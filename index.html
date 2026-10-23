@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Posturální profil">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#1f4fa3">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Posturální profil</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: nástroj — vlevo snímek a protokol focení, vpravo body, výsledek a měření; na mobilu pod sebou */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --surface-2:#f7f8fb; --ink:#14213d; --muted:#5b6782; --line:#d8deea;
+  --sapphire:#1f4fa3; --sapphire-soft:#e5ecf9; --gold:#b9861d; --gold-soft:#f7eed7;
+  --ok:#2f7d4f; --ok-soft:#e3f2e8; --warn:#b4541a; --warn-soft:#fbeadf;
+  --f-ui:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-num:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0c1322; --surface:#141d31; --surface-2:#18233b; --ink:#e6ebf5; --muted:#9ba7c0; --line:#28344f;
+  --sapphire:#79a4f2; --sapphire-soft:#1b2a4a; --gold:#e3b653; --gold-soft:#33290f; --ok:#6cc792; --ok-soft:#17321f; --warn:#f0a06a; --warn-soft:#3a2214; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0c1322; --surface:#141d31; --surface-2:#18233b; --ink:#e6ebf5; --muted:#9ba7c0; --line:#28344f;
+  --sapphire:#79a4f2; --sapphire-soft:#1b2a4a; --gold:#e3b653; --gold-soft:#33290f; --ok:#6cc792; --ok-soft:#17321f; --warn:#f0a06a; --warn-soft:#3a2214; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:12px}
+.mark{width:40px;height:40px;border-radius:10px;background:linear-gradient(140deg,var(--sapphire),#2c3f7a 70%,var(--gold));display:grid;place-items:center;flex:none}
+h1{font-size:1.45rem;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);font-size:.88rem;margin:0}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;color:var(--muted);font:600 .9rem var(--f-ui);padding:8px 14px;border-radius:7px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--sapphire);color:#fff}
+.seg button small{display:block;font-weight:400;font-size:.72rem;opacity:.85}
+.grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.col{display:grid;gap:18px;min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.stage-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:500 .9rem var(--f-ui);padding:8px 12px;border-radius:9px;cursor:pointer;text-decoration:none}
+.btn:hover{border-color:var(--sapphire)}
+.btn.primary{background:var(--sapphire);border-color:var(--sapphire);color:#fff}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#1a1405}
+.btn.on{border-color:var(--gold);background:var(--gold-soft)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.seg button:focus-visible,input:focus-visible,summary:focus-visible,.step:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.stage{position:relative;display:flex;justify-content:center;background:repeating-conic-gradient(var(--surface-2) 0 25%,var(--bg) 0 50%) 0 0/18px 18px;border-radius:10px;overflow:hidden;min-height:240px}
+#cv{display:block;max-width:100%;max-height:72vh;width:auto;height:auto;touch-action:none;cursor:crosshair}
+#loupe{position:absolute;top:10px;left:10px;width:140px;height:140px;border-radius:50%;border:3px solid var(--gold);box-shadow:0 6px 20px rgba(0,0,0,.35);pointer-events:none;background:#000}
+#loupe.right{left:auto;right:10px}
+.badge{position:absolute;bottom:10px;left:10px;background:var(--gold-soft);color:var(--ink);border:1px solid var(--gold);font-size:.78rem;padding:3px 9px;border-radius:999px}
+.row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.ctrl{display:flex;align-items:center;gap:8px;font-size:.86rem;color:var(--muted)}
+.ctrl input[type=range]{width:150px;accent-color:var(--sapphire)}
+.ctrl output{font-family:var(--f-num);color:var(--ink);min-width:3.6em}
+.hint{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:var(--sapphire-soft);font-size:.9rem}
+.hint b{color:var(--sapphire)}
+.warns{display:grid;gap:6px;margin-top:8px}
+.warn{padding:7px 10px;border-radius:9px;background:var(--warn-soft);color:var(--ink);font-size:.84rem;border-left:3px solid var(--warn)}
+.okmsg{padding:7px 10px;border-radius:9px;background:var(--ok-soft);font-size:.84rem;border-left:3px solid var(--ok)}
+h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px;font-weight:600}
+h2 .cnt{font-family:var(--f-num);letter-spacing:0;text-transform:none;color:var(--ink);margin-left:6px}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.step{display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;align-items:center;padding:7px 8px;border-radius:9px;cursor:pointer;border:1px solid transparent}
+.step:hover{background:var(--surface-2)}
+.num{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:600 .78rem var(--f-num);border:1.5px solid var(--line);color:var(--muted)}
+.step.done .num{background:var(--gold);border-color:var(--gold);color:#1a1405}
+.step.cur{border-color:var(--sapphire);background:var(--sapphire-soft)}
+.step.cur .num{border-color:var(--sapphire);color:var(--sapphire)}
+.step .nm{font-weight:500;font-size:.92rem}
+.step .st{font-size:.76rem;color:var(--muted)}
+.check{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.check label{display:grid;grid-template-columns:20px minmax(0,1fr);gap:8px;align-items:start;padding:5px 4px;font-size:.88rem;cursor:pointer;border-radius:7px}
+.check label:hover{background:var(--surface-2)}
+.check input{margin-top:3px;accent-color:var(--sapphire);width:16px;height:16px}
+.check small{display:block;color:var(--muted);font-size:.76rem}
+.total{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.total .val{font:600 2.6rem/1 var(--f-num);color:var(--sapphire);font-variant-numeric:tabular-nums}
+.total .lbl{font-weight:600}
+.total .pm{font:500 1rem var(--f-num);color:var(--muted)}
+.parts{display:grid;gap:7px;margin-top:6px}
+.part{display:grid;grid-template-columns:62px minmax(0,1fr) 52px;gap:10px;align-items:center;font-size:.86rem}
+.part code{font-family:var(--f-num);font-size:.8rem;color:var(--muted)}
+.bar{height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden;border:1px solid var(--line)}
+.bar i{display:block;height:100%;background:var(--sapphire);border-radius:4px}
+.part .v{font-family:var(--f-num);text-align:right;font-variant-numeric:tabular-nums}
+.part .dir{grid-column:2 / 4;font-size:.76rem;color:var(--muted);margin-top:-4px}
+.series{margin-top:14px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;display:grid;gap:8px}
+.series .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 .8rem var(--f-num);padding:2px 8px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line)}
+.chip.cur{border-color:var(--sapphire);color:var(--sapphire)}
+.empty{color:var(--muted);font-size:.9rem;margin:0}
+label.f{display:grid;gap:4px;font-size:.8rem;color:var(--muted)}
+label.f input{font:inherit;font-size:.92rem;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:7px 9px;min-width:0;width:100%}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.saved{display:grid;gap:8px}
+.sv{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2)}
+.sv img{width:52px;height:64px;object-fit:cover;border-radius:6px;background:var(--bg)}
+.sv .t{font-weight:600;font-size:.9rem}
+.sv .m{font-size:.76rem;color:var(--muted)}
+.sv .n{font:600 1.1rem var(--f-num);text-align:right}
+.delta{font:500 .74rem var(--f-num);display:block;max-width:14em;margin-left:auto}
+.delta.up{color:var(--warn)} .delta.down{color:var(--ok)} .delta.same{color:var(--muted)}
+details{border-top:1px solid var(--line);padding-top:10px}
+details+details{margin-top:10px}
+summary{cursor:pointer;font-weight:600;font-size:.95rem}
+details .body{font-size:.9rem;color:var(--ink);max-width:78ch}
+details h3{font-size:.86rem;margin:14px 0 4px;color:var(--sapphire)}
+details ul,details ol{margin:4px 0 0;padding-left:20px;display:grid;gap:3px;color:var(--muted)}
+details p{margin:6px 0;color:var(--muted)}
+.ref{font-size:.8rem;color:var(--muted);margin:0}
+.note{font-size:.78rem;color:var(--muted);margin-top:16px;max-width:75ch}
+#copyArea{position:absolute;left:-9999px;top:0}
+.toast{font-size:.8rem;color:var(--ok);min-height:1.2em}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .3s ease}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="mark" aria-hidden="true">
+        <svg width="22" height="26" viewBox="0 0 22 26" fill="none"><path d="M11 1v24" stroke="#fff" stroke-width="1.6" stroke-dasharray="2 2.4"/><path d="M3 6h16M4 12h14M5 18h12" stroke="#f5d488" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div>
+        <h1>Posturální profil</h1>
+        <p class="sub">Indexy symetrie trupu z fotografie · POTSI a ATSI · podle Suzukiho, Stolińského a Černého</p>
+      </div>
+    </div>
+    <div class="seg" role="group" aria-label="Typ měření">
+      <button id="tPOTSI" aria-pressed="true">POTSI<small>snímek zezadu</small></button>
+      <button id="tATSI" aria-pressed="false">ATSI<small>snímek zepředu</small></button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="col">
+      <section class="panel" aria-label="Snímek">
+        <div class="stage-tools">
+          <label class="btn primary" for="file">📷 Vyfotit nebo nahrát snímek</label>
+          <input id="file" type="file" accept="image/*" hidden>
+          <button class="btn" id="plumb" title="Klepněte na dva body olovnice nebo svislé hrany">⊥ Vyrovnat podle olovnice</button>
+          <button class="btn" id="undo">↶ Zpět</button>
+          <button class="btn" id="reset">Smazat body</button>
+          <button class="btn" id="demo">Ukázka</button>
+        </div>
+        <div class="stage" id="stage">
+          <canvas id="cv" width="900" height="1100" aria-label="Snímek pacienta s anatomickými body"></canvas>
+          <canvas id="loupe" width="280" height="280" hidden></canvas>
+          <span class="badge" id="demoBadge">Ukázka – smyšlená silueta, ne pacient</span>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <div class="ctrl"><label for="rot">Ruční vyrovnání</label><input id="rot" type="range" min="-20" max="20" step="0.1" value="0"><output id="rotOut">0,0°</output></div>
+          <div class="ctrl"><input id="grid" type="checkbox"><label for="grid">Svislá mřížka</label></div>
+        </div>
+        <p class="hint" id="hint"></p>
+        <div class="warns" id="warns"></div>
+      </section>
+
+      <section class="panel" aria-label="Protokol focení">
+        <h2>Protokol focení <span class="cnt" id="protoCnt"></span></h2>
+        <ul class="check" id="proto"></ul>
+        <div class="fields" style="margin-top:10px">
+          <label class="f">Vzdálenost fotoaparátu (m)<input id="dist" type="number" step="0.1" min="0" inputmode="decimal" placeholder="3,0"></label>
+          <label class="f">Výška objektivu (cm)<input id="camh" type="number" step="1" min="0" inputmode="numeric" placeholder="např. 90"></label>
+          <label class="f">Měřil(a)<input id="examiner" type="text" autocomplete="off" placeholder="iniciály"></label>
+        </div>
+        <p class="ref" style="margin-top:8px">Podmínky se uloží k měření, aby šlo kontrolu příště nafotit stejně.</p>
+      </section>
+    </div>
+
+    <aside class="col">
+      <section class="panel">
+        <h2>Body na snímku</h2>
+        <ol class="steps" id="steps"></ol>
+      </section>
+
+      <section class="panel" id="resPanel">
+        <h2>Výsledek</h2>
+        <div id="result"></div>
+        <div id="seriesBox"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Uložená měření v této relaci</h2>
+        <div class="fields">
+          <label class="f">Pacient (jméno nebo číslo karty)<input id="pname" type="text" autocomplete="off" placeholder="např. Novák Jan"></label>
+          <label class="f">Datum<input id="pdate" type="date"></label>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn gold" id="save" disabled>Uložit měření</button>
+          <span class="toast" id="saveToast"></span>
+        </div>
+        <div class="saved" id="saved" style="margin-top:12px"></div>
+      </section>
+    </aside>
+  </div>
+
+  <section class="panel" style="margin-top:18px">
+    <details open>
+      <summary>Klinický protokol: příprava a focení</summary>
+      <div class="body">
+        <h3>Příprava pacienta</h3>
+        <ul>
+          <li>Pacient svlečený do spodního prádla (dívky úzká podprsenka), bosý. Horní konec intergluteální rýhy musí být odkrytý, jinak POTSI nelze spočítat.</li>
+          <li>Delší vlasy stažené sponou, aby nezakrývaly krk a kontury trupu.</li>
+          <li>Před focením palpačně najděte a dermografem (netoxickou tužkou) označte trn C7 a středy akromií; u ATSI i střed jugula. Označené body se na snímku hledají přesněji než body odhadované od oka.</li>
+        </ul>
+        <h3>Postavení</h3>
+        <ul>
+          <li>Na podlaze podélná a příčná čára. Chodidla na šířku pánve, rovnoběžně s podélnou čárou, zevní kotníky nad příčnou čárou. Většina pacientů potřebuje s postavením pomoct.</li>
+          <li>Váha rovnoměrně na obou nohách, kolena v neutrálu – ne pokrčená, ne v hyperextenzi. Stání na jedné noze mění symetrii trupu.</li>
+          <li>Paže volně podél těla, ramena dole (bez protrakce a elevace), pohled vpřed v úrovni očí, bez úsměvu.</li>
+          <li>Spontánní, habituální postoj – nežádejte „narovnej se“; aktivní korekce mění výsledek.</li>
+        </ul>
+        <h3>Fotoaparát</h3>
+        <ul>
+          <li>Stativ, fotoaparát ve vodováze a kolmo k pacientovi. Nakloněný fotoaparát je jedna z nejčastějších chyb.</li>
+          <li>Vzdálenost kolem 3 m, objektiv v polovině výšky postavy (u dětí 7–10 let se osvědčilo 90 cm). Na telefonu nepoužívejte širokoúhlý objektiv; při kratší vzdálenosti zkreslení roste.</li>
+          <li>Do záběru zavěste olovnici (nebo použijte svislou zárubeň). Tlačítkem <b>Vyrovnat podle olovnice</b> pak snímek přesně srovnáte – výškové indexy jsou na náklon citlivé.</li>
+          <li>Ostrý snímek s rozlišením aspoň 2 Mpx (každý dnešní telefon stačí), světlé jednobarevné pozadí.</li>
+          <li>Pořiďte 3 snímky během několika sekund a každý změřte – průměr je spolehlivější než jedno měření.</li>
+          <li>Při kontrolách stejné místo, vzdálenost, výška objektivu, pozadí a pokud možno stejný terapeut.</li>
+        </ul>
+        <h3>Etika a dokumentace</h3>
+        <ul>
+          <li>Fotodokumentace je součástí zdravotnické dokumentace: písemný souhlas pacienta, u dětí zákonného zástupce. Snímky nepatří do osobního telefonu ani cloudu.</li>
+          <li>U dětí s omezenou spoluprací (a obecně pod 7 let) nemusí jít standardizovaný postoj zajistit – pak měření neinterpretujte.</li>
+        </ul>
+      </div>
+    </details>
+    <details>
+      <summary>Jak výsledky vyhodnocovat</summary>
+      <div class="body">
+        <ul>
+          <li><b>0 = plná symetrie trupu.</b> Index je poměrový, nezávisí na vzdálenosti ani výšce pacienta; je ale citlivý na náklon fotoaparátu, otočení pacienta a jeho postoj.</li>
+          <li><b>Chyba měření:</b> u POTSI autoři metody uvádějí průměrnou chybu opakovaného měření 5,5 bodu u téhož hodnotitele a 6,4 bodu mezi hodnotiteli (Suzuki 1999). Změnu menší než tato hodnota nelze považovat za skutečné zlepšení ani zhoršení. Aplikace takovou změnu označí „v rámci chyby měření“.</li>
+          <li><b>Stabilita:</b> u zdravých dětí se POTSI ani ATSI při opakovaném focení po hodině a po týdnu významně nelišily (Stoliński 2017) – při dodržení protokolu je metoda vhodná pro sledování v čase.</li>
+          <li><b>Orientační hodnoty:</b> zdravé děti 7–10 let měly průměr ATSI 24,3 (421 dětí, Stoliński 2013); v menším souboru zdravých dětí vycházel POTSI kolem 18–22 a ATSI kolem 20–22 (Stoliński 2017). U pacientů se skoliózou je POTSI významně vyšší než u zdravých (Suzuki 1999). Pro dospělé jednotná norma zavedená není.</li>
+          <li><b>Hranice „POTSI ≤ 10 = norma“</b>, kterou uvádí aplikace PotsiApp, s publikovanými daty zdravých dětí nesouhlasí – nepoužívejte ji k závěrům.</li>
+          <li><b>Co fotografie neumí:</b> je dvourozměrná, neměří rotaci trupu. Doplňte Adamsův předklonový test se skoliometrem (ATR). RTG s Cobbovým úhlem zůstává zlatým standardem pro diagnózu skoliózy; fotogrammetrie slouží k dokumentaci a sledování bez záření.</li>
+          <li><b>Nejcennější informace</b> je trend u téhož pacienta: stejný protokol, stejný hodnotitel, průměr ze 3 měření.</li>
+        </ul>
+      </div>
+    </details>
+    <details>
+      <summary>Jak se indexy počítají</summary>
+      <div class="body">
+        <ul>
+          <li>Střední čára je svislice vedená začátkem intergluteální rýhy (POTSI), resp. pupkem (ATSI). Výška trupu <i>e</i> je svislá vzdálenost C7 – rýha (POTSI), resp. jugulum – pupek (ATSI).</li>
+          <li>Bod ramene je průsečík kontury ramene se svislicí vedenou z podpažní řasy téže strany – aplikace ho proto po umístění podpažní řasy drží na této svislici.</li>
+          <li>FAI‑C7 / FAI‑SN = vodorovná odchylka C7 / jugula od střední čáry ÷ <i>e</i> × 100.</li>
+          <li>FAI‑A a FAI‑T = |pravá − levá vzdálenost od střední čáry| ÷ (pravá + levá) × 100, pro podpažní řasy a tajle.</li>
+          <li>HDI‑S, HDI‑A, HDI‑T = výškový rozdíl ramen, podpažních řas a tajlí ÷ <i>e</i> × 100.</li>
+          <li>Index = součet šesti dílčích indexů.</li>
+        </ul>
+        <p class="ref">Suzuki N. et al. 1999 (POTSI); Stoliński Ł. et al. 2012 a 2013 (ATSI); Stoliński Ł., Černý P. et al. 2017, Scoliosis and Spinal Disorders 12:38 (standardizace fotografie, SCODIAC).</p>
+      </div>
+    </details>
+    <p class="note">Snímky se zpracovávají jen v tomto prohlížeči, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.2 – samostatný prototyp, později modul kartotéky.</p>
+  </section>
+</div>
+<textarea id="copyArea" aria-hidden="true" tabindex="-1"></textarea>
+
+<script>
+(function(){
+const VERSION='0.2';
+const MEAS_ERR={POTSI:{intra:5.5,inter:6.4}}; // Suzuki 1999
+const DEFS={
+  POTSI:{name:'POTSI',view:'zezadu',top:'c7',mid:'nc',patientRightIsImageRight:true,topCode:'FAI‑C7',topName:'C7',
+    pts:[
+      {k:'c7',n:'C7',t:'Trn obratle C7 – ideálně předem označený dermografem.'},
+      {k:'ra',n:'Pravá podpažní řasa',t:'Místo, kde se pravá paže odděluje od trupu. Zezadu je pravá strana pacienta na snímku vpravo.'},
+      {k:'rs',n:'Pravé rameno',t:'Horní kontura ramene na zlaté svislici vedené z pravé podpažní řasy – stačí trefit výšku.'},
+      {k:'rw',n:'Pravá tajle',t:'Nejhlubší bod zářezu tajle.'},
+      {k:'nc',n:'Intergluteální rýha',t:'Horní začátek intergluteální rýhy. Určuje střední čáru.'},
+      {k:'lw',n:'Levá tajle',t:'Nejhlubší bod zářezu tajle vlevo.'},
+      {k:'la',n:'Levá podpažní řasa',t:'Místo, kde se levá paže odděluje od trupu.'},
+      {k:'ls',n:'Levé rameno',t:'Horní kontura ramene na zlaté svislici z levé podpažní řasy.'}
+    ]},
+  ATSI:{name:'ATSI',view:'zepředu',top:'sn',mid:'um',patientRightIsImageRight:false,topCode:'FAI‑SN',topName:'jugulum',
+    pts:[
+      {k:'sn',n:'Jugulum',t:'Střed incisura jugularis sterni – ideálně předem označený.'},
+      {k:'ra',n:'Pravá podpažní řasa',t:'Místo, kde se pravá paže odděluje od trupu. Zepředu je pravá strana pacienta na snímku vlevo.'},
+      {k:'rs',n:'Pravé rameno',t:'Horní kontura ramene na zlaté svislici vedené z pravé podpažní řasy – stačí trefit výšku.'},
+      {k:'rw',n:'Pravá tajle',t:'Nejhlubší bod zářezu tajle.'},
+      {k:'um',n:'Pupek',t:'Střed pupku. Určuje střední čáru.'},
+      {k:'lw',n:'Levá tajle',t:'Nejhlubší bod zářezu tajle vlevo.'},
+      {k:'la',n:'Levá podpažní řasa',t:'Místo, kde se levá paže odděluje od trupu.'},
+      {k:'ls',n:'Levé rameno',t:'Horní kontura ramene na zlaté svislici z levé podpažní řasy.'}
+    ]}
+};
+const PROTO=[
+  {k:'mark',t:'Body označeny dermografem',s:'C7 a akromia po palpaci; u ATSI i jugulum'},
+  {k:'cam',t:'Stativ, fotoaparát ve vodováze a kolmo',s:'bez širokoúhlého objektivu'},
+  {k:'dist',t:'Vzdálenost kolem 3 m, objektiv v polovině výšky postavy',s:''},
+  {k:'plumb',t:'Olovnice nebo svislice v záběru',s:'a snímek srovnaný tlačítkem ⊥'},
+  {k:'feet',t:'Chodidla na značkách',s:'na šířku pánve, rovnoběžně, váha na obou nohách, kolena v neutrálu'},
+  {k:'arms',t:'Paže volně podél těla, ramena dole, pohled vpřed',s:'spontánní postoj, bez „narovnej se“'},
+  {k:'skin',t:'Kontury trupu a horní konec rýhy odkryté',s:'vlasy stažené, prádlo nic nezakrývá'},
+  {k:'cons',t:'Souhlas s fotodokumentací',s:'u dětí od zákonného zástupce'}
+];
+const $=id=>document.getElementById(id);
+const cv=$('cv'),ctx=cv.getContext('2d'),loupe=$('loupe'),lctx=loupe.getContext('2d');
+let type='POTSI',src=null,base=document.createElement('canvas'),rot=0,showGrid=false,isDemo=true,calibrated=false;
+let pts={},hist=[],drag=null,saved=[],series=[],plumbMode=false,plumbPts=[],proto={};
+const fmt=(v,d=1)=>Number(v).toLocaleString('cs-CZ',{minimumFractionDigits:d,maximumFractionDigits:d});
+const def=()=>DEFS[type];
+const nextKey=()=>{const p=def().pts.find(p=>!pts[p.k]);return p?p.k:null};
+const complete=()=>def().pts.every(p=>pts[p.k]);
+const partner={rs:'ra',ls:'la'};
+try{$('pdate').value=new Date().toISOString().slice(0,10)}catch(e){}
+
+/* ---------- ukázková silueta ---------- */
+function makeDemo(t){
+  const c=document.createElement('canvas');c.width=900;c.height=1100;const g=c.getContext('2d');
+  const bg=g.createLinearGradient(0,0,0,1100);bg.addColorStop(0,'#d9dde4');bg.addColorStop(1,'#bfc5cf');g.fillStyle=bg;g.fillRect(0,0,900,1100);
+  g.fillStyle='#a9b0bc';g.fillRect(0,960,900,140);
+  // olovnice v záběru (mírně nakloněný snímek)
+  g.strokeStyle='#2b2b2b';g.lineWidth=2;g.beginPath();g.moveTo(800,0);g.lineTo(806,900);g.stroke();
+  g.fillStyle='#8a6a2a';g.beginPath();g.moveTo(798,900);g.lineTo(814,900);g.lineTo(806,926);g.closePath();g.fill();
+  const skin='#d9a98b',skinD='#c08f72';
+  const back=t==='POTSI';
+  const P=back?{c7:[452,182],rs:[598,236],ra:[598,372],rw:[586,566],nc:[447,812],lw:[322,580],la:[306,384],ls:[306,252]}
+             :{sn:[452,206],rs:[302,246],ra:[302,382],rw:[320,572],um:[456,606],lw:[586,562],la:[600,372],ls:[600,236]};
+  const L=back?{s:P.ls,a:P.la,w:P.lw}:{s:P.rs,a:P.ra,w:P.rw};
+  const R=back?{s:P.rs,a:P.ra,w:P.rw}:{s:P.ls,a:P.la,w:P.lw};
+  g.fillStyle=skinD;
+  [[L.s[0]-50,L.s[1]+10,L.a[0]-40,640],[R.s[0]-0,R.s[1]+10,R.a[0]+40,640]].forEach(([x1,y1,x2,y2],i)=>{
+    g.beginPath();const w=58;g.moveTo(x1,y1);g.quadraticCurveTo(x1+(i?w+10:-10),y1+120,x2+(i?0:-w/2),y2);
+    g.lineTo(x2+(i?w/2:w/2),y2+30);g.quadraticCurveTo(x1+(i?20:w),y1+200,x1+w,y1+20);g.closePath();g.fill();
+  });
+  g.fillStyle=skin;g.beginPath();
+  g.moveTo(415,90);g.lineTo(420,170);
+  g.quadraticCurveTo(L.s[0]+40,L.s[1]-22,L.s[0]-14,L.s[1]+4);
+  g.quadraticCurveTo(L.s[0]-24,L.s[1]+70,L.a[0],L.a[1]);
+  g.quadraticCurveTo(L.a[0]+20,L.a[1]+110,L.w[0],L.w[1]);
+  g.quadraticCurveTo(L.w[0]-10,L.w[1]+110,L.w[0]-40,780);
+  g.lineTo(L.w[0]-30,960);g.lineTo(R.w[0]+30,960);g.lineTo(R.w[0]+40,780);
+  g.quadraticCurveTo(R.w[0]+10,R.w[1]+110,R.w[0],R.w[1]);
+  g.quadraticCurveTo(R.a[0]-20,R.a[1]+110,R.a[0],R.a[1]);
+  g.quadraticCurveTo(R.s[0]+24,R.s[1]+70,R.s[0]+14,R.s[1]+4);
+  g.quadraticCurveTo(R.s[0]-40,R.s[1]-22,484,170);g.lineTo(488,90);g.closePath();g.fill();
+  g.beginPath();g.ellipse(452,60,58,70,0,0,Math.PI*2);g.fillStyle=back?'#5b4636':skin;g.fill();
+  g.fillStyle='#4a5872';g.beginPath();
+  const by=back?836:800;g.moveTo(L.w[0]-36,by);g.lineTo(R.w[0]+36,by);g.lineTo(R.w[0]+30,960);g.lineTo(L.w[0]-30,960);g.closePath();g.fill();
+  g.strokeStyle='rgba(90,50,30,.45)';g.lineWidth=3;g.lineCap='round';
+  if(back){
+    g.beginPath();g.moveTo(P.c7[0],P.c7[1]);g.bezierCurveTo(470,360,432,560,P.nc[0],P.nc[1]);g.stroke();
+    g.beginPath();g.moveTo(P.nc[0],P.nc[1]);g.lineTo(P.nc[0]+2,836);g.stroke();
+    g.lineWidth=2;g.beginPath();g.moveTo(370,300);g.quadraticCurveTo(350,360,390,420);g.moveTo(540,290);g.quadraticCurveTo(560,350,515,412);g.stroke();
+    g.fillStyle='#2a2fa0';g.beginPath();g.arc(P.c7[0],P.c7[1],4,0,Math.PI*2);g.fill();
+  } else {
+    g.beginPath();g.moveTo(P.sn[0]-16,P.sn[1]-6);g.quadraticCurveTo(P.sn[0],P.sn[1]+12,P.sn[0]+16,P.sn[1]-6);g.stroke();
+    g.beginPath();g.moveTo(P.sn[0]-30,200);g.lineTo(300,232);g.moveTo(P.sn[0]+30,200);g.lineTo(606,224);g.stroke();
+    g.fillStyle='rgba(90,50,30,.55)';g.beginPath();g.ellipse(P.um[0],P.um[1],7,9,0,0,Math.PI*2);g.fill();
+  }
+  return {canvas:c,pts:Object.fromEntries(Object.entries(P).map(([k,v])=>[k,{x:v[0],y:v[1]}]))};
+}
+
+/* ---------- snímek a natočení ---------- */
+function rebuildBase(){
+  if(!src)return;
+  base.width=src.width;base.height=src.height;
+  const b=base.getContext('2d');b.fillStyle='#222';b.fillRect(0,0,base.width,base.height);
+  b.save();b.translate(base.width/2,base.height/2);b.rotate(rot*Math.PI/180);
+  b.drawImage(src,-src.width/2,-src.height/2);b.restore();
+  cv.width=base.width;cv.height=base.height;
+}
+function setRotation(nr){
+  nr=Math.max(-20,Math.min(20,nr));const d=(nr-rot)*Math.PI/180,cx=cv.width/2,cy=cv.height/2,c=Math.cos(d),s=Math.sin(d);
+  for(const k in pts){const x=pts[k].x-cx,y=pts[k].y-cy;pts[k]={x:cx+x*c-y*s,y:cy+x*s+y*c}}
+  rot=nr;$('rot').value=rot;snapShoulders();rebuildBase();refresh();
+}
+function loadDemo(){
+  const d=makeDemo(type);src=d.canvas;isDemo=true;rot=0;calibrated=false;$('rot').value=0;
+  pts=d.pts;hist=def().pts.map(p=>p.k);series=[];rebuildBase();refresh();
+}
+$('demo').onclick=loadDemo;
+$('file').addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  const url=URL.createObjectURL(f);const im=new Image();
+  im.onload=()=>{
+    const max=2400,s=Math.min(1,max/Math.max(im.naturalWidth,im.naturalHeight));
+    const c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*s);c.height=Math.round(im.naturalHeight*s);
+    c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(url);
+    c._origMpx=im.naturalWidth*im.naturalHeight/1e6;
+    if(isDemo)series=[];
+    src=c;isDemo=false;rot=0;calibrated=false;$('rot').value=0;pts={};hist=[];rebuildBase();refresh();
+  };
+  im.onerror=()=>{URL.revokeObjectURL(url);$('hint').innerHTML='Tento soubor se nepodařilo otevřít jako obrázek. Zkuste fotografii ve formátu JPG nebo PNG.'};
+  im.src=url;e.target.value='';
+});
+$('rot').addEventListener('input',e=>{calibrated=false;setRotation(parseFloat(e.target.value)||0)});
+$('grid').addEventListener('change',e=>{showGrid=e.target.checked;draw()});
+$('plumb').onclick=()=>{plumbMode=!plumbMode;plumbPts=[];$('plumb').classList.toggle('on',plumbMode);refresh()};
+
+/* ---------- kreslení ---------- */
+function draw(){
+  if(!src)return;
+  ctx.drawImage(base,0,0);
+  const W=cv.width,H=cv.height,s=Math.max(W,H)/900;
+  if(showGrid||plumbMode){ctx.strokeStyle='rgba(255,255,255,.4)';ctx.lineWidth=1*s;
+    for(let i=1;i<10;i++){const x=W*i/10;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}}
+  if(plumbMode){plumbPts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,9*s,0,Math.PI*2);ctx.fillStyle='#e3b653';ctx.fill();ctx.lineWidth=2*s;ctx.strokeStyle='#14213d';ctx.stroke()});return}
+  const d=def(),m=pts[d.mid];
+  // svislice z podpažních řas pro bod ramene
+  ['ra','la'].forEach(a=>{if(pts[a]){ctx.save();ctx.setLineDash([4*s,6*s]);ctx.strokeStyle='rgba(227,182,83,.95)';ctx.lineWidth=2*s;
+    ctx.beginPath();ctx.moveTo(pts[a].x,pts[a].y);ctx.lineTo(pts[a].x,Math.max(0,pts[a].y-H*.3));ctx.stroke();ctx.restore()}});
+  if(m){ctx.save();ctx.setLineDash([10*s,8*s]);ctx.strokeStyle='rgba(31,79,163,.95)';ctx.lineWidth=2.5*s;
+    ctx.beginPath();ctx.moveTo(m.x,0);ctx.lineTo(m.x,H);ctx.stroke();ctx.restore();
+    const t=pts[d.top];
+    if(t){ctx.strokeStyle='rgba(185,134,29,.95)';ctx.lineWidth=3*s;ctx.beginPath();ctx.moveTo(t.x,t.y);ctx.lineTo(m.x,t.y);ctx.stroke();}
+  }
+  [['rs','ls'],['ra','la'],['rw','lw']].forEach(([a,b])=>{
+    if(pts[a]&&pts[b]){ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=2*s;ctx.beginPath();ctx.moveTo(pts[a].x,pts[a].y);ctx.lineTo(pts[b].x,pts[b].y);ctx.stroke();}
+  });
+  d.pts.forEach((p,i)=>{const q=pts[p.k];if(!q)return;
+    const r=11*s;ctx.beginPath();ctx.arc(q.x,q.y,r,0,Math.PI*2);ctx.fillStyle=drag===p.k?'#1f4fa3':'#e3b653';ctx.fill();
+    ctx.lineWidth=2.5*s;ctx.strokeStyle='#14213d';ctx.stroke();
+    ctx.fillStyle=drag===p.k?'#fff':'#14213d';ctx.font=`600 ${12*s}px "IBM Plex Mono",monospace`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(i+1,q.x,q.y+0.5*s);
+  });
+}
+function drawLoupe(p,clientX){
+  const rect=cv.getBoundingClientRect(),stage=$('stage').getBoundingClientRect();
+  loupe.hidden=false;loupe.classList.toggle('right',clientX-stage.left<stage.width/2);
+  const scale=cv.width/rect.width,L=loupe.width,zoom=2.6,sw=(140/zoom)*scale;
+  lctx.fillStyle='#000';lctx.fillRect(0,0,L,L);
+  lctx.drawImage(cv,p.x-sw/2,p.y-sw/2,sw,sw,0,0,L,L);
+  lctx.strokeStyle='#fff';lctx.lineWidth=2;lctx.beginPath();lctx.moveTo(L/2,L/2-24);lctx.lineTo(L/2,L/2+24);lctx.moveTo(L/2-24,L/2);lctx.lineTo(L/2+24,L/2);lctx.stroke();
+}
+
+/* ---------- body ---------- */
+function snapShoulders(){for(const s in partner){const a=partner[s];if(pts[s]&&pts[a])pts[s].x=pts[a].x}}
+function place(k,p){pts[k]={x:p.x,y:p.y};if(partner[k]&&pts[partner[k]])pts[k].x=pts[partner[k]].x;
+  if(k==='ra'&&pts.rs)pts.rs.x=p.x;if(k==='la'&&pts.ls)pts.ls.x=p.x}
+function toImg(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*cv.width/r.width,y:(e.clientY-r.top)*cv.height/r.height}}
+cv.addEventListener('pointerdown',e=>{
+  if(!src)return;e.preventDefault();const p=toImg(e);
+  if(plumbMode){plumbPts.push(p);draw();
+    if(plumbPts.length===2){let[a,b]=plumbPts;if(a.y>b.y)[a,b]=[b,a];const dx=b.x-a.x,dy=b.y-a.y;
+      if(dy<cv.height*.08){plumbPts=[];refresh();$('hint').innerHTML='<b>Body jsou příliš blízko.</b> Klepněte na olovnici co nejvýš a co nejníž.';return}
+      const alpha=Math.atan(dx/dy)*180/Math.PI;plumbMode=false;plumbPts=[];$('plumb').classList.remove('on');calibrated=true;setRotation(rot+alpha);}
+    return}
+  const r=cv.getBoundingClientRect(),hit=26*cv.width/r.width;
+  let best=null,bd=hit;
+  for(const k in pts){if(!def().pts.some(x=>x.k===k))continue;const d=Math.hypot(pts[k].x-p.x,pts[k].y-p.y);if(d<bd){bd=d;best=k}}
+  if(best){drag=best;place(best,p)}
+  else{const k=nextKey();if(!k)return;place(k,p);hist.push(k);drag=k}
+  cv.setPointerCapture(e.pointerId);draw();drawLoupe(pts[drag],e.clientX);renderSteps();
+});
+cv.addEventListener('pointermove',e=>{if(!drag)return;place(drag,toImg(e));draw();drawLoupe(pts[drag],e.clientX)});
+const end=()=>{if(!drag)return;drag=null;loupe.hidden=true;refresh()};
+cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);
+$('undo').onclick=()=>{const k=hist.pop();if(k){delete pts[k];refresh()}};
+$('reset').onclick=()=>{pts={};hist=[];refresh()};
+
+function setType(t){type=t;$('tPOTSI').setAttribute('aria-pressed',t==='POTSI');$('tATSI').setAttribute('aria-pressed',t==='ATSI');
+  series=[];if(isDemo)loadDemo();else{pts={};hist=[];refresh()}}
+$('tPOTSI').onclick=()=>setType('POTSI');$('tATSI').onclick=()=>setType('ATSI');
+
+/* ---------- výpočet ---------- */
+function compute(){
+  const d=def(),P=pts,x0=P[d.mid].x,e=Math.abs(P[d.mid].y-P[d.top].y);
+  if(e<10)return null;
+  const R=d.patientRightIsImageRight?1:-1;
+  const dist=k=>Math.abs(P[k].x-x0);
+  const ratio=(a,b)=>{const A=dist(a),B=dist(b);return A+B>0?Math.abs(A-B)/(A+B)*100:0};
+  const hd=(a,b)=>Math.abs(P[a].y-P[b].y)/e*100;
+  const side=c=>c?'vpravo':'vlevo';
+  const topDev=(P[d.top].x-x0)*R;
+  const parts=[
+    {c:d.topCode,v:Math.abs(P[d.top].x-x0)/e*100,dir:Math.abs(topDev)<0.5?'na střední čáře':`${d.topName} posunuto ${side(topDev>0)} od střední čáry`},
+    {c:'FAI‑A',v:ratio('ra','la'),dir:`podpažní řasa dál od střední čáry ${side(dist('ra')>dist('la'))}`},
+    {c:'FAI‑T',v:ratio('rw','lw'),dir:`tajle dál od střední čáry ${side(dist('rw')>dist('lw'))}`},
+    {c:'HDI‑S',v:hd('rs','ls'),dir:`rameno výš ${side(P.rs.y<P.ls.y)}`},
+    {c:'HDI‑A',v:hd('ra','la'),dir:`podpažní řasa výš ${side(P.ra.y<P.la.y)}`},
+    {c:'HDI‑T',v:hd('rw','lw'),dir:`tajle výš ${side(P.rw.y<P.lw.y)}`}
+  ];
+  return{total:parts.reduce((s,p)=>s+p.v,0),parts,e};
+}
+function stats(arr){const n=arr.length,m=arr.reduce((a,b)=>a+b,0)/n;const sd=n>1?Math.sqrt(arr.reduce((a,b)=>a+(b-m)**2,0)/(n-1)):0;return{n,m,sd,min:Math.min(...arr),max:Math.max(...arr)}}
+
+/* ---------- kontrola kvality ---------- */
+function qualityWarnings(r){
+  const w=[];
+  if(!src)return w;
+  if(!isDemo&&src._origMpx&&src._origMpx<2)w.push('Snímek má méně než 2 Mpx. Použijte vyšší rozlišení, body se pak hledají přesněji.');
+  if(!calibrated)w.push('Snímek není vyrovnaný podle olovnice. Výškové indexy (HDI) jsou na náklon citlivé – náklon 1° posune výsledek u širokého trupu o několik desetin bodu.');
+  if(r&&r.e<cv.height*.3)w.push('Trup zabírá jen malou část snímku. Přibližte (ne širokoúhlým objektivem) nebo ořízněte, aby šly body umístit přesněji.');
+  const miss=PROTO.filter(p=>!proto[p.k]);
+  if(miss.length)w.push(`Protokol focení: neodškrtnuto ${miss.length} z ${PROTO.length} bodů. Výsledek nebude označen jako změřený podle standardizovaného protokolu.`);
+  if(r&&series.length===0)w.push('Doporučení: změřte 3 snímky (nebo 3× tentýž snímek) a uložte průměr. Jednotlivé měření nese chybu několika bodů.');
+  return w;
+}
+
+/* ---------- panely ---------- */
+function renderSteps(){
+  const nk=nextKey();
+  $('steps').innerHTML=def().pts.map((p,i)=>`<li class="step ${pts[p.k]?'done':''} ${p.k===nk?'cur':''}" data-k="${p.k}" tabindex="0" title="Kliknutím bod smažete a umístíte znovu">
+    <span class="num">${i+1}</span><span><span class="nm">${p.n}</span><br><span class="st">${pts[p.k]?'umístěno · klepnutím přeměříte':(p.k===nk?'na řadě':'čeká')}</span></span></li>`).join('');
+  $('steps').querySelectorAll('.step').forEach(el=>{const go=()=>{const k=el.dataset.k;if(pts[k]){delete pts[k];hist=hist.filter(x=>x!==k);refresh()}};el.onclick=go;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}}});
+}
+function renderProto(){
+  $('proto').innerHTML=PROTO.map(p=>`<li><label><input type="checkbox" id="pr_${p.k}" ${proto[p.k]?'checked':''}><span>${p.t}${p.s?`<small>${p.s}</small>`:''}</span></label></li>`).join('');
+  PROTO.forEach(p=>$('pr_'+p.k).addEventListener('change',e=>{proto[p.k]=e.target.checked;updateProtoCnt();renderResult()}));
+  updateProtoCnt();
+}
+function updateProtoCnt(){const n=PROTO.filter(p=>proto[p.k]).length;$('protoCnt').textContent=`${n}/${PROTO.length}`}
+function hint(){
+  const nk=nextKey(),p=def().pts.find(x=>x.k===nk);
+  if(!src){$('hint').textContent='Nahrajte snímek pacienta.';return}
+  if(plumbMode){$('hint').innerHTML=`<b>Vyrovnání podle olovnice:</b> klepněte na olovnici (nebo svislou zárubeň) co nejvýš a potom co nejníž. ${plumbPts.length?'Teď druhý bod.':''}`;return}
+  $('hint').innerHTML=p?`<b>Bod ${def().pts.indexOf(p)+1}: ${p.n}.</b> ${p.t} Klepněte na snímek; bod pak můžete posunout tažením.`
+    :'<b>Všechny body jsou umístěné.</b> Body lze dál doladit tažením; lupa ukazuje místo pod prstem.';
+}
+let lastRes=null;
+function protoOk(){return PROTO.every(p=>proto[p.k])}
+function renderResult(){
+  const box=$('result');lastRes=null;
+  if(!complete()){const n=def().pts.filter(p=>pts[p.k]).length;box.innerHTML=`<p class="empty">Výsledek se zobrazí po umístění všech 8 bodů (zatím ${n} z 8).</p>`}
+  else{
+    const r=compute();
+    if(!r)box.innerHTML='<p class="empty">Body nahoře a dole jsou příliš blízko u sebe. Zkontrolujte jejich umístění.</p>';
+    else{
+      lastRes=r;const mx=Math.max(20,...r.parts.map(p=>p.v));
+      box.innerHTML=`<div class="total"><span class="val">${fmt(r.total)}</span><span class="lbl">${def().name} – toto měření${isDemo?' <span class="st" style="font-weight:400;color:var(--muted)">(ukázka)</span>':''}</span></div>
+      <div class="parts">${r.parts.map(p=>`<div class="part"><code>${p.c}</code><div class="bar"><i style="width:${Math.min(100,p.v/mx*100)}%"></i></div><span class="v">${fmt(p.v)}</span><span class="dir">${p.dir}</span></div>`).join('')}</div>`;
+    }
+  }
+  renderSeries();
+  const w=qualityWarnings(lastRes);
+  $('warns').innerHTML=w.map(x=>`<div class="warn">${x}</div>`).join('')+(lastRes&&!w.length?'<div class="okmsg">Snímek vyrovnaný, protokol dodržen, měření opakované – výsledek je dobře srovnatelný.</div>':'');
+  $('save').disabled=!(lastRes||series.length);
+}
+function currentSet(){const a=series.map(s=>s.total);if(lastRes)a.push(lastRes.total);return a}
+function renderSeries(){
+  const box=$('seriesBox');const all=currentSet();
+  if(!all.length){box.innerHTML='';return}
+  const st=stats(all);
+  box.innerHTML=`<div class="series">
+    <div class="row" style="justify-content:space-between"><strong style="font-size:.9rem">Opakované měření</strong><span class="ref">doporučeno 3×</span></div>
+    <div class="chips">${series.map((s,i)=>`<span class="chip">${i+1}. ${fmt(s.total)}</span>`).join('')}${lastRes?`<span class="chip cur">${series.length+1}. ${fmt(lastRes.total)}</span>`:''}</div>
+    ${st.n>1?`<div class="total"><span class="val" style="font-size:1.8rem">${fmt(st.m)}</span><span class="pm">± ${fmt(st.sd)} SD · rozpětí ${fmt(st.min)}–${fmt(st.max)} · n = ${st.n}</span></div>`:''}
+    <div class="row">
+      <button class="btn" id="addSeries" ${lastRes?'':'disabled'}>＋ Přidat do série a měřit znovu</button>
+      ${series.length?'<button class="btn" id="clearSeries">Nová série</button>':''}
+      <button class="btn" id="copy" ${(lastRes||series.length)?'':'disabled'}>Kopírovat do záznamu</button>
+    </div><span class="toast" id="copyToast"></span></div>`;
+  const a=$('addSeries');if(a)a.onclick=()=>{series.push({total:lastRes.total,parts:lastRes.parts});pts={};hist=[];refresh();
+    $('hint').innerHTML+=' <b>Měření přidáno do série.</b> Nahrajte další snímek nebo body umístěte znovu na tentýž.'};
+  const c=$('clearSeries');if(c)c.onclick=()=>{series=[];refresh()};
+  $('copy').onclick=copyResult;
+}
+function summary(){
+  const all=currentSet();if(!all.length)return null;const st=stats(all);
+  const last=lastRes||series[series.length-1];
+  return{st,parts:last.parts};
+}
+function resultText(){
+  const s=summary();if(!s)return'';const dt=$('pdate').value?new Date($('pdate').value).toLocaleDateString('cs-CZ'):new Date().toLocaleDateString('cs-CZ');
+  const head=s.st.n>1?`${def().name} ${fmt(s.st.m)} (průměr ze ${s.st.n} měření, SD ${fmt(s.st.sd)}, rozpětí ${fmt(s.st.min)}–${fmt(s.st.max)})`:`${def().name} ${fmt(s.st.m)} (1 měření)`;
+  const parts=`Poslední měření: ${s.parts.map(p=>`${p.c.replace('‑','-')} ${fmt(p.v)}`).join('; ')}; ${s.parts.slice(3).map(p=>p.dir).join(', ')}.`;
+  const cond=[ $('dist').value?`vzdálenost ${String($('dist').value).replace('.',',')} m`:'', $('camh').value?`výška objektivu ${$('camh').value} cm`:'', calibrated?'snímek vyrovnán podle olovnice':'' ].filter(Boolean).join(', ');
+  return `${head}. ${parts} Fotogrammetrie ${def().view}, ${dt}${protoOk()?', standardizovaný protokol (Stoliński 2017)':', protokol focení nedodržen v plném rozsahu'}${cond?`; ${cond}`:''}.${$('examiner').value?` Měřil(a): ${$('examiner').value}.`:''}`;
+}
+function copyResult(){
+  const txt=resultText();if(!txt)return;const t=$('copyToast');
+  const fallback=()=>{const a=$('copyArea');a.value=txt;a.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}if(t)t.textContent=ok?'Zkopírováno':'Kopírování nebylo povoleno – text: '+txt};
+  try{navigator.clipboard.writeText(txt).then(()=>{if(t)t.textContent='Zkopírováno'},fallback)}catch(e){fallback()}
+}
+$('save').onclick=()=>{
+  const s=summary();if(!s)return;
+  const th=document.createElement('canvas'),k=120/cv.height;th.width=Math.round(cv.width*k);th.height=120;th.getContext('2d').drawImage(cv,0,0,th.width,th.height);
+  saved.push({type,name:$('pname').value.trim()||(isDemo?'Ukázka':'Bez jména'),date:$('pdate').value,total:s.st.m,n:s.st.n,sd:s.st.sd,
+    proto:protoOk(),calibrated,dist:$('dist').value,camh:$('camh').value,examiner:$('examiner').value.trim(),thumb:th.toDataURL('image/jpeg',.7),demo:isDemo});
+  series=[];pts={};hist=[];
+  $('saveToast').textContent='Uloženo do přehledu níže';setTimeout(()=>$('saveToast').textContent='',2500);refresh();renderSaved();
+};
+function renderSaved(){
+  const box=$('saved');
+  if(!saved.length){box.innerHTML='<p class="empty">Zatím nic. U dalšího měření téhož pacienta se ukáže změna oproti prvnímu a zda je větší než chyba měření.</p>';return}
+  const sorted=[...saved].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  box.innerHTML=sorted.map(m=>{
+    const first=sorted.find(x=>x.type===m.type&&x.name===m.name);
+    let delta='';
+    if(first!==m){const dv=m.total-first.total,err=MEAS_ERR[m.type];
+      const sameEx=m.examiner&&m.examiner===first.examiner;const lim=err?(sameEx?err.intra:err.inter):null;
+      const within=lim!==null&&Math.abs(dv)<lim;
+      const cls=within?'same':(dv>0?'up':'down');
+      const lbl=lim===null?'chyba měření u ATSI není číselně publikována – posuzujte opatrně':(within?`v rámci chyby měření (±${fmt(lim)})`:(dv>0?'zhoršení nad chybu měření':'zlepšení nad chybu měření'));
+      delta=`<span class="delta ${cls}">${dv>0?'+':''}${fmt(dv)} od ${first.date?new Date(first.date).toLocaleDateString('cs-CZ'):'1. měření'} · ${lbl}</span>`}
+    const cond=[m.n>1?`průměr z ${m.n}`:'1 měření',m.proto?'protokol ✓':'protokol neúplný',m.calibrated?'olovnice ✓':'',m.dist?`${String(m.dist).replace('.',',')} m`:'',m.camh?`${m.camh} cm`:'',m.examiner].filter(Boolean).join(' · ');
+    return `<div class="sv"><img src="${m.thumb}" alt=""><div><div class="t">${esc(m.name)}</div><div class="m">${m.type} · ${m.date?new Date(m.date).toLocaleDateString('cs-CZ'):'bez data'}${m.demo?' · ukázka':''}</div><div class="m">${esc(cond)}</div></div><div class="n">${fmt(m.total)}${delta}</div></div>`}).join('');
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function refresh(){
+  $('rotOut').textContent=fmt(rot)+'°';$('demoBadge').hidden=!isDemo;
+  draw();renderSteps();hint();renderResult();
+}
+renderProto();loadDemo();renderSaved();
+})();
+</script>
+
+</body>
+</html>

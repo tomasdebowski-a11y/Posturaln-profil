@@ -301,7 +301,7 @@ details p{margin:6px 0;color:var(--muted)}
           <li><b style="color:var(--ink)">Jedním prstem</b> snímek posouváte, <b style="color:var(--ink)">dvěma prsty</b> přibližujete (kolem zaměřovače). Na počítači kolečko myši a tažení.</li>
           <li><b style="color:var(--ink)">Šipky</b> posunou snímek o kousek; podržením se posun opakuje. <b style="color:var(--ink)">Jemně</b> zpomalí tažení i šipky.</li>
           <li><b style="color:var(--ink)">Ťuknutí na místo</b> ho přesune pod zaměřovač (hrubé zaměření).</li>
-          <li><b style="color:var(--ink)">Oprava bodu:</b> ťukněte na bod nebo jeho číslo – bod se „přichytí“ k zaměřovači, posuňte snímek a dejte Potvrdit polohu.</li>
+          <li><b style="color:var(--ink)">Oprava bodu:</b> ťukněte na číslo bodu dole – bod se „přichytí“ k zaměřovači, posuňte snímek a dejte Potvrdit polohu.</li>
           <li>Nejpřesnější je přiblížit na 3–6× a dolaďovat šipkami.</li>
         </ul>
         <div class="row" style="margin-top:12px"><button class="btn" id="demo">Načíst ukázkový snímek</button></div>
@@ -347,6 +347,7 @@ details p{margin:6px 0;color:var(--muted)}
           <li><b>Chyba měření:</b> u POTSI autoři metody uvádějí průměrnou chybu opakovaného měření 5,5 bodu u téhož hodnotitele a 6,4 bodu mezi hodnotiteli (Suzuki 1999). Změnu menší než tato hodnota nelze považovat za skutečné zlepšení ani zhoršení. Aplikace takovou změnu označí „v rámci chyby měření“.</li>
           <li><b>Stabilita:</b> u zdravých dětí se POTSI ani ATSI při opakovaném focení po hodině a po týdnu významně nelišily (Stoliński 2017) – při dodržení protokolu je metoda vhodná pro sledování v čase.</li>
           <li><b>Orientační hodnoty:</b> zdravé děti 7–10 let měly průměr ATSI 24,3 (421 dětí, Stoliński 2013); v menším souboru zdravých dětí vycházel POTSI kolem 18–22 a ATSI kolem 20–22 (Stoliński 2017). U pacientů se skoliózou je POTSI významně vyšší než u zdravých (Suzuki 1999). Pro dospělé jednotná norma zavedená není.</li>
+          <li><b>Srovnání s PotsiApp:</b> PotsiApp vede střední čáru přes C7, takže posun trupu vůči pánvi (C7 mimo rýhu) do výsledku nezapočítá. Aplikace proto u POTSI ukazuje i hodnotu v této variantě, aby šlo navázat na starší měření. Pro nová měření a závěry používejte hodnotu podle metody.</li>
           <li><b>Hranice „POTSI ≤ 10 = norma“</b>, kterou uvádí aplikace PotsiApp, s publikovanými daty zdravých dětí nesouhlasí – nepoužívejte ji k závěrům.</li>
           <li><b>Co fotografie neumí:</b> je dvourozměrná, neměří rotaci trupu. Doplňte Adamsův předklonový test se skoliometrem (ATR). RTG s Cobbovým úhlem zůstává zlatým standardem pro diagnózu skoliózy; fotogrammetrie slouží k dokumentaci a sledování bez záření.</li>
           <li><b>Nejcennější informace</b> je trend u téhož pacienta: stejný protokol, stejný hodnotitel, průměr ze 3 měření.</li>
@@ -369,7 +370,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.6.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.8.</p>
     </section>
   </main>
 
@@ -390,24 +391,24 @@ const DEFS={
   POTSI:{name:'POTSI',view:'zezadu',top:'c7',mid:'nc',patientRightIsImageRight:true,topCode:'FAI‑C7',topName:'C7',
     pts:[
       {k:'c7',n:'C7',t:'Trn obratle C7 – ideálně předem označený dermografem.'},
-      {k:'ra',n:'Pravá podpažní řasa',t:'Místo, kde se pravá paže odděluje od trupu. Zezadu je pravá strana pacienta na snímku vpravo.'},
-      {k:'rs',n:'Pravé rameno',t:'Horní kontura ramene na zlaté svislici vedené z pravé podpažní řasy – stačí trefit výšku.'},
+      {k:'rs',n:'Pravé rameno',t:'Horní kontura ramene nad pravou podpažní řasou – rozhoduje jen výška. Zezadu je pravá strana pacienta na snímku vpravo.'},
+      {k:'ra',n:'Pravá podpažní řasa',t:'Místo, kde se pravá paže odděluje od trupu.'},
       {k:'rw',n:'Pravá tajle',t:'Nejhlubší bod zářezu tajle.'},
       {k:'nc',n:'Intergluteální rýha',t:'Horní začátek intergluteální rýhy. Určuje střední čáru.'},
       {k:'lw',n:'Levá tajle',t:'Nejhlubší bod zářezu tajle vlevo.'},
       {k:'la',n:'Levá podpažní řasa',t:'Místo, kde se levá paže odděluje od trupu.'},
-      {k:'ls',n:'Levé rameno',t:'Horní kontura ramene na zlaté svislici z levé podpažní řasy.'}
+      {k:'ls',n:'Levé rameno',t:'Horní kontura ramene nad levou podpažní řasou – rozhoduje jen výška.'}
     ]},
   ATSI:{name:'ATSI',view:'zepředu',top:'sn',mid:'um',patientRightIsImageRight:false,topCode:'FAI‑SN',topName:'jugulum',
     pts:[
       {k:'sn',n:'Jugulum',t:'Střed incisura jugularis sterni – ideálně předem označený.'},
-      {k:'ra',n:'Pravá podpažní řasa',t:'Místo, kde se pravá paže odděluje od trupu. Zepředu je pravá strana pacienta na snímku vlevo.'},
-      {k:'rs',n:'Pravé rameno',t:'Horní kontura ramene na zlaté svislici vedené z pravé podpažní řasy – stačí trefit výšku.'},
+      {k:'rs',n:'Pravé rameno',t:'Horní kontura ramene nad pravou podpažní řasou – rozhoduje jen výška. Zepředu je pravá strana pacienta na snímku vlevo.'},
+      {k:'ra',n:'Pravá podpažní řasa',t:'Místo, kde se pravá paže odděluje od trupu.'},
       {k:'rw',n:'Pravá tajle',t:'Nejhlubší bod zářezu tajle.'},
       {k:'um',n:'Pupek',t:'Střed pupku. Určuje střední čáru.'},
       {k:'lw',n:'Levá tajle',t:'Nejhlubší bod zářezu tajle vlevo.'},
       {k:'la',n:'Levá podpažní řasa',t:'Místo, kde se levá paže odděluje od trupu.'},
-      {k:'ls',n:'Levé rameno',t:'Horní kontura ramene na zlaté svislici z levé podpažní řasy.'}
+      {k:'ls',n:'Levé rameno',t:'Horní kontura ramene nad levou podpažní řasou – rozhoduje jen výška.'}
     ]}
 };
 const PROTO=[
@@ -636,9 +637,8 @@ cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 cv.addEventListener('wheel',e=>{if(!src)return;e.preventDefault();zoomAt(Math.exp(-e.deltaY*0.0015))},{passive:false});
 ['contextmenu','selectstart','dragstart','gesturestart'].forEach(t=>$('stage').addEventListener(t,e=>e.preventDefault()));
 function tapAt(sp){
-  // ťuknutí na bod = vybrat ho k úpravě; ťuknutí jinam = přesunout to místo pod zaměřovač
-  const k=plumbMode?null:hitPoint(sp);
-  if(k){selected=selected===k?null:k;if(selected)centerOn(pts[k]);viewChanged();refresh();return}
+  // ťuknutí = přesunout to místo pod zaměřovač (bod se k úpravě vybírá jen číslem dole)
+  if(selected){flash('Upravujete bod – nejdřív Potvrdit polohu, nebo ťukněte znovu na jeho číslo.');return}
   centerOn(toWorld(sp.x,sp.y));viewChanged();refresh();
 }
 function selectPoint(k){selected=selected===k?null:k;if(selected)centerOn(pts[k]);viewChanged();refresh()}
@@ -659,8 +659,8 @@ function setType(t){type=t;$('tPOTSI').setAttribute('aria-pressed',t==='POTSI');
 $('tPOTSI').onclick=()=>setType('POTSI');$('tATSI').onclick=()=>setType('ATSI');
 
 /* ---------- výpočet ---------- */
-function compute(){
-  const d=def(),P=pts,x0=P[d.mid].x,e=Math.abs(P[d.mid].y-P[d.top].y);
+function compute(alt){
+  const d=def(),P=pts,x0=alt?P[d.top].x:P[d.mid].x,e=Math.abs(P[d.mid].y-P[d.top].y);
   if(e<10)return null;
   const R=d.patientRightIsImageRight?1:-1;
   const dist=k=>Math.abs(P[k].x-x0);
@@ -681,6 +681,17 @@ function compute(){
 function stats(arr){const n=arr.length,m=arr.reduce((a,b)=>a+b,0)/n;const sd=n>1?Math.sqrt(arr.reduce((a,b)=>a+(b-m)**2,0)/(n-1)):0;return{n,m,sd,min:Math.min(...arr),max:Math.max(...arr)}}
 
 /* ---------- kontrola kvality ---------- */
+function sanity(){
+  if(!complete())return[];const d=def(),P=pts,x0=P[d.mid].x,iss=[];
+  const nm=k=>{const i=d.pts.findIndex(p=>p.k===k);return `P${i+1} ${d.pts[i].n.toLowerCase()}`};
+  [['rs','ra'],['ls','la']].forEach(([s,a])=>{if(P[s].y>=P[a].y)iss.push(`${nm(s)} leží níž než ${nm(a)} – rameno má být nad podpažní řasou.`)});
+  [['ra','rw'],['la','lw']].forEach(([a,w])=>{if(P[a].y>=P[w].y)iss.push(`${nm(a)} leží níž než ${nm(w)}.`)});
+  if(type==='POTSI'&&(P.rw.y>=P.nc.y||P.lw.y>=P.nc.y))iss.push('Tajle leží níž než začátek intergluteální rýhy.');
+  if(P[d.top].y>=Math.min(P.ra.y,P.la.y))iss.push(`${nm(d.top)} leží níž než podpažní řasy.`);
+  [['ra','la'],['rw','lw']].forEach(([a,b])=>{if((P[a].x-x0)*(P[b].x-x0)>=0)iss.push(`${nm(a)} a ${nm(b)} leží na stejné straně střední čáry.`)});
+  [['rs','ra','rw'],['ls','la','lw']].forEach(g=>{const sg=g.map(k=>Math.sign(P[k].x-x0));if(new Set(sg).size>1)iss.push(`Body jedné strany (${g.map(nm).join(', ')}) nejsou na stejné straně střední čáry.`)});
+  return iss;
+}
 function qualityWarnings(r){
   const w=[];
   if(!src)return w;
@@ -717,7 +728,7 @@ function hint(){
     flash('Posouvejte snímek, bod jde se zaměřovačem. Pak ťukněte na Potvrdit.');pb.textContent='Potvrdit polohu';pb.classList.remove('primary');pb.classList.add('gold');return}
   if(nk){const p=d.pts[i];n.textContent=`${i+1}/8`;$('stepName').textContent=p.n;flash(p.t);pb.textContent=`Umístit bod ${i+1}`;return}
   n.textContent='✓';n.classList.add('done');$('stepName').textContent=lastRes?`${d.name} ${fmt(lastRes.total)}`:'Hotovo';
-  flash('Všechny body jsou umístěné. Ťuknutím na bod (nebo číslo) ho můžete upravit.');$('goRes').hidden=false;pb.textContent='Hotovo';pb.disabled=true;
+  {const sn=sanity();flash(sn.length?'⚠ '+sn[0]:'Všechny body jsou umístěné. Bod upravíte ťuknutím na jeho číslo.')}$('goRes').hidden=false;pb.textContent='Hotovo';pb.disabled=true;
 }
 let lastRes=null;
 function protoOk(){return PROTO.every(p=>proto[p.k])}
@@ -733,8 +744,15 @@ function renderResult(){
       <div class="parts">${r.parts.map(p=>`<div class="part"><code>${p.c}</code><div class="bar"><i style="width:${Math.min(100,p.v/mx*100)}%"></i></div><span class="v">${fmt(p.v)}</span><span class="dir">${p.dir}</span></div>`).join('')}</div>`;
     }
   }
+  if(lastRes&&type==='POTSI'){const a=compute(true),P=pts,shift=(P.c7.x-P.nc.x)/lastRes.e*100;lastRes.compat=a.total;
+    const fai=a.parts[0].v+a.parts[1].v+a.parts[2].v,hai=a.parts[3].v+a.parts[4].v+a.parts[5].v,cs=compatSet();
+    $('result').insertAdjacentHTML('beforeend',`<div class="series" style="margin-top:12px">
+      <div class="row" style="justify-content:space-between"><strong style="font-size:.9rem">Pro srovnání s PotsiApp</strong><span class="ref">střední čára přes C7</span></div>
+      <div class="total"><span class="val" style="font-size:1.8rem;color:var(--ink)">${fmt(a.total)}</span><span class="pm">FAI ${fmt(fai)} · HAI ${fmt(hai)}${cs.length>1?` · průměr série ${fmt(stats(cs).m)}`:''}</span></div>
+      <div class="ref">Navazuje na dřívější měření v PotsiApp. Platná hodnota podle metody (Suzuki, Stoliński) je nahoře – střední čára rýhou. Rozdíl dělá posun C7 vůči rýze (${fmt(Math.abs(shift))} % výšky trupu ${shift*(def().patientRightIsImageRight?1:-1)>0?'doprava':'doleva'}), který varianta PotsiApp nezapočítá.</div></div>`)}
   renderSeries();
-  const w=qualityWarnings(lastRes);
+  const w=qualityWarnings(lastRes),sn=sanity();
+  if(sn.length&&lastRes)$('result').insertAdjacentHTML('afterbegin',`<div class="warn" style="margin-bottom:10px"><b>Body jsou pravděpodobně umístěné špatně – výsledek neplatí.</b><br>${sn.join('<br>')}<br>Opravte bod ťuknutím na jeho číslo na obrazovce Měření.</div>`);
   $('warns').innerHTML=w.map(x=>`<div class="warn">${x}</div>`).join('')+(lastRes&&!w.length?'<div class="okmsg">Snímek vyrovnaný, protokol dodržen, měření opakované – výsledek je dobře srovnatelný.</div>':'');
   $('save').disabled=!(lastRes||series.length);
 }
@@ -752,7 +770,7 @@ function renderSeries(){
       ${series.length?'<button class="btn" id="clearSeries">Nová série</button>':''}
       <button class="btn" id="copy" ${(lastRes||series.length)?'':'disabled'}>Kopírovat do záznamu</button>
     </div><span class="toast" id="copyToast"></span></div>`;
-  const a=$('addSeries');if(a)a.onclick=()=>{series.push({total:lastRes.total,parts:lastRes.parts});pts={};hist=[];refresh();
+  const a=$('addSeries');if(a)a.onclick=()=>{series.push({total:lastRes.total,parts:lastRes.parts,compat:lastRes.compat});pts={};hist=[];refresh();
     show('measure');flash(`Měření ${series.length} přidáno do série. Pořiďte další snímek nebo umístěte body znovu.`)};
   const c=$('clearSeries');if(c)c.onclick=()=>{series=[];refresh()};
   $('copy').onclick=copyResult;
@@ -762,12 +780,14 @@ function summary(){
   const last=lastRes||series[series.length-1];
   return{st,parts:last.parts};
 }
+function compatSet(){const a=series.map(x=>x.compat).filter(v=>v!=null);if(lastRes&&lastRes.compat!=null)a.push(lastRes.compat);return a}
 function resultText(){
   const s=summary();if(!s)return'';const dt=$('pdate').value?new Date($('pdate').value).toLocaleDateString('cs-CZ'):new Date().toLocaleDateString('cs-CZ');
   const head=s.st.n>1?`${def().name} ${fmt(s.st.m)} (průměr ze ${s.st.n} měření, SD ${fmt(s.st.sd)}, rozpětí ${fmt(s.st.min)}–${fmt(s.st.max)})`:`${def().name} ${fmt(s.st.m)} (1 měření)`;
   const parts=`Poslední měření: ${s.parts.map(p=>`${p.c.replace('‑','-')} ${fmt(p.v)}`).join('; ')}; ${s.parts.slice(3).map(p=>p.dir).join(', ')}.`;
   const cond=[ $('dist').value?`vzdálenost ${String($('dist').value).replace('.',',')} m`:'', $('camh').value?`výška objektivu ${$('camh').value} cm`:'', calibrated?'snímek vyrovnán podle olovnice':'' ].filter(Boolean).join(', ');
-  return `${head}. ${parts} Fotogrammetrie ${def().view}, ${dt}${protoOk()?', standardizovaný protokol (Stoliński 2017)':', protokol focení nedodržen v plném rozsahu'}${cond?`; ${cond}`:''}.${$('examiner').value?` Měřil(a): ${$('examiner').value}.`:''}`;
+  const cs=compatSet(),compat=(type==='POTSI'&&cs.length)?` Pro srovnání s PotsiApp (střední čára přes C7): ${fmt(stats(cs).m)}.`:'';
+  return `${head}.${compat} ${parts} Fotogrammetrie ${def().view}, ${dt}${protoOk()?', standardizovaný protokol (Stoliński 2017)':', protokol focení nedodržen v plném rozsahu'}${cond?`; ${cond}`:''}.${$('examiner').value?` Měřil(a): ${$('examiner').value}.`:''}`;
 }
 function copyResult(){
   const txt=resultText();if(!txt)return;const t=$('copyToast');
@@ -777,7 +797,7 @@ function copyResult(){
 $('save').onclick=()=>{
   const s=summary();if(!s)return;
   const full=renderFull(),th=document.createElement('canvas'),k=120/full.height;th.width=Math.round(full.width*k);th.height=120;th.getContext('2d').drawImage(full,0,0,th.width,th.height);
-  saved.push({type,name:$('pname').value.trim()||(isDemo?'Ukázka':'Bez jména'),date:$('pdate').value,total:s.st.m,n:s.st.n,sd:s.st.sd,
+  saved.push({type,name:$('pname').value.trim()||(isDemo?'Ukázka':'Bez jména'),date:$('pdate').value,total:s.st.m,n:s.st.n,sd:s.st.sd,compat:(type==='POTSI'&&compatSet().length)?stats(compatSet()).m:null,
     proto:protoOk(),calibrated,dist:$('dist').value,camh:$('camh').value,examiner:$('examiner').value.trim(),thumb:th.toDataURL('image/jpeg',.7),demo:isDemo});
   series=[];pts={};hist=[];
   $('saveToast').textContent='Uloženo do přehledu níže';setTimeout(()=>$('saveToast').textContent='',2500);refresh();renderSaved();
@@ -795,7 +815,7 @@ function renderSaved(){
       const cls=within?'same':(dv>0?'up':'down');
       const lbl=lim===null?'chyba měření u ATSI není číselně publikována – posuzujte opatrně':(within?`v rámci chyby měření (±${fmt(lim)})`:(dv>0?'zhoršení nad chybu měření':'zlepšení nad chybu měření'));
       delta=`<span class="delta ${cls}">${dv>0?'+':''}${fmt(dv)} od ${first.date?new Date(first.date).toLocaleDateString('cs-CZ'):'1. měření'} · ${lbl}</span>`}
-    const cond=[m.n>1?`průměr z ${m.n}`:'1 měření',m.proto?'protokol ✓':'protokol neúplný',m.calibrated?'olovnice ✓':'',m.dist?`${String(m.dist).replace('.',',')} m`:'',m.camh?`${m.camh} cm`:'',m.examiner].filter(Boolean).join(' · ');
+    const cond=[m.compat!=null?`PotsiApp var. ${fmt(m.compat)}`:'',m.n>1?`průměr z ${m.n}`:'1 měření',m.proto?'protokol ✓':'protokol neúplný',m.calibrated?'olovnice ✓':'',m.dist?`${String(m.dist).replace('.',',')} m`:'',m.camh?`${m.camh} cm`:'',m.examiner].filter(Boolean).join(' · ');
     return `<div class="sv"><img src="${m.thumb}" alt=""><div><div class="t">${esc(m.name)}</div><div class="m">${m.type} · ${m.date?new Date(m.date).toLocaleDateString('cs-CZ'):'bez data'}${m.demo?' · ukázka':''}</div><div class="m">${esc(cond)}</div></div><div class="n">${fmt(m.total)}${delta}</div></div>`}).join('');
 }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));

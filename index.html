@@ -2,12 +2,12 @@
 <html lang="cs">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Posturální profil">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#1f4fa3">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d1017">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
@@ -16,111 +16,97 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: mobilní aplikace — horní lišta, snímek přes celou obrazovku s ovládáním u palce, dole záložky */
+/* Layout: měřicí obrazovka — fotka přes celý displej, nad ní skleněné lišty (nahoře stav, dole nástroje u palce); výsledky v panelu, který vyjede zdola */
 :root{
   --bg:#f2f4f8; --surface:#ffffff; --surface-2:#f4f6fa; --ink:#14213d; --muted:#5b6782; --line:#d8deea;
   --sapphire:#1f4fa3; --sapphire-soft:#e5ecf9; --gold:#b9861d; --gold-soft:#f7eed7;
-  --ok:#2f7d4f; --ok-soft:#e3f2e8; --warn:#b4541a; --warn-soft:#fbeadf; --stage:#161a22;
+  --ok:#2f7d4f; --ok-soft:#e3f2e8; --warn:#b4541a; --warn-soft:#fbeadf;
+  --stage:#0d1017; --glass:rgba(20,24,34,.58); --glass-line:rgba(255,255,255,.16); --on-glass:#ffffff; --on-glass-dim:rgba(255,255,255,.62);
+  --aim:#5ec8f2; --pt:#f5c95c;
   --f-ui:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-num:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#0c1322; --surface:#141d31; --surface-2:#1a2540; --ink:#e6ebf5; --muted:#9ba7c0; --line:#28344f;
-  --sapphire:#79a4f2; --sapphire-soft:#1b2a4a; --gold:#e3b653; --gold-soft:#33290f; --ok:#6cc792; --ok-soft:#17321f; --warn:#f0a06a; --warn-soft:#3a2214; --stage:#0a0d14; color-scheme:dark }}
+  --sapphire:#79a4f2; --sapphire-soft:#1b2a4a; --gold:#e3b653; --gold-soft:#33290f; --ok:#6cc792; --ok-soft:#17321f; --warn:#f0a06a; --warn-soft:#3a2214; color-scheme:dark }}
 :root[data-theme="dark"]{
   --bg:#0c1322; --surface:#141d31; --surface-2:#1a2540; --ink:#e6ebf5; --muted:#9ba7c0; --line:#28344f;
-  --sapphire:#79a4f2; --sapphire-soft:#1b2a4a; --gold:#e3b653; --gold-soft:#33290f; --ok:#6cc792; --ok-soft:#17321f; --warn:#f0a06a; --warn-soft:#3a2214; --stage:#0a0d14; color-scheme:dark }
+  --sapphire:#79a4f2; --sapphire-soft:#1b2a4a; --gold:#e3b653; --gold-soft:#33290f; --ok:#6cc792; --ok-soft:#17321f; --warn:#f0a06a; --warn-soft:#3a2214; color-scheme:dark }
 *{box-sizing:border-box}
-html,body{height:100%}
-body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.45;overscroll-behavior:none;-webkit-text-size-adjust:100%}
-button{font-family:inherit}
-.app{display:flex;flex-direction:column;height:100%;max-width:680px;margin:0 auto;background:var(--bg)}
-.gut{padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+body{background:var(--stage);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.45;-webkit-text-size-adjust:100%;touch-action:none}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+.app{position:fixed;inset:0;background:var(--stage);overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none;cursor:crosshair}
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);border:1px solid var(--glass-line);color:var(--on-glass)}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
 /* horní lišta */
-.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-block:8px;background:var(--surface);border-bottom:1px solid var(--line)}
-.brand{display:flex;align-items:center;gap:8px;min-width:0}
-.mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(140deg,var(--sapphire),#2c3f7a 70%,var(--gold));display:grid;place-items:center;flex:none}
-.brand b{font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px;flex:none}
-.seg button{border:0;background:transparent;color:var(--muted);font-weight:600;font-size:.88rem;min-height:36px;padding:0 12px;border-radius:7px;cursor:pointer}
-.seg button[aria-pressed="true"]{background:var(--sapphire);color:#fff}
-
-main{flex:1;min-height:0;display:flex;flex-direction:column}
-.view{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;padding-block:14px 24px;display:grid;gap:14px;align-content:start}
-#v-measure{display:flex;flex-direction:column;overflow:hidden;padding:0;gap:0}
-
-/* snímek */
-.stage{position:relative;flex:1;min-height:180px;background:var(--stage);overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;touch-action:none}
-#cv{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;outline:none}
-#loupe{position:absolute;top:10px;left:10px;width:130px;height:130px;border-radius:50%;border:3px solid #e3b653;box-shadow:0 6px 20px rgba(0,0,0,.45);pointer-events:none;background:#000}
-#loupe.right{left:auto;right:10px}
-.badge{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(247,238,215,.92);color:#14213d;font-size:.72rem;padding:3px 9px;border-radius:999px;white-space:nowrap;pointer-events:none}
-.fabs{position:absolute;right:10px;bottom:10px;display:grid;gap:8px}
-.fab{width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(20,24,34,.72);color:#fff;font-size:1.25rem;font-weight:600;display:grid;place-items:center;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-.fab:active{background:rgba(31,79,163,.9)}
-
-/* dok s ovládáním */
-.dock{background:var(--surface);border-top:1px solid var(--line);padding-block:10px;display:grid;gap:10px}
-.stepline{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center}
-.stepnum{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font:600 .9rem var(--f-num);background:var(--sapphire-soft);color:var(--sapphire);border:2px solid var(--sapphire)}
-.stepnum.done{background:var(--gold);border-color:var(--gold);color:#1a1405}
+.topbar{position:absolute;top:calc(8px + env(safe-area-inset-top,0px));left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));display:flex;gap:8px;align-items:center;pointer-events:none}
+.topbar>*{pointer-events:auto}
+.stepcard{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border-radius:18px;padding:6px 12px 6px 6px;cursor:pointer}
+.stepnum{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;font:600 .84rem var(--f-num);border:2px solid var(--aim);color:var(--aim)}
+.stepnum.done{background:var(--pt);border-color:var(--pt);color:#14213d}
+.stepnum.edit{background:var(--aim);color:#0d1017}
 .steptxt{min-width:0}
-.steptxt b{display:block;font-size:1rem;line-height:1.25}
-.steptxt small{display:block;color:var(--muted);font-size:.8rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
-.chip2{flex:none;width:34px;height:34px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface-2);color:var(--muted);font:600 .82rem var(--f-num);cursor:pointer}
-.chip2.done{background:var(--gold);border-color:var(--gold);color:#1a1405}
-.chip2.cur{border:2px solid var(--sapphire);color:var(--sapphire);background:var(--sapphire-soft)}
-.chip2.sel{background:var(--sapphire);border-color:var(--sapphire);color:#fff;box-shadow:0 0 0 3px var(--sapphire-soft)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font-weight:500;font-size:.9rem;min-height:44px;padding:0 12px;border-radius:11px;cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent}
-.btn:active{border-color:var(--sapphire)}
-.btn.primary{background:var(--sapphire);border-color:var(--sapphire);color:#fff}
-.btn.gold{background:var(--gold);border-color:var(--gold);color:#1a1405}
-.btn.on{border-color:var(--gold);background:var(--gold-soft)}
-.btn:disabled{opacity:.4}
-.btn:focus-visible,.seg button:focus-visible,.tab:focus-visible,.fab:focus-visible,.chip2:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-.dockrow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
-.aimrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
-.btn.big{min-height:52px;font-size:1rem;font-weight:600}
-.app.full .top,.app.full .tabbar,.app.full .dock{display:none}
-.fbar{position:absolute;left:50%;bottom:calc(12px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:none;gap:6px;padding:6px;border-radius:999px;background:rgba(20,24,34,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.18);max-width:calc(100% - 20px)}
-.app.full .fbar{display:flex}
-.fbtn{min-width:48px;height:48px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font:600 .9rem var(--f-ui);display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 12px;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.fbtn.ok{background:#e3b653;color:#14213d;border-color:#e3b653}
-.fbtn.on{background:rgba(227,182,83,.35)}
-.fbtn:disabled{opacity:.4}
-.fstep{position:absolute;left:10px;top:calc(10px + env(safe-area-inset-top,0px));display:none;max-width:calc(100% - 80px);background:rgba(20,24,34,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;border-radius:12px;padding:6px 10px;font-size:.84rem;pointer-events:none}
-.app.full .fstep{display:block}
-.app.full .badge{top:auto;bottom:calc(84px + env(safe-area-inset-bottom,0px))}
-.fbtn{white-space:nowrap}
-.app.full .zl{bottom:auto;top:calc(54px + env(safe-area-inset-top,0px))}
-.app.full .fabs{bottom:auto;top:calc(10px + env(safe-area-inset-top,0px))}
-.fstep b{font-family:var(--f-num);color:#f5c95c;margin-right:6px}
-.aim{position:absolute;left:50%;top:50%;width:96px;height:96px;transform:translate(-50%,-50%);pointer-events:none;filter:drop-shadow(0 0 1.5px rgba(0,0,0,.9))}
-.zl{position:absolute;left:10px;bottom:10px;font:600 .78rem var(--f-num);color:#fff;background:rgba(20,24,34,.72);padding:4px 8px;border-radius:999px;pointer-events:none}
-.dockrow .btn{flex-direction:column;gap:1px;font-size:.74rem;min-height:52px;padding:4px}
-.dockrow .btn .ic{font-size:1.15rem;line-height:1}
-.subpanel{display:grid;gap:8px;padding:10px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
-.subpanel .lab{font-size:.78rem;color:var(--muted)}
-.nudge{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
-.pad{display:grid;grid-template-columns:repeat(4,44px);gap:5px}
-.pad .btn{padding:0;font-size:1.1rem}
-.rotrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.rotrow .btn{min-width:48px;padding:0 8px;font-size:.84rem}
-.rotrow output{font:600 .9rem var(--f-num);min-width:4em;text-align:center}
-.ctrl{display:flex;align-items:center;gap:8px;font-size:.88rem;color:var(--muted);min-height:36px}
-.ctrl input{width:20px;height:20px;accent-color:var(--sapphire)}
+.steptxt b{display:block;font-size:.95rem;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steptxt span{display:block;font:500 .72rem var(--f-num);color:var(--on-glass-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gbtn{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;cursor:pointer;flex:none;padding:0}
+.gbtn[aria-pressed="true"]{color:var(--pt)}
+.gbtn:active,.tool:active{background:rgba(255,255,255,.22)}
 
-/* záložky */
-.tabbar{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-top:1px solid var(--line);padding-bottom:max(0px,env(safe-area-inset-bottom,0px))}
-.tab{border:0;background:transparent;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px 8px;font-size:.72rem;font-weight:500;cursor:pointer;min-height:54px;-webkit-tap-highlight-color:transparent;position:relative}
-.tab svg{width:22px;height:22px}
-.tab[aria-selected="true"]{color:var(--sapphire)}
-.tab[aria-selected="true"]::before{content:"";position:absolute;top:0;left:25%;right:25%;height:3px;border-radius:0 0 3px 3px;background:var(--sapphire)}
-.tab .tv{font:600 .68rem var(--f-num);color:var(--gold);min-height:1em}
+/* loupe a toast */
+#loupe{position:absolute;top:calc(68px + env(safe-area-inset-top,0px));left:12px;width:132px;height:132px;border-radius:50%;border:2px solid var(--pt);box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:none;background:#000}
+#loupe.right{left:auto;right:12px}
+.toast{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(146px + env(safe-area-inset-bottom,0px));width:min(92%,520px);border-radius:14px;padding:9px 13px;font-size:.86rem;line-height:1.35;text-align:center;cursor:pointer;transition:opacity .25s}
+.toast.hide{opacity:0;pointer-events:none}
+.toast.warn{border-color:rgba(240,160,106,.7)}
+.zl{position:absolute;left:12px;bottom:calc(152px + env(safe-area-inset-bottom,0px));font:600 .76rem var(--f-num);padding:4px 9px;border-radius:999px;pointer-events:none}
+.demo{position:absolute;left:50%;transform:translateX(-50%);top:calc(66px + env(safe-area-inset-top,0px));font-size:.72rem;padding:4px 9px;border-radius:999px;pointer-events:none;color:#14213d;background:rgba(247,238,215,.92);border:0}
 
-/* obsahové stránky */
+/* spodní ovládání */
+.bottom{position:absolute;left:0;right:0;bottom:0;padding:0 max(10px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));display:grid;gap:8px;pointer-events:none}
+.bottom>*{pointer-events:auto}
+.chiprow{display:flex;gap:6px;justify-content:center;padding:6px;border-radius:999px;justify-self:center;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.chiprow::-webkit-scrollbar,.strip::-webkit-scrollbar{display:none}
+.chip{flex:none;width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(255,255,255,.35);background:transparent;color:var(--on-glass-dim);font:600 .78rem var(--f-num);cursor:pointer;padding:0}
+.chip.done{background:var(--pt);border-color:var(--pt);color:#14213d}
+.chip.cur{border:2px solid var(--aim);color:var(--aim)}
+.chip.sel{background:var(--aim);border-color:var(--aim);color:#0d1017;box-shadow:0 0 0 3px rgba(94,200,242,.35)}
+.barrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center}
+.strip{display:flex;gap:2px;overflow-x:auto;border-radius:999px;padding:4px;scroll-snap-type:x proximity;touch-action:pan-x}
+.tool{flex:none;min-width:50px;height:54px;border-radius:27px;border:0;background:transparent;color:var(--on-glass);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.62rem;font-weight:500;padding:0 6px;cursor:pointer;scroll-snap-align:start}
+.tool small{font-size:.62rem;color:var(--on-glass-dim);white-space:nowrap}
+.tool[aria-pressed="true"]{background:rgba(245,201,92,.25);color:var(--pt)}
+.tool[aria-pressed="true"] small{color:var(--pt)}
+.tool:disabled{opacity:.35}
+.sep{flex:none;width:1px;margin:10px 4px;background:var(--glass-line)}
+.okbtn{height:58px;min-width:88px;border-radius:29px;border:0;background:var(--pt);color:#14213d;font:700 .98rem var(--f-ui);display:flex;align-items:center;justify-content:center;gap:6px;padding:0 16px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.okbtn.edit{background:var(--aim)}
+.okbtn.res{background:#ffffff}
+.okbtn:disabled{opacity:.45}
+.okbtn:active{transform:scale(.97)}
+.mini{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));display:none;gap:8px}
+.app.min .topbar .stepcard,.app.min .topbar #menuBtn,.app.min .bottom,.app.min .toast,.app.min .demo{display:none}
+.app.min .mini{display:flex}
+.btnfocus:focus-visible,.tool:focus-visible,.gbtn:focus-visible,.chip:focus-visible,.okbtn:focus-visible{outline:2px solid var(--pt);outline-offset:2px}
+
+/* panel s výsledky */
+.sheet{position:absolute;inset:0;background:rgba(5,8,14,.45);display:flex;align-items:flex-end;justify-content:center;touch-action:none}
+.card{width:min(100%,680px);height:min(88%,900px);background:var(--bg);border-radius:20px 20px 0 0;display:flex;flex-direction:column;overflow:hidden;color:var(--ink);-webkit-user-select:text;user-select:text;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
+.grab{width:42px;height:5px;border-radius:3px;background:var(--line);margin:8px auto 2px}
+.shead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px max(14px,env(safe-area-inset-right,0px)) 8px max(14px,env(safe-area-inset-left,0px))}
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;color:var(--muted);font-weight:600;font-size:.88rem;min-height:36px;padding:0 14px;border-radius:7px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--sapphire);color:#fff}
+.xbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:1.1rem;cursor:pointer}
+.stabs{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line);padding:0 8px}
+.stab{border:0;background:transparent;color:var(--muted);font-weight:600;font-size:.88rem;padding:10px 4px;cursor:pointer;position:relative}
+.stab[aria-selected="true"]{color:var(--sapphire)}
+.stab[aria-selected="true"]::after{content:"";position:absolute;left:20%;right:20%;bottom:-1px;height:3px;border-radius:3px 3px 0 0;background:var(--sapphire)}
+.stab .tv{font-family:var(--f-num);color:var(--gold);margin-left:4px}
+.sbody{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior:contain;padding:14px max(14px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));display:grid;gap:14px;align-content:start}
+.sbody .gut{padding:0}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
 h2{font-size:.76rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px;font-weight:600}
 h2 .cnt{font-family:var(--f-num);letter-spacing:0;text-transform:none;color:var(--ink);margin-left:6px}
@@ -136,11 +122,14 @@ h2 .cnt{font-family:var(--f-num);letter-spacing:0;text-transform:none;color:var(
 .part .v{font-family:var(--f-num);text-align:right;font-variant-numeric:tabular-nums}
 .part .dir{grid-column:2 / 4;font-size:.76rem;color:var(--muted);margin-top:-5px}
 .series{margin-top:14px;padding:12px;border:1px dashed var(--line);border-radius:12px;display:grid;gap:10px}
-.series .chips{flex-wrap:wrap}
-.chip{font:500 .8rem var(--f-num);padding:4px 9px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line)}
-.chip.cur{border-color:var(--sapphire);color:var(--sapphire)}
+.series .chips{display:flex;flex-wrap:wrap;gap:6px}
+.series .chip{width:auto;height:auto;border-radius:999px;font:500 .8rem var(--f-num);padding:4px 9px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink)}
+.series .chip.cur{border-color:var(--sapphire);color:var(--sapphire)}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.stackbtn{display:grid;gap:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font-weight:500;font-size:.9rem;min-height:44px;padding:0 12px;border-radius:11px;cursor:pointer}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#1a1405}
+.btn:disabled{opacity:.4}
+.btn:focus-visible,.seg button:focus-visible,.stab:focus-visible,.xbtn:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .warns{display:grid;gap:6px}
 .warn{padding:8px 10px;border-radius:9px;background:var(--warn-soft);font-size:.84rem;border-left:3px solid var(--warn)}
 .okmsg{padding:8px 10px;border-radius:9px;background:var(--ok-soft);font-size:.84rem;border-left:3px solid var(--ok)}
@@ -170,88 +159,111 @@ details ul{margin:4px 0 0;padding-left:20px;display:grid;gap:4px;color:var(--mut
 details p{margin:6px 0;color:var(--muted)}
 .ref{font-size:.78rem;color:var(--muted);margin:0}
 .note{font-size:.78rem;color:var(--muted);margin:0}
-.toast{font-size:.8rem;color:var(--ok);min-height:1.2em}
+.toastline{font-size:.8rem;color:var(--ok);min-height:1.2em}
+.help{margin:0;padding-left:20px;display:grid;gap:5px;color:var(--muted);font-size:.9rem}
+.help b{color:var(--ink)}
 #copyArea{position:absolute;left:-9999px;top:0}
-@media (prefers-reduced-motion:no-preference){.bar i{transition:width .3s ease}}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
 </style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 18l5-5 4 4 3-3 4 4"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></symbol>
+  <symbol id="i-fine" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></symbol>
+  <symbol id="i-move" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></symbol>
+  <symbol id="i-zin" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5M8 11h6M11 8v6"/></symbol>
+  <symbol id="i-zout" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5M8 11h6"/></symbol>
+  <symbol id="i-fit" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+  <symbol id="i-l" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+  <symbol id="i-r" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-plumb" viewBox="0 0 24 24"><path d="M12 2v14"/><path d="M8.5 16h7L12 22z"/><path d="M8 2h8"/></symbol>
+  <symbol id="i-rl" viewBox="0 0 24 24"><path d="M4 4v5h5"/><path d="M5.5 15A7.5 7.5 0 1 0 6 8l-2 1"/></symbol>
+  <symbol id="i-rr" viewBox="0 0 24 24"><path d="M20 4v5h-5"/><path d="M18.5 15A7.5 7.5 0 1 1 18 8l2 1"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><path d="M8 3v18M16 3v18M3 12h18"/><rect x="3" y="3" width="18" height="18" rx="2"/></symbol>
+  <symbol id="i-del" viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 20V11M10 20V5M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+</svg>
 
 </head>
 <body>
-<div class="app">
-  <header class="top gut">
-    <div class="brand">
-      <div class="mark" aria-hidden="true"><svg width="16" height="20" viewBox="0 0 22 26" fill="none"><path d="M11 1v24" stroke="#fff" stroke-width="1.8" stroke-dasharray="2 2.4"/><path d="M3 6h16M4 12h14M5 18h12" stroke="#f5d488" stroke-width="2.4" stroke-linecap="round"/></svg></div>
-      <b>Posturální profil</b>
-    </div>
-    <div class="seg" role="group" aria-label="Typ měření">
-      <button id="tPOTSI" aria-pressed="true" title="snímek zezadu">POTSI</button>
-      <button id="tATSI" aria-pressed="false" title="snímek zepředu">ATSI</button>
-    </div>
-  </header>
+<div class="app" id="app">
+  <canvas id="cv" tabindex="0" aria-label="Snímek pacienta se zaměřovačem a anatomickými body"></canvas>
+  <canvas id="loupe" width="264" height="264" hidden></canvas>
 
-  <main>
-    <!-- MĚŘENÍ -->
-    <section class="view" id="v-measure" aria-label="Měření">
-      <div class="stage" id="stage">
-        <canvas id="cv" tabindex="0" aria-label="Snímek pacienta s anatomickými body"></canvas>
-        <canvas id="loupe" width="260" height="260" hidden></canvas>
-        <span class="badge" id="demoBadge">Ukázka – smyšlená silueta</span>
-        <svg class="aim" viewBox="0 0 96 96" aria-hidden="true"><g fill="none"><circle cx="48" cy="48" r="40" stroke="#fff" stroke-width="1.6"/><circle cx="48" cy="48" r="22" stroke="#fff" stroke-width="1.4"/><circle cx="48" cy="48" r="9" stroke="#fff" stroke-width="1.2"/><path d="M48 2v40M48 54v40M2 48h40M54 48h40" stroke="#5ec8f2" stroke-width="2"/></g><circle cx="48" cy="48" r="2.4" fill="#f5c95c"/></svg>
-        <span class="zl" id="zl">1,0×</span>
-        <div class="fabs">
-          <button class="fab" id="zin" aria-label="Přiblížit">+</button>
-          <button class="fab" id="zout" aria-label="Oddálit">−</button>
-          <button class="fab" id="zfit" aria-label="Celý snímek">⤢</button>
-          <button class="fab" id="eye" aria-label="Skrýt nebo ukázat vyznačení" aria-pressed="false">👁</button>
-        </div>
-        <div class="fstep" id="fstep"></div>
-        <div class="fbar" role="toolbar" aria-label="Ovládání měření">
-          <button class="fbtn" id="fExit" aria-label="Zobrazit panel">⌃</button>
-          <button class="fbtn" id="fUndo" aria-label="Zpět">↶</button>
-          <button class="fbtn" id="fFine" aria-label="Jemný posun">◎</button>
-          <button class="fbtn ok" id="fPlace">✓ Umístit</button>
-        </div>
-      </div>
-      <div class="dock gut">
-        <div class="stepline">
-          <div class="stepnum" id="stepNum">1/8</div>
-          <div class="steptxt"><b id="stepName"></b><small id="stepDesc"></small></div>
-          <span class="row" style="gap:6px;flex-wrap:nowrap"><button class="btn gold" id="goRes" hidden>Výsledek</button><button class="btn" id="fullBtn" aria-label="Snímek přes celou obrazovku" title="Snímek přes celou obrazovku">⌄</button></span>
-        </div>
-        <div class="chips" id="chips" aria-label="Body"></div>
-        <div class="aimrow">
-          <button class="btn primary big" id="placeBtn">Umístit bod</button>
-          <div class="pad" role="group" aria-label="Jemný posun snímku pod zaměřovačem">
-            <button class="btn" data-nudge="-1,0" aria-label="Doleva">←</button>
-            <button class="btn" data-nudge="0,-1" aria-label="Nahoru">↑</button>
-            <button class="btn" data-nudge="0,1" aria-label="Dolů">↓</button>
-            <button class="btn" data-nudge="1,0" aria-label="Doprava">→</button>
-          </div>
-        </div>
-        <div class="subpanel" id="alignPanel" hidden>
-          <button class="btn primary" id="plumb">⊥ Vyrovnat podle olovnice</button>
-          <div class="lab">Nebo ručně</div>
-          <div class="rotrow" role="group" aria-label="Ruční vyrovnání">
-            <button class="btn" data-rot="-1">−1°</button><button class="btn" data-rot="-0.1">−0,1°</button>
-            <output id="rotOut">0,0°</output>
-            <button class="btn" data-rot="0.1">+0,1°</button><button class="btn" data-rot="1">+1°</button>
-            <button class="btn" data-rot="0">0</button>
-          </div>
-          <label class="ctrl"><input id="grid" type="checkbox"> Svislá mřížka</label>
-        </div>
-        <div class="dockrow">
-          <label class="btn primary" for="file"><span class="ic">📷</span>Snímek</label>
-          <button class="btn" id="alignBtn"><span class="ic">⊥</span>Vyrovnat</button>
-          <button class="btn" id="undo"><span class="ic">↶</span>Zpět</button>
-          <button class="btn" id="delp"><span class="ic">✕</span>Smazat</button>
-          <button class="btn" id="fine" aria-pressed="false"><span class="ic">◎</span>Jemně</button>
-        </div>
-        <input id="file" type="file" accept="image/*" hidden>
-      </div>
-    </section>
+  <div class="topbar">
+    <div class="stepcard glass" id="stepcard" role="button" tabindex="0" title="Zobrazit popis bodu">
+      <div class="stepnum" id="stepNum">1/8</div>
+      <div class="steptxt"><b id="stepName">C7</b><span id="stepSub">POTSI</span></div>
+    </div>
+    <button class="gbtn glass" id="eye" aria-pressed="false" aria-label="Skrýt vyznačení"><svg class="i"><use href="#i-eye"/></svg></button>
+    <button class="gbtn glass" id="menuBtn" aria-label="Výsledek, protokol a návod"><svg class="i"><use href="#i-menu"/></svg></button>
+  </div>
 
-    <!-- VÝSLEDEK -->
-    <section class="view gut" id="v-result" aria-label="Výsledek" hidden>
+    <div class="demo" id="demoBadge">Ukázka – smyšlená silueta</div>
+  <div class="toast glass hide" id="toast" role="status"></div>
+
+  <div class="bottom" id="bottom">
+    <div class="chiprow glass" id="chips" aria-label="Body P1–P8"></div>
+    <div class="barrow">
+      <button class="gbtn glass" id="collapse" aria-label="Sbalit ovládání"><svg class="i"><use href="#i-down"/></svg></button>
+      <div class="strip glass" id="strip" role="toolbar" aria-label="Nástroje">
+        <button class="tool" id="undo"><svg class="i"><use href="#i-undo"/></svg><small>Zpět</small></button>
+        <button class="tool" id="fine" aria-pressed="false"><svg class="i"><use href="#i-fine"/></svg><small>Jemně</small></button>
+        <button class="tool" id="zout"><svg class="i"><use href="#i-zout"/></svg><small>Oddálit</small></button>
+        <button class="tool" id="zin"><svg class="i"><use href="#i-zin"/></svg><small>Přiblížit</small></button>
+        <button class="tool" id="zfit"><svg class="i"><use href="#i-fit"/></svg><small>Celý</small></button>
+        <button class="tool" id="panMode" aria-pressed="false"><svg class="i"><use href="#i-move"/></svg><small>Posun fotky</small></button>
+        <span class="sep"></span>
+        <button class="tool" data-nudge="-1,0" aria-label="Zaměřovač doleva"><svg class="i"><use href="#i-l"/></svg><small>vlevo</small></button>
+        <button class="tool" data-nudge="0,-1" aria-label="Zaměřovač nahoru"><svg class="i"><use href="#i-up"/></svg><small>nahoru</small></button>
+        <button class="tool" data-nudge="0,1" aria-label="Zaměřovač dolů"><svg class="i"><use href="#i-down"/></svg><small>dolů</small></button>
+        <button class="tool" data-nudge="1,0" aria-label="Zaměřovač doprava"><svg class="i"><use href="#i-r"/></svg><small>vpravo</small></button>
+        <span class="sep"></span>
+        <button class="tool" id="camBtn"><svg class="i"><use href="#i-cam"/></svg><small>Vyfotit</small></button>
+        <button class="tool" id="libBtn"><svg class="i"><use href="#i-img"/></svg><small>Galerie</small></button>
+        <span class="sep"></span>
+        <button class="tool" id="plumb" aria-pressed="false"><svg class="i"><use href="#i-plumb"/></svg><small>Olovnice</small></button>
+        <button class="tool" data-rot="-0.1" aria-label="Otočit o 0,1° doleva"><svg class="i"><use href="#i-rl"/></svg><small>−0,1°</small></button>
+        <button class="tool" data-rot="0.1" aria-label="Otočit o 0,1° doprava"><svg class="i"><use href="#i-rr"/></svg><small>+0,1°</small></button>
+        <button class="tool" data-rot="0"><span style="font:600 .9rem var(--f-num)" id="rotOut">0,0°</span><small>zrušit</small></button>
+        <button class="tool" id="grid" aria-pressed="false"><svg class="i"><use href="#i-grid"/></svg><small>Mřížka</small></button>
+        <span class="sep"></span>
+        <button class="tool" id="delp"><svg class="i"><use href="#i-del"/></svg><small>Smazat bod</small></button>
+      </div>
+      <button class="okbtn" id="ok" aria-label="Umístit bod pod zaměřovač"><svg class="i"><use href="#i-check"/></svg><span id="okTxt">P1</span></button>
+    </div>
+  </div>
+
+  <div class="mini">
+    <button class="gbtn glass" id="expand" aria-label="Zobrazit ovládání"><svg class="i"><use href="#i-up"/></svg></button>
+    <button class="gbtn glass" id="miniOk" aria-label="Umístit bod" style="color:var(--pt)"><svg class="i"><use href="#i-check"/></svg></button>
+  </div>
+
+  <input id="fileLib" type="file" accept="image/*" hidden>
+  <input id="fileCam" type="file" accept="image/*" capture="environment" hidden>
+
+  <div class="sheet" id="sheet" hidden>
+    <div class="card" role="dialog" aria-modal="true" aria-label="Výsledek a nastavení">
+      <div class="grab"></div>
+      <div class="shead">
+        <div class="seg" role="group" aria-label="Typ měření">
+          <button id="tPOTSI" aria-pressed="true">POTSI · zezadu</button>
+          <button id="tATSI" aria-pressed="false">ATSI · zepředu</button>
+        </div>
+        <button class="xbtn" id="closeSheet" aria-label="Zavřít">✕</button>
+      </div>
+      <div class="stabs" role="tablist">
+        <button class="stab" role="tab" data-t="result" aria-selected="true">Výsledek<span class="tv" id="tabVal"></span></button>
+        <button class="stab" role="tab" data-t="proto" aria-selected="false">Protokol<span class="tv" id="tabProto"></span></button>
+        <button class="stab" role="tab" data-t="info" aria-selected="false">Návod</button>
+      </div>
+      <div class="sbody" id="t-result">
       <div class="panel">
         <h2>Výsledek</h2>
         <div id="result"></div>
@@ -266,17 +278,15 @@ details p{margin:6px 0;color:var(--muted)}
         </div>
         <div class="row" style="margin-top:10px">
           <button class="btn gold" id="save" disabled>Uložit měření</button>
-          <span class="toast" id="saveToast"></span>
+          <span class="toastline" id="saveToast"></span>
         </div>
       </div>
       <div class="panel">
         <h2>Měření v této relaci</h2>
         <div class="saved" id="saved"></div>
       </div>
-    </section>
-
-    <!-- PROTOKOL -->
-    <section class="view gut" id="v-proto" aria-label="Protokol" hidden>
+    </div>
+      <div class="sbody" id="t-proto" hidden>
       <div class="panel">
         <h2>Protokol focení <span class="cnt" id="protoCnt"></span></h2>
         <ul class="check" id="proto"></ul>
@@ -290,19 +300,19 @@ details p{margin:6px 0;color:var(--muted)}
         </div>
         <p class="ref" style="margin-top:8px">Uloží se k měření, aby šlo kontrolu příště nafotit stejně.</p>
       </div>
-    </section>
-
-    <!-- NÁVOD -->
-    <section class="view gut" id="v-info" aria-label="Návod" hidden>
+    </div>
+      <div class="sbody" id="t-info" hidden>
       <div class="panel">
         <h2>Ovládání</h2>
-        <ul style="margin:0;padding-left:20px;display:grid;gap:4px;color:var(--muted);font-size:.9rem">
-          <li><b style="color:var(--ink)">Zaměřovač</b> je pevně uprostřed. Snímek posuňte tak, aby mířil na anatomický bod, a ťukněte na <b style="color:var(--ink)">Umístit bod</b>.</li>
-          <li><b style="color:var(--ink)">Jedním prstem</b> snímek posouváte, <b style="color:var(--ink)">dvěma prsty</b> přibližujete (kolem zaměřovače). Na počítači kolečko myši a tažení.</li>
-          <li><b style="color:var(--ink)">Šipky</b> posunou snímek o kousek; podržením se posun opakuje. <b style="color:var(--ink)">Jemně</b> zpomalí tažení i šipky.</li>
-          <li><b style="color:var(--ink)">Ťuknutí na místo</b> ho přesune pod zaměřovač (hrubé zaměření).</li>
-          <li><b style="color:var(--ink)">Oprava bodu:</b> ťukněte na číslo bodu dole – bod se „přichytí“ k zaměřovači, posuňte snímek a dejte Potvrdit polohu.</li>
-          <li>Nejpřesnější je přiblížit na 3–6× a dolaďovat šipkami.</li>
+        <ul class="help">
+          <li><b>Zaměřovač posouváte jedním prstem kdekoli na fotce.</b> Jede o stejný kus jako prst, ale neskočí pod něj, takže prst nikdy nezakryje cíl. Krátké ťuknutí přesune zaměřovač na to místo.</li>
+          <li><b>Dvěma prsty</b> fotku přibližujete a posouváte. Lišty a tlačítka se nepřibližují.</li>
+          <li><b>Zlaté tlačítko ✓ P3</b> položí další bod přesně pod zaměřovač. Pořadí P1–P8 je stejné jako v PotsiApp.</li>
+          <li><b>Jemně</b> zpomalí zaměřovač na čtvrtinu, <b>šipky</b> ho posunou o kousek (podržením opakovaně).</li>
+          <li><b>Posun fotky</b> přepne jeden prst na posouvání fotky místo zaměřovače.</li>
+          <li><b>Oprava bodu:</b> ťukněte na jeho číslo v řadě 1–8, bod se přichytí k zaměřovači, posuňte ho a dejte Potvrdit. Opětovné ťuknutí na číslo úpravu zruší.</li>
+          <li><b>Olovnice:</b> zaměřte olovnici nahoře, potvrďte, pak dole a potvrďte – snímek se vyrovná.</li>
+          <li><b>⌄</b> vlevo dole sbalí ovládání pro čistý pohled na fotku, <b>oko</b> nahoře skryje vyznačení.</li>
         </ul>
         <div class="row" style="margin-top:12px"><button class="btn" id="demo">Načíst ukázkový snímek</button></div>
       </div>
@@ -370,22 +380,16 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.8.</p>
-    </section>
-  </main>
-
-  <nav class="tabbar gut" role="tablist">
-    <button class="tab" role="tab" data-v="measure" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="7"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>Měření</button>
-    <button class="tab" role="tab" data-v="result" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Výsledek<span class="tv" id="tabVal"></span></button>
-    <button class="tab" role="tab" data-v="proto" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M3 6l1.5 1.5L7 5M3 12l1.5 1.5L7 11M3 18l1.5 1.5L7 17"/></svg>Protokol<span class="tv" id="tabProto"></span></button>
-    <button class="tab" role="tab" data-v="info" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M9 8h6"/></svg>Návod</button>
-  </nav>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.9.</p>
+    </div>
+    </div>
+  </div>
 </div>
 <textarea id="copyArea" aria-hidden="true" tabindex="-1"></textarea>
 
 <script>
 (function(){
-const VERSION='0.5';
+const VERSION='0.9';
 const MEAS_ERR={POTSI:{intra:5.5,inter:6.4}}; // Suzuki 1999
 const DEFS={
   POTSI:{name:'POTSI',view:'zezadu',top:'c7',mid:'nc',patientRightIsImageRight:true,topCode:'FAI‑C7',topName:'C7',
@@ -479,9 +483,10 @@ function makeDemo(t){
   return {canvas:c,pts:Object.fromEntries(Object.entries(P).map(([k,v])=>[k,{x:v[0],y:v[1]}]))};
 }
 
-/* ---------- snímek, pohled a natočení ---------- */
+/* ---------- pohled ---------- */
 const DPR=()=>Math.max(1,Math.min(3,window.devicePixelRatio||1));
-let view={s:1,tx:0,ty:0},fine=false,selected=null,hideOverlay=false;
+const app=$('app');
+let view={s:1,tx:0,ty:0},fine=false,selected=null,selOrig=null,hideOverlay=false,panMode=false,aim={x:0,y:0},lastStepKey=null;
 function rebuildBase(){
   if(!src)return;
   base.width=src.width;base.height=src.height;
@@ -489,26 +494,44 @@ function rebuildBase(){
   b.save();b.translate(base.width/2,base.height/2);b.rotate(rot*Math.PI/180);
   b.drawImage(src,-src.width/2,-src.height/2);b.restore();
 }
-function sizeCanvas(){const r=cv.getBoundingClientRect(),d=DPR();if(r.width<20||r.height<20)return null;const w=Math.max(1,Math.round(r.width*d)),h=Math.max(1,Math.round(r.height*d));
-  if(cv.width!==w||cv.height!==h){const ow=cv.width,oh=cv.height;cv.width=w;cv.height=h;return{ow,oh}}return null}
-function fitScale(){return Math.min(cv.width/base.width,cv.height/base.height)}
-function fit(){sizeCanvas();const s=fitScale()*0.96;view={s,tx:(cv.width-base.width*s)/2,ty:(cv.height-base.height*s)/2};draw()}
-function clampS(s){return Math.max(fitScale()*0.5,Math.min(fitScale()*16,s))}
-function zoomAt(f,px,py){const s0=view.s,s=clampS(s0*f),wx=(px-view.tx)/s0,wy=(py-view.ty)/s0;view={s,tx:px-wx*s,ty:py-wy*s};draw()}
+function sizeCanvas(){const r=cv.getBoundingClientRect(),d=DPR();if(r.width<20||r.height<20)return null;
+  const w=Math.round(r.width*d),h=Math.round(r.height*d);if(cv.width!==w||cv.height!==h){const ow=cv.width,oh=cv.height;cv.width=w;cv.height=h;return{ow,oh}}return null}
 const toWorld=(px,py)=>({x:(px-view.tx)/view.s,y:(py-view.ty)/view.s});
 const toScreen=p=>({x:p.x*view.s+view.tx,y:p.y*view.s+view.ty});
-try{new ResizeObserver(()=>{const ch=sizeCanvas();if(ch&&src){view.tx+=(cv.width-ch.ow)/2;view.ty+=(cv.height-ch.oh)/2;draw()}}).observe(cv)}catch(e){}
+function safeRect(){ // část displeje mezi lištami, v pixelech plátna
+  const d=DPR(),c=cv.getBoundingClientRect(),min=app.classList.contains('min');
+  const t=min?0:Math.max(0,$('stepcard').getBoundingClientRect().bottom-c.top)+8;
+  const b=min?c.height:Math.min(c.height,$('bottom').getBoundingClientRect().top-c.top)-8;
+  return{l:0,t:t*d,r:cv.width,b:Math.max(t+40,b)*d};
+}
+function fitScale(){const r=safeRect();return Math.min((r.r-r.l)/base.width,(r.b-r.t)/base.height)}
+function fit(){sizeCanvas();if(!src)return;const r=safeRect(),s=fitScale()*0.97;
+  view={s,tx:r.l+((r.r-r.l)-base.width*s)/2,ty:r.t+((r.b-r.t)-base.height*s)/2};draw();updateZoom()}
+function clampS(s){return Math.max(fitScale()*0.5,Math.min(fitScale()*20,s))}
+function zoomAround(f,px,py){const s0=view.s,s=clampS(s0*f),wx=(px-view.tx)/s0,wy=(py-view.ty)/s0;view={s,tx:px-wx*s,ty:py-wy*s};draw();updateZoom()}
+function zoomAim(f){const p=toScreen(aim);zoomAround(f,p.x,p.y);keepAimVisible();draw()}
+function subText(){const d=def();return `${d.name} · ${d.view}${src?' · '+fmt(view.s/fitScale(),1)+'×':''}${rot?` · ${fmt(rot,1)}°`:''}${calibrated?' · olovnice ✓':''}`}
+function updateZoom(){$('stepSub').textContent=subText()}
+function clampAim(){if(!src)return;aim.x=Math.max(0,Math.min(base.width,aim.x));aim.y=Math.max(0,Math.min(base.height,aim.y))}
+function keepAimVisible(){ // zaměřovač nesmí zajet pod lišty – fotka se posune za ním
+  const r=safeRect(),m=46*DPR(),p=toScreen(aim);let dx=0,dy=0;
+  if(p.x<r.l+m)dx=r.l+m-p.x;else if(p.x>r.r-m)dx=r.r-m-p.x;
+  if(p.y<r.t+m)dy=r.t+m-p.y;else if(p.y>r.b-m)dy=r.b-m-p.y;
+  if(dx||dy){view.tx+=dx;view.ty+=dy}
+}
+try{new ResizeObserver(()=>{const ch=sizeCanvas();if(ch&&src){if(ch.ow<40)fit();else{view.tx+=(cv.width-ch.ow)/2;view.ty+=(cv.height-ch.oh)/2;draw()}}}).observe(cv)}catch(e){}
 function setRotation(nr){
   nr=Math.max(-20,Math.min(20,Math.round(nr*100)/100));const d=(nr-rot)*Math.PI/180,cx=base.width/2,cy=base.height/2,c=Math.cos(d),s=Math.sin(d);
-  for(const k in pts){const x=pts[k].x-cx,y=pts[k].y-cy;pts[k]={x:cx+x*c-y*s,y:cy+x*s+y*c}}
+  const R=p=>{const x=p.x-cx,y=p.y-cy;return{x:cx+x*c-y*s,y:cy+x*s+y*c}};
+  for(const k in pts)pts[k]=R(pts[k]);aim=R(aim);if(selOrig)selOrig=R(selOrig);
   rot=nr;snapShoulders();rebuildBase();refresh();
 }
-function loadDemo(){
-  const d=makeDemo(type);src=d.canvas;isDemo=true;rot=0;calibrated=false;selected=null;
-  pts=d.pts;hist=def().pts.map(p=>p.k);series=[];rebuildBase();fit();refresh();
+function newImage(c,demo){
+  src=c;isDemo=demo;rot=0;calibrated=false;selected=null;selOrig=null;plumbMode=false;plumbPts=[];
+  rebuildBase();aim={x:base.width/2,y:base.height*0.3};lastStepKey=null;fit();
 }
-$('demo').onclick=loadDemo;
-$('file').addEventListener('change',e=>{
+function loadDemo(){const d=makeDemo(type);series=[];newImage(d.canvas,true);pts=d.pts;hist=def().pts.map(p=>p.k);refresh()}
+function onFile(e){
   const f=e.target.files&&e.target.files[0];if(!f)return;
   const url=URL.createObjectURL(f);const im=new Image();
   im.onload=()=>{
@@ -516,19 +539,180 @@ $('file').addEventListener('change',e=>{
     const c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*s);c.height=Math.round(im.naturalHeight*s);
     c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(url);
     c._origMpx=im.naturalWidth*im.naturalHeight/1e6;
-    if(isDemo)series=[];
-    src=c;isDemo=false;rot=0;calibrated=false;pts={};hist=[];selected=null;rebuildBase();fit();refresh();
+    if(isDemo)series=[];pts={};hist=[];newImage(c,false);closeSheet();refresh();
   };
-  im.onerror=()=>{URL.revokeObjectURL(url);flash('Tento soubor se nepodařilo otevřít jako obrázek. Zkuste fotografii JPG nebo PNG.')};
+  im.onerror=()=>{URL.revokeObjectURL(url);flash('Tento soubor se nepodařilo otevřít jako obrázek. Zkuste fotografii JPG nebo PNG.',true)};
   im.src=url;e.target.value='';
+}
+$('fileLib').addEventListener('change',onFile);$('fileCam').addEventListener('change',onFile);
+$('camBtn').onclick=()=>$('fileCam').click();$('libBtn').onclick=()=>$('fileLib').click();
+
+/* ---------- kreslení ---------- */
+function drawAim(g){
+  if(!src)return;const p=toScreen(aim),u=DPR(),col=plumbMode?'#f5c95c':(selected?'#f5c95c':'#5ec8f2');
+  g.save();g.shadowColor='rgba(0,0,0,.75)';g.shadowBlur=3*u;g.lineWidth=1.4*u;g.strokeStyle='rgba(255,255,255,.95)';
+  [32,19,8].forEach(r=>{g.beginPath();g.arc(p.x,p.y,r*u,0,Math.PI*2);g.stroke()});
+  g.lineWidth=2*u;g.strokeStyle=col;g.beginPath();
+  [[0,-40,0,-4],[0,4,0,40],[-40,0,-4,0],[4,0,40,0]].forEach(([a,b,c,d])=>{g.moveTo(p.x+a*u,p.y+b*u);g.lineTo(p.x+c*u,p.y+d*u)});g.stroke();
+  g.shadowBlur=0;g.fillStyle='#f5c95c';g.beginPath();g.arc(p.x,p.y,1.3*u,0,Math.PI*2);g.fill();g.restore();
+}
+function draw(){
+  const g=ctx;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);
+  if(!src)return;
+  g.setTransform(view.s,0,0,view.s,view.tx,view.ty);g.imageSmoothingQuality='high';g.drawImage(base,0,0);
+  g.setTransform(1,0,0,1,0,0);
+  drawOverlay(g,toScreen,DPR(),cv.width,cv.height,base.height);
+  drawAim(g);
+}
+
+/* ---------- gesta: jeden prst posouvá zaměřovač, dva prsty fotku ---------- */
+const ptrs=new Map();let gest=null,loupeT=null;
+function cpos(e){const r=cv.getBoundingClientRect(),d=DPR();return{x:(e.clientX-r.left)*d,y:(e.clientY-r.top)*d}}
+function moveAim(dxs,dys){ // posun v pixelech displeje
+  const k=fine?0.25:1;aim.x+=dxs/view.s*k;aim.y+=dys/view.s*k;clampAim();
+  if(selected)place(selected,aim);keepAimVisible();draw();showLoupe();
+}
+function showLoupe(){drawLoupe(aim);clearTimeout(loupeT);loupeT=setTimeout(()=>{loupe.hidden=true},700)}
+cv.addEventListener('pointerdown',e=>{
+  if(!src)return;e.preventDefault();try{cv.focus({preventScroll:true})}catch(_){}
+  try{cv.setPointerCapture(e.pointerId)}catch(_){}
+  const sp=cpos(e);ptrs.set(e.pointerId,sp);
+  if(ptrs.size===2){const[a,b]=[...ptrs.values()];loupe.hidden=true;
+    gest={mode:'pinch',d0:Math.hypot(a.x-b.x,a.y-b.y)||1,m0:{x:(a.x+b.x)/2,y:(a.y+b.y)/2},v0:{...view}};return}
+  if(ptrs.size>2)return;
+  gest={mode:'tap',s0:sp,last:sp};
 });
-document.querySelectorAll('[data-rot]').forEach(b=>b.onclick=()=>{if(!src)return;calibrated=false;setRotation(b.dataset.rot==='0'?0:rot+parseFloat(b.dataset.rot))});
-$('grid').addEventListener('change',e=>{showGrid=e.target.checked;draw()});
-$('plumb').onclick=()=>{plumbMode=!plumbMode;plumbPts=[];$('plumb').classList.toggle('on',plumbMode);refresh()};
-$('zin').onclick=()=>zoomAt(1.5,cv.width/2,cv.height/2);
-$('zout').onclick=()=>zoomAt(1/1.5,cv.width/2,cv.height/2);
-$('zfit').onclick=fit;
-$('fine').onclick=()=>{fine=!fine;$('fine').classList.toggle('on',fine);$('fine').setAttribute('aria-pressed',String(fine));$('fFine').classList.toggle('on',fine)};
+cv.addEventListener('pointermove',e=>{
+  if(!ptrs.has(e.pointerId)||!gest)return;const sp=cpos(e);ptrs.set(e.pointerId,sp);
+  if(gest.mode==='pinch'){if(ptrs.size<2)return;const[a,b]=[...ptrs.values()];
+    const d=Math.hypot(a.x-b.x,a.y-b.y),m={x:(a.x+b.x)/2,y:(a.y+b.y)/2},s=clampS(gest.v0.s*d/gest.d0);
+    const wx=(gest.m0.x-gest.v0.tx)/gest.v0.s,wy=(gest.m0.y-gest.v0.ty)/gest.v0.s;
+    view={s,tx:m.x-wx*s,ty:m.y-wy*s};draw();updateZoom();return}
+  if(gest.mode==='tap'&&Math.hypot(sp.x-gest.s0.x,sp.y-gest.s0.y)>6*DPR()){gest.mode=panMode?'pan':'aim';gest.last=gest.s0}
+  if(gest.mode==='pan'){view.tx+=sp.x-gest.last.x;view.ty+=sp.y-gest.last.y;draw()}
+  else if(gest.mode==='aim')moveAim(sp.x-gest.last.x,sp.y-gest.last.y);
+  gest.last=sp;
+});
+function up(e){
+  if(!ptrs.has(e.pointerId))return;const sp=ptrs.get(e.pointerId);ptrs.delete(e.pointerId);
+  if(!gest)return;
+  if(gest.mode==='pinch'){if(ptrs.size===1){const[r]=[...ptrs.values()];gest={mode:'pan',s0:r,last:r}}else if(!ptrs.size)gest=null;return}
+  if(gest.mode==='tap'&&e.type==='pointerup'&&!panMode){aim=toWorld(sp.x,sp.y);clampAim();if(selected)place(selected,aim);draw();showLoupe()}
+  const m=gest.mode;gest=null;if(m==='aim'||m==='tap')refresh();
+}
+cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+cv.addEventListener('wheel',e=>{if(!src)return;e.preventDefault();const p=cpos(e);zoomAround(Math.exp(-e.deltaY*0.0015),p.x,p.y)},{passive:false});
+cv.addEventListener('keydown',e=>{const m={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
+  if(m){e.preventDefault();const f=(e.shiftKey?6:1)*DPR();moveAim(m[0]*f,m[1]*f);refresh()}
+  else if(e.key==='Enter'){e.preventDefault();$('ok').click()}
+  else if(e.key==='+'||e.key==='=')zoomAim(1.4);else if(e.key==='-')zoomAim(1/1.4)});
+// stránka se nikdy nepřibližuje – přibližuje se jen fotka
+['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
+['contextmenu','selectstart','dragstart'].forEach(t=>cv.addEventListener(t,e=>e.preventDefault()));
+
+/* ---------- tlačítka ---------- */
+function hold(btn,fn){let t=null,r=null;
+  btn.addEventListener('pointerdown',e=>{e.preventDefault();fn();t=setTimeout(()=>{r=setInterval(fn,55)},380)});
+  const stop=()=>{if(t||r){clearTimeout(t);clearInterval(r);t=r=null;refresh()}};
+  ['pointerup','pointerleave','pointercancel'].forEach(ev=>btn.addEventListener(ev,stop));
+  btn.addEventListener('click',e=>e.preventDefault());
+}
+document.querySelectorAll('[data-nudge]').forEach(b=>hold(b,()=>{if(!src)return;const[x,y]=b.dataset.nudge.split(',').map(Number),st=1.2*DPR();moveAim(x*st,y*st)}));
+document.querySelectorAll('[data-rot]').forEach(b=>{if(b.dataset.rot==='0')b.onclick=()=>{if(!src)return;calibrated=false;setRotation(0)};
+  else hold(b,()=>{if(!src)return;calibrated=false;setRotation(rot+parseFloat(b.dataset.rot))})});
+hold($('zin'),()=>zoomAim(1.12));hold($('zout'),()=>zoomAim(1/1.12));
+$('zfit').onclick=()=>{fit();keepAimVisible();draw()};
+function setPressed(id,v){$(id).setAttribute('aria-pressed',String(v))}
+$('fine').onclick=()=>{fine=!fine;setPressed('fine',fine);flash(fine?'Jemný posun: zaměřovač jede čtyřikrát pomaleji než prst.':'Jemný posun vypnut.')};
+$('panMode').onclick=()=>{panMode=!panMode;setPressed('panMode',panMode);flash(panMode?'Posun fotky: jedním prstem teď posouváte fotku. Zaměřovač zůstane na místě snímku.':'Jedním prstem zase posouváte zaměřovač.')};
+$('grid').onclick=()=>{showGrid=!showGrid;setPressed('grid',showGrid);draw()};
+$('eye').onclick=()=>{hideOverlay=!hideOverlay;setPressed('eye',hideOverlay);$('eye').querySelector('use').setAttribute('href',hideOverlay?'#i-eyeoff':'#i-eye');draw()};
+$('plumb').onclick=()=>{if(!src)return;if(selected)cancelEdit();plumbMode=!plumbMode;plumbPts=[];setPressed('plumb',plumbMode);lastStepKey=null;refresh()};
+$('collapse').onclick=()=>{app.classList.add('min');requestAnimationFrame(draw)};
+$('expand').onclick=()=>{app.classList.remove('min');requestAnimationFrame(()=>{keepAimVisible();draw()})};
+$('miniOk').onclick=()=>$('ok').click();
+$('stepcard').onclick=()=>{lastStepKey=null;hint()};
+$('stepcard').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();lastStepKey=null;hint()}};
+function cancelEdit(){if(selected&&selOrig)pts[selected]={...selOrig};selected=null;selOrig=null}
+function selectPoint(k){
+  if(selected===k){cancelEdit();flash('Úprava zrušena, bod zůstal na původním místě.');refresh();return}
+  if(selected){selected=null;selOrig=null}
+  if(plumbMode){plumbMode=false;plumbPts=[];setPressed('plumb',false)}
+  selected=k;selOrig={...pts[k]};aim={...pts[k]};keepAimVisible();lastStepKey=null;refresh();showLoupe();
+}
+$('ok').onclick=()=>{
+  if(!src){$('fileCam').click();return}
+  if(plumbMode){plumbPts.push({...aim});
+    if(plumbPts.length===2){let[a,b]=plumbPts;if(a.y>b.y)[a,b]=[b,a];const dx=b.x-a.x,dy=b.y-a.y;
+      if(dy<base.height*.08){plumbPts=[];refresh();flash('Body olovnice jsou příliš blízko. Zaměřte ji co nejvýš a co nejníž.',true);return}
+      const alpha=Math.atan(dx/dy)*180/Math.PI;plumbMode=false;plumbPts=[];setPressed('plumb',false);calibrated=true;lastStepKey=null;setRotation(rot+alpha);
+      flash(`Snímek vyrovnán podle olovnice (${fmt(alpha,2)}°).`);return}
+    lastStepKey=null;refresh();return}
+  if(selected){selected=null;selOrig=null;lastStepKey=null;refresh();flash('Poloha bodu potvrzena.');return}
+  const k=nextKey();if(!k){openSheet('result');return}
+  place(k,aim);hist.push(k);refresh();
+};
+$('undo').onclick=()=>{
+  if(selected){cancelEdit();refresh();return}
+  if(plumbMode&&plumbPts.length){plumbPts.pop();lastStepKey=null;refresh();return}
+  const k=hist.pop();if(k){aim={...pts[k]};delete pts[k];lastStepKey=null;keepAimVisible();refresh()}
+};
+$('delp').onclick=()=>{const k=selected;if(!k)return;delete pts[k];hist=hist.filter(x=>x!==k);selected=null;selOrig=null;lastStepKey=null;refresh()};
+
+/* ---------- typ měření a panel ---------- */
+function setType(t){
+  if(t===type)return;type=t;setPressed('tPOTSI',t==='POTSI');setPressed('tATSI',t==='ATSI');
+  series=[];selected=null;selOrig=null;
+  if(isDemo)loadDemo();else{const had=hist.length;pts={};hist=[];lastStepKey=null;refresh();if(had)flash(`Přepnuto na ${t}. Body z předchozího typu byly smazány.`,true)}
+}
+$('tPOTSI').onclick=()=>setType('POTSI');$('tATSI').onclick=()=>setType('ATSI');
+function openSheet(t){$('sheet').hidden=false;stab(t||'result')}
+function closeSheet(){$('sheet').hidden=true}
+function stab(t){document.querySelectorAll('.stab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.t===t)));
+  ['result','proto','info'].forEach(x=>$('t-'+x).hidden=x!==t)}
+function show(v){if(v==='measure')closeSheet();else openSheet(v)}
+document.querySelectorAll('.stab').forEach(b=>b.onclick=()=>stab(b.dataset.t));
+$('menuBtn').onclick=()=>openSheet('result');
+$('closeSheet').onclick=closeSheet;
+$('sheet').addEventListener('pointerdown',e=>{if(e.target===$('sheet'))closeSheet()});
+$('demo').onclick=()=>{loadDemo();closeSheet()};
+
+/* ---------- stav a nápověda ---------- */
+let toastT=null;
+function flash(t,warn){const el=$('toast');el.textContent=t;el.classList.toggle('warn',!!warn);el.classList.remove('hide');
+  clearTimeout(toastT);toastT=setTimeout(()=>el.classList.add('hide'),warn?6000:4200)}
+$('toast').onclick=()=>$('toast').classList.add('hide');
+function renderSteps(){
+  const nk=nextKey();
+  $('chips').innerHTML=def().pts.map((p,i)=>`<button class="chip ${pts[p.k]?'done':''} ${p.k===nk&&!selected?'cur':''} ${p.k===selected?'sel':''}" data-k="${p.k}" aria-label="P${i+1} ${p.n}${pts[p.k]?' – upravit':''}">${i+1}</button>`).join('');
+  $('chips').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{const k=b.dataset.k;if(pts[k])selectPoint(k);else flash(`P${def().pts.findIndex(p=>p.k===k)+1} ještě není umístěný. Body se umisťují postupně tlačítkem ✓.`)});
+}
+function hint(){
+  const d=def(),nk=nextKey(),i=d.pts.findIndex(x=>x.k===nk),n=$('stepNum'),ok=$('ok'),txt=$('okTxt');
+  n.className='stepnum';ok.className='okbtn';ok.disabled=false;
+  $('stepSub').textContent=subText();
+  let key,desc,warn=false;
+  if(!src){n.textContent='📷';$('stepName').textContent='Pořiďte snímek';txt.textContent='Vyfotit';key='nosrc';desc='Vyfoťte pacienta, nebo vyberte fotku z galerie.'}
+  else if(plumbMode){n.textContent='⊥';$('stepName').textContent=plumbPts.length?'Olovnice – dolní bod':'Olovnice – horní bod';
+    txt.textContent='Potvrdit';key='plumb'+plumbPts.length;
+    desc=plumbPts.length?'Zaměřte olovnici co nejníž a potvrďte.':'Zaměřte olovnici (nebo svislou zárubeň) co nejvýš a potvrďte.'}
+  else if(selected){const j=d.pts.findIndex(x=>x.k===selected);n.textContent='P'+(j+1);n.classList.add('edit');
+    $('stepName').textContent='Úprava: '+d.pts[j].n;txt.textContent='Potvrdit';ok.classList.add('edit');key='edit'+selected;
+    desc='Posuňte zaměřovač, bod jde s ním. Potvrďte, nebo zrušte ťuknutím na číslo bodu.'}
+  else if(nk){const p=d.pts[i];n.textContent=`${i+1}/8`;$('stepName').textContent=`P${i+1} · ${p.n}`;txt.textContent=`P${i+1}`;key=nk;desc=p.t}
+  else{const sn=sanity();n.textContent='✓';n.classList.add('done');$('stepName').textContent=lastRes?`${d.name} ${fmt(lastRes.total)}`:'Hotovo';
+    txt.textContent='Výsledek';ok.classList.add('res');key='done'+sn.length;
+    desc=sn.length?'Pozor: '+sn[0]:'Všechny body jsou umístěné. Bod opravíte ťuknutím na jeho číslo.';warn=!!sn.length}
+  if(key!==lastStepKey){lastStepKey=key;flash(desc,warn)}
+}
+function refresh(){
+  $('rotOut').textContent=fmt(rot,1)+'°';$('demoBadge').hidden=!isDemo;
+  draw();renderResult();renderSteps();hint();updateZoom();
+  $('delp').disabled=!selected;$('undo').disabled=!(hist.length||selected||(plumbMode&&plumbPts.length));
+  $('tabVal').textContent=lastRes?fmt(lastRes.total):(series.length?`série ${series.length}`:'');
+}
 
 /* ---------- kreslení ---------- */
 function drawOverlay(g,T,u,W,H,wH){
@@ -555,13 +739,6 @@ function drawOverlay(g,T,u,W,H,wH){
     g.lineWidth=3*u;g.strokeStyle='rgba(20,33,61,.85)';g.strokeText('P'+(i+1),q.x+6*u,q.y-5*u);g.fillStyle='#fff';g.fillText('P'+(i+1),q.x+6*u,q.y-5*u);
   });
 }
-function draw(){
-  const g=ctx;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);
-  if(!src)return;
-  g.setTransform(view.s,0,0,view.s,view.tx,view.ty);g.imageSmoothingQuality='high';g.drawImage(base,0,0);
-  g.setTransform(1,0,0,1,0,0);
-  drawOverlay(g,toScreen,DPR(),cv.width,cv.height,base.height);
-}
 function renderFull(){ // celý snímek s vyznačením pro náhled a export
   const c=document.createElement('canvas');c.width=base.width;c.height=base.height;const g=c.getContext('2d');
   g.drawImage(base,0,0);const keep=plumbMode;plumbMode=false;drawOverlay(g,p=>p,Math.max(base.width,base.height)/900,base.width,base.height,base.height);plumbMode=keep;return c;
@@ -577,87 +754,9 @@ function drawLoupe(w){
   lctx.fillStyle='#e3b653';lctx.fillRect(L/2-1,L/2-1,2,2);
 }
 
-/* ---------- zaměřovač a gesta ---------- */
 function snapShoulders(){for(const s in partner){const a=partner[s];if(pts[s]&&pts[a])pts[s].x=pts[a].x}}
 function place(k,p){pts[k]={x:p.x,y:p.y};if(partner[k]&&pts[partner[k]])pts[k].x=pts[partner[k]].x;
   if(k==='ra'&&pts.rs)pts.rs.x=p.x;if(k==='la'&&pts.ls)pts.ls.x=p.x}
-const center=()=>({x:cv.width/2,y:cv.height/2});
-const aimWorld=()=>{const c=center();return toWorld(c.x,c.y)};
-function centerOn(w){const c=center();view={s:view.s,tx:c.x-w.x*view.s,ty:c.y-w.y*view.s}}
-function viewChanged(){ // vybraný bod jede se zaměřovačem
-  if(selected&&pts[selected]&&!plumbMode)place(selected,aimWorld());
-  draw();updateZoom();
-}
-function updateZoom(){const z=src?view.s/fitScale():1;$('zl').textContent=fmt(z,1)+'×'}
-function panBy(dx,dy){view={s:view.s,tx:view.tx+dx,ty:view.ty+dy};viewChanged()}
-// tlačítka zoomu přibližují kolem zaměřovače
-zoomAt=function(f){const c=center(),s0=view.s,s=clampS(s0*f),w=toWorld(c.x,c.y);view={s,tx:c.x-w.x*s,ty:c.y-w.y*s};viewChanged()};
-function nudge(dx,dy){if(!src)return;const st=(fine?0.5:1.5)*DPR();panBy(-dx*st,-dy*st)}
-document.querySelectorAll('[data-nudge]').forEach(b=>{
-  let t=null,r=null;const go=()=>{const[x,y]=b.dataset.nudge.split(',').map(Number);nudge(x,y)};
-  b.addEventListener('pointerdown',e=>{e.preventDefault();go();t=setTimeout(()=>{r=setInterval(go,60)},380)});
-  const stop=()=>{clearTimeout(t);clearInterval(r);t=r=null;refresh()};
-  ['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,stop));
-});
-cv.addEventListener('keydown',e=>{const m={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
-  if(m){e.preventDefault();const f=e.shiftKey?5:1;nudge(m[0]*f,m[1]*f)} else if(e.key==='Enter'){e.preventDefault();$('placeBtn').click()}});
-
-const ptrs=new Map();let gest=null;
-function cpos(e){const r=cv.getBoundingClientRect(),d=cv.width/r.width;return{x:(e.clientX-r.left)*d,y:(e.clientY-r.top)*d}}
-function hitPoint(sp){let best=null,bd=26*DPR();for(const p of def().pts){const q=pts[p.k];if(!q)continue;const s=toScreen(q),dd=Math.hypot(s.x-sp.x,s.y-sp.y);if(dd<bd){bd=dd;best=p.k}}return best}
-cv.addEventListener('pointerdown',e=>{
-  if(!src)return;e.preventDefault();try{cv.focus({preventScroll:true})}catch(_){}
-  try{cv.setPointerCapture(e.pointerId)}catch(_){}
-  const sp=cpos(e);ptrs.set(e.pointerId,sp);
-  if(ptrs.size===2){const[a,b]=[...ptrs.values()];
-    gest={mode:'pinch',d0:Math.hypot(a.x-b.x,a.y-b.y)||1,m0:{x:(a.x+b.x)/2,y:(a.y+b.y)/2},v0:{...view}};return}
-  if(ptrs.size>2)return;
-  gest={mode:'tap',s0:sp,last:sp};
-});
-cv.addEventListener('pointermove',e=>{
-  if(!ptrs.has(e.pointerId)||!gest)return;const sp=cpos(e);ptrs.set(e.pointerId,sp);
-  if(gest.mode==='pinch'){if(ptrs.size<2)return;const[a,b]=[...ptrs.values()];
-    const d=Math.hypot(a.x-b.x,a.y-b.y),m={x:(a.x+b.x)/2,y:(a.y+b.y)/2},c=center();
-    const s=clampS(gest.v0.s*d/gest.d0);
-    const wc={x:(c.x-gest.v0.tx)/gest.v0.s,y:(c.y-gest.v0.ty)/gest.v0.s}; // co bylo pod zaměřovačem
-    const k=fine?0.3:1;
-    view={s,tx:c.x-wc.x*s+(m.x-gest.m0.x)*k,ty:c.y-wc.y*s+(m.y-gest.m0.y)*k};viewChanged();return}
-  if(gest.mode==='tap'&&Math.hypot(sp.x-gest.s0.x,sp.y-gest.s0.y)>6*DPR())gest.mode='pan';
-  if(gest.mode==='pan'){const k=fine?0.3:1;panBy((sp.x-gest.last.x)*k,(sp.y-gest.last.y)*k);gest.last=sp}
-  else gest.last=sp;
-});
-function up(e){
-  if(!ptrs.has(e.pointerId))return;const sp=ptrs.get(e.pointerId);ptrs.delete(e.pointerId);
-  if(!gest)return;
-  if(gest.mode==='pinch'){if(ptrs.size===1){const[r]=[...ptrs.values()];gest={mode:'pan',s0:r,last:r}}else if(!ptrs.size){gest=null;refresh()}return}
-  if(gest.mode==='tap'&&e.type==='pointerup')tapAt(sp);
-  gest=null;refresh();
-}
-cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
-cv.addEventListener('wheel',e=>{if(!src)return;e.preventDefault();zoomAt(Math.exp(-e.deltaY*0.0015))},{passive:false});
-['contextmenu','selectstart','dragstart','gesturestart'].forEach(t=>$('stage').addEventListener(t,e=>e.preventDefault()));
-function tapAt(sp){
-  // ťuknutí = přesunout to místo pod zaměřovač (bod se k úpravě vybírá jen číslem dole)
-  if(selected){flash('Upravujete bod – nejdřív Potvrdit polohu, nebo ťukněte znovu na jeho číslo.');return}
-  centerOn(toWorld(sp.x,sp.y));viewChanged();refresh();
-}
-function selectPoint(k){selected=selected===k?null:k;if(selected)centerOn(pts[k]);viewChanged();refresh()}
-$('placeBtn').onclick=()=>{
-  if(!src)return;const w=aimWorld();
-  if(plumbMode){plumbPts.push(w);draw();
-    if(plumbPts.length===2){let[a,b]=plumbPts;if(a.y>b.y)[a,b]=[b,a];const dx=b.x-a.x,dy=b.y-a.y;
-      if(dy<base.height*.08){plumbPts=[];refresh();flash('Body jsou příliš blízko. Zaměřte olovnici co nejvýš a co nejníž.');return}
-      const alpha=Math.atan(dx/dy)*180/Math.PI;plumbMode=false;plumbPts=[];$('plumb').classList.remove('on');calibrated=true;setRotation(rot+alpha);return}
-    refresh();return}
-  if(selected){selected=null;refresh();return}
-  const k=nextKey();if(!k)return;place(k,w);hist.push(k);refresh();
-};
-$('undo').onclick=()=>{const k=hist.pop();if(k){delete pts[k];if(selected===k)selected=null;refresh()}};
-
-function setType(t){type=t;$('tPOTSI').setAttribute('aria-pressed',t==='POTSI');$('tATSI').setAttribute('aria-pressed',t==='ATSI');
-  series=[];selected=null;if(isDemo)loadDemo();else{pts={};hist=[];refresh()}}
-$('tPOTSI').onclick=()=>setType('POTSI');$('tATSI').onclick=()=>setType('ATSI');
-
 /* ---------- výpočet ---------- */
 function compute(alt){
   const d=def(),P=pts,x0=alt?P[d.top].x:P[d.mid].x,e=Math.abs(P[d.mid].y-P[d.top].y);
@@ -704,32 +803,12 @@ function qualityWarnings(r){
   return w;
 }
 
-/* ---------- panely ---------- */
-function renderSteps(){
-  const nk=nextKey();
-  $('chips').innerHTML=def().pts.map((p,i)=>`<button class="chip2 ${pts[p.k]?'done':''} ${p.k===nk?'cur':''} ${p.k===selected&&pts[p.k]?'sel':''}" data-k="${p.k}" aria-label="${i+1}. ${p.n}">${i+1}</button>`).join('');
-  $('chips').querySelectorAll('.chip2').forEach(b=>b.onclick=()=>{const k=b.dataset.k;if(pts[k])selectPoint(k)});
-}
 function renderProto(){
   $('proto').innerHTML=PROTO.map(p=>`<li><label><input type="checkbox" id="pr_${p.k}" ${proto[p.k]?'checked':''}><span>${p.t}${p.s?`<small>${p.s}</small>`:''}</span></label></li>`).join('');
   PROTO.forEach(p=>$('pr_'+p.k).addEventListener('change',e=>{proto[p.k]=e.target.checked;updateProtoCnt();renderResult()}));
   updateProtoCnt();
 }
 function updateProtoCnt(){const n=PROTO.filter(p=>proto[p.k]).length;$('protoCnt').textContent=`${n}/${PROTO.length}`;$('tabProto').textContent=`${n}/${PROTO.length}`}
-function flash(t){$('stepDesc').textContent=t}
-function hint(){
-  const d=def(),nk=nextKey(),i=d.pts.findIndex(x=>x.k===nk),n=$('stepNum'),pb=$('placeBtn');
-  $('goRes').hidden=true;n.classList.remove('done');pb.disabled=false;pb.classList.add('primary');pb.classList.remove('gold');
-  if(!src){n.textContent='📷';$('stepName').textContent='Pořiďte snímek';flash('Tlačítkem Snímek vyfoťte pacienta nebo vyberte fotku.');pb.disabled=true;pb.textContent='Umístit';return}
-  if(plumbMode){n.textContent='⊥';$('stepName').textContent='Vyrovnání podle olovnice';
-    flash(plumbPts.length?'Posuňte snímek tak, aby zaměřovač mířil na olovnici co nejníž.':'Posuňte snímek tak, aby zaměřovač mířil na olovnici (nebo svislou zárubeň) co nejvýš.');
-    pb.textContent=plumbPts.length?'Potvrdit dolní bod':'Potvrdit horní bod';return}
-  if(selected&&pts[selected]){const j=d.pts.findIndex(x=>x.k===selected);n.textContent=String(j+1);$('stepName').textContent='Úprava: '+d.pts[j].n;
-    flash('Posouvejte snímek, bod jde se zaměřovačem. Pak ťukněte na Potvrdit.');pb.textContent='Potvrdit polohu';pb.classList.remove('primary');pb.classList.add('gold');return}
-  if(nk){const p=d.pts[i];n.textContent=`${i+1}/8`;$('stepName').textContent=p.n;flash(p.t);pb.textContent=`Umístit bod ${i+1}`;return}
-  n.textContent='✓';n.classList.add('done');$('stepName').textContent=lastRes?`${d.name} ${fmt(lastRes.total)}`:'Hotovo';
-  {const sn=sanity();flash(sn.length?'⚠ '+sn[0]:'Všechny body jsou umístěné. Bod upravíte ťuknutím na jeho číslo.')}$('goRes').hidden=false;pb.textContent='Hotovo';pb.disabled=true;
-}
 let lastRes=null;
 function protoOk(){return PROTO.every(p=>proto[p.k])}
 function renderResult(){
@@ -769,7 +848,7 @@ function renderSeries(){
       <button class="btn" id="addSeries" ${lastRes?'':'disabled'}>＋ Přidat do série a měřit znovu</button>
       ${series.length?'<button class="btn" id="clearSeries">Nová série</button>':''}
       <button class="btn" id="copy" ${(lastRes||series.length)?'':'disabled'}>Kopírovat do záznamu</button>
-    </div><span class="toast" id="copyToast"></span></div>`;
+    </div><span class="toastline" id="copyToast"></span></div>`;
   const a=$('addSeries');if(a)a.onclick=()=>{series.push({total:lastRes.total,parts:lastRes.parts,compat:lastRes.compat});pts={};hist=[];refresh();
     show('measure');flash(`Měření ${series.length} přidáno do série. Pořiďte další snímek nebo umístěte body znovu.`)};
   const c=$('clearSeries');if(c)c.onclick=()=>{series=[];refresh()};
@@ -819,37 +898,9 @@ function renderSaved(){
     return `<div class="sv"><img src="${m.thumb}" alt=""><div><div class="t">${esc(m.name)}</div><div class="m">${m.type} · ${m.date?new Date(m.date).toLocaleDateString('cs-CZ'):'bez data'}${m.demo?' · ukázka':''}</div><div class="m">${esc(cond)}</div></div><div class="n">${fmt(m.total)}${delta}</div></div>`}).join('');
 }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function refresh(){
-  $('rotOut').textContent=fmt(rot)+'°';$('demoBadge').hidden=!isDemo;
-  draw();renderResult();renderSteps();hint();
-  const sel=!!(selected&&pts[selected]);updateZoom();
-  $('delp').disabled=!sel;$('undo').disabled=!hist.length;
-  $('fUndo').disabled=!hist.length;$('fPlace').disabled=$('placeBtn').disabled;
-  $('fPlace').textContent='✓ '+$('placeBtn').textContent.replace(/^Umístit bod /,'Umístit ');$('fFine').classList.toggle('on',fine);
-  $('fstep').innerHTML=`<b>${esc($('stepNum').textContent)}</b>${esc($('stepName').textContent)}`;
-  $('tabVal').textContent=lastRes?fmt(lastRes.total):(series.length?`série ${series.length}`:'');
-}
-function show(v){
-  document.querySelectorAll('.view').forEach(x=>x.hidden=x.id!=='v-'+v);
-  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.v===v)));
-  if(v==='measure')requestAnimationFrame(()=>{const ch=sizeCanvas();if(ch&&src&&ch.ow<20)fit();else draw()});
-}
-document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>show(t.dataset.v));
-$('goRes').onclick=()=>show('result');
-$('alignBtn').onclick=()=>{const p=$('alignPanel');p.hidden=!p.hidden;$('alignBtn').classList.toggle('on',!p.hidden)};
-$('plumb').addEventListener('click',()=>{$('alignPanel').hidden=true;$('alignBtn').classList.remove('on')});
-$('delp').onclick=()=>{const k=selected;if(!k||!pts[k])return;delete pts[k];hist=hist.filter(x=>x!==k);selected=null;refresh()};
-$('demo').addEventListener('click',()=>show('measure'));
-const app=document.querySelector('.app');
-function setFull(on){app.classList.toggle('full',on);requestAnimationFrame(()=>{sizeCanvas();draw()})}
-$('fullBtn').onclick=()=>setFull(true);$('fExit').onclick=()=>setFull(false);
-$('fUndo').onclick=()=>$('undo').click();$('fPlace').onclick=()=>$('placeBtn').click();
-$('fFine').onclick=()=>$('fine').click();
-$('eye').onclick=()=>{hideOverlay=!hideOverlay;$('eye').setAttribute('aria-pressed',String(hideOverlay));$('eye').style.opacity=hideOverlay?'.55':'1';draw()};
-$('zfit').addEventListener('click',()=>{selected=null;refresh()});
 renderProto();loadDemo();renderSaved();
-})();
-</script>
+requestAnimationFrame(()=>{fit();keepAimVisible();refresh()});
+})();</script>
 
 </body>
 </html>

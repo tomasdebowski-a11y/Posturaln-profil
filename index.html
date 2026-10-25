@@ -60,7 +60,7 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 #loupe.right{left:auto;right:12px}
 .toast{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(144px + env(safe-area-inset-bottom,0px));width:min(92%,520px);border-radius:14px;padding:9px 13px;font-size:.86rem;line-height:1.35;text-align:center;cursor:pointer;transition:opacity .25s}
 .toast.hide{opacity:0;pointer-events:none}
-.toast.warn{border-color:rgba(240,160,106,.7)}
+.toast.tw{border-color:rgba(240,160,106,.85);background:rgba(58,30,14,.78)}
 .zl{position:absolute;left:12px;bottom:calc(152px + env(safe-area-inset-bottom,0px));font:600 .76rem var(--f-num);padding:4px 9px;border-radius:999px;pointer-events:none}
 .demo{position:absolute;left:50%;transform:translateX(-50%);top:calc(110px + env(safe-area-inset-top,0px));font-size:.72rem;padding:4px 9px;border-radius:999px;pointer-events:none;color:#14213d;background:rgba(247,238,215,.92);border:0}
 
@@ -291,7 +291,7 @@ details p{margin:6px 0;color:var(--muted)}
         <h2>Ovládání</h2>
         <ul class="help">
           <li><b>1. Fotka</b> – Vyfotit, nebo vybrat z Galerie.</li>
-          <li><b>2. Vyrovnání</b> – spustí se samo. Zaměřovač dejte na horní konec olovnice a potvrďte, pak na dolní konec a potvrďte. Žlutá čára má ležet na olovnici. Bez olovnice v záběru dejte Přeskočit.</li>
+          <li><b>2. Vyrovnání</b> – proběhne samo: aplikace najde svislé linie v záběru (olovnici, zárubeň dveří, roh místnosti) a fotku podle nich srovná. Žluté čáry ukazují, podle čeho; když sedí, dejte Pokračovat. Jinak <b>Olovnicí ručně</b>: zaměřovač na horní konec olovnice, potvrdit, na dolní konec, potvrdit.</li>
           <li><b>3. Body P1–P8</b> – zaměřovač posuňte na bod a potvrďte velkým tlačítkem. Po podpažní řase skočí zaměřovač nad ni a u ramene se posouvá jen nahoru a dolů – rameno leží podle metody na svislici z podpažní řasy. (Pořadí řasa → rameno se liší od PotsiApp.)</li>
           <li><b>Zaměřovač</b> posouváte jedním prstem kdekoli na fotce; neskočí pod prst, takže ho nezakryjete. Pomalý pohyb prstu = jemné doladění. Ťuknutím ho přesunete na dané místo.</li>
           <li><b>Dvěma prsty</b> fotku přibližujete a posouváte. Lišty se nepřibližují.</li>
@@ -364,7 +364,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.9.2.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.9.4.</p>
     </div>
     </div>
   </div>
@@ -413,7 +413,7 @@ const $=id=>document.getElementById(id);
 const cv=$('cv'),ctx=cv.getContext('2d'),loupe=$('loupe'),lctx=loupe.getContext('2d');
 let type='POTSI',src=null,base=document.createElement('canvas'),rot=0,showGrid=false,isDemo=true,calibrated=false;
 let pts={},hist=[],drag=null,saved=[],series=[],plumbMode=false,plumbPts=[],proto={};
-const fmt=(v,d=1)=>Number(v).toLocaleString('cs-CZ',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmt=(v,d=1)=>Number(Math.abs(v)<Math.pow(10,-d)/2?0:v).toLocaleString('cs-CZ',{minimumFractionDigits:d,maximumFractionDigits:d});
 const def=()=>DEFS[type];
 const nextKey=()=>{const p=def().pts.find(p=>!pts[p.k]);return p?p.k:null};
 const complete=()=>def().pts.every(p=>pts[p.k]);
@@ -494,7 +494,7 @@ function fit(){sizeCanvas();if(!src)return;const r=safeRect(),s=fitScale()*0.97;
 function clampS(s){return Math.max(fitScale()*0.5,Math.min(fitScale()*20,s))}
 function zoomAround(f,px,py){const s0=view.s,s=clampS(s0*f),wx=(px-view.tx)/s0,wy=(py-view.ty)/s0;view={s,tx:px-wx*s,ty:py-wy*s};draw();updateZoom()}
 function zoomAim(f){const p=toScreen(aim);zoomAround(f,p.x,p.y);keepAimVisible();draw()}
-function subText(){const d=def();return `${d.name} · ${d.view}${src?' · '+fmt(view.s/fitScale(),1)+'×':''}${rot?` · ${fmt(rot,1)}°`:''}${calibrated?' · olovnice ✓':''}`}
+function subText(){const d=def();return `${d.name} · ${d.view}${src?' · '+fmt(view.s/fitScale(),1)+'×':''}${rot?` · ${fmt(rot,1)}°`:''}${calibMode==='auto'?' · vyrovnáno ✓':(calibrated?' · olovnice ✓':'')}`}
 function updateZoom(){$('stepSub').textContent=subText()}
 function lockX(){if(plumbMode)return null;const k=selected||nextKey();return(k&&partner[k]&&pts[partner[k]])?pts[partner[k]].x:null}
 function jumpToShoulder(){const k=nextKey(),d=def();if(!k||!partner[k]||!pts[partner[k]])return;const a=pts[partner[k]],t=pts[d.top];
@@ -514,22 +514,23 @@ function setRotation(nr){
   rot=nr;snapShoulders();rebuildBase();refresh();
 }
 function newImage(c,demo){
-  src=c;isDemo=demo;rot=0;calibrated=false;selected=null;selOrig=null;plumbMode=false;plumbPts=[];
+  src=c;isDemo=demo;rot=0;calibrated=false;calibMode=false;levelReview=false;autoLines=[];tiltDeg=null;origSrc=null;levelInfo=null;selected=null;selOrig=null;plumbMode=false;plumbPts=[];
   rebuildBase();aim={x:base.width/2,y:base.height*0.3};lastStepKey=null;fit();
 }
 function loadDemo(){const d=makeDemo(type);series=[];newImage(d.canvas,true);pts=d.pts;hist=def().pts.map(p=>p.k);refresh()}
 function onFile(e){
   const f=e.target.files&&e.target.files[0];if(!f)return;
-  const url=URL.createObjectURL(f);const im=new Image();
+  let f35=null;const url=URL.createObjectURL(f);const im=new Image();
+  const go=()=>{im.src=url};f.arrayBuffer?f.arrayBuffer().then(b=>{f35=exifFocal35(b);go()},go):go();
   im.onload=()=>{
     const max=3000,s=Math.min(1,max/Math.max(im.naturalWidth,im.naturalHeight));
     const c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*s);c.height=Math.round(im.naturalHeight*s);
     c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(url);
-    c._origMpx=im.naturalWidth*im.naturalHeight/1e6;
-    if(isDemo)series=[];pts={};hist=[];newImage(c,false);closeSheet();startPlumb(true);
+    c._origMpx=im.naturalWidth*im.naturalHeight/1e6;c._f35=f35;
+    if(isDemo)series=[];pts={};hist=[];newImage(c,false);closeSheet();autoLevel();
   };
   im.onerror=()=>{URL.revokeObjectURL(url);flash('Tento soubor se nepodařilo otevřít jako obrázek. Zkuste fotografii JPG nebo PNG.',true)};
-  im.src=url;e.target.value='';
+  e.target.value='';
 }
 $('fileLib').addEventListener('change',onFile);$('fileCam').addEventListener('change',onFile);
 $('camBtn').onclick=()=>$('fileCam').click();$('libBtn').onclick=()=>$('fileLib').click();
@@ -537,6 +538,9 @@ $('camBtn').onclick=()=>$('fileCam').click();$('libBtn').onclick=()=>$('fileLib'
 /* ---------- kreslení ---------- */
 function drawAim(g){
   if(!src)return;
+  if(levelReview&&autoLines.length){const u=DPR();g.save();g.setLineDash([10*u,7*u]);g.lineWidth=2.2*u;g.strokeStyle='rgba(245,201,92,.95)';
+    autoLines.forEach(L=>{const a=toScreen(L.a),b=toScreen(L.b);g.setLineDash([]);g.lineWidth=5*u;g.strokeStyle='rgba(13,16,23,.7)';g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke();g.setLineDash([9*u,6*u]);g.lineWidth=2.5*u;g.strokeStyle='#f5c95c';g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke()});g.restore()}
+  if(levelReview)return;
   if(plumbMode&&plumbPts.length===1){const a=toScreen(plumbPts[0]),b=toScreen(aim),u=DPR();g.save();g.setLineDash([8*u,6*u]);g.lineWidth=2*u;g.strokeStyle='#f5c95c';g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke();g.restore()}const p=toScreen(aim),u=DPR(),col=plumbMode?'#f5c95c':(selected?'#f5c95c':'#5ec8f2');
   g.save();g.shadowColor='rgba(0,0,0,.75)';g.shadowBlur=3*u;g.lineWidth=1.4*u;g.strokeStyle='rgba(255,255,255,.95)';
   [32,19,8].forEach(r=>{g.beginPath();g.arc(p.x,p.y,r*u,0,Math.PI*2);g.stroke()});
@@ -612,11 +616,115 @@ function hold(btn,fn){let t=null,r=null;
 $('zfit').onclick=()=>{fit();keepAimVisible();draw()};
 function setPressed(id,v){$(id).setAttribute('aria-pressed',String(v))}
 $('eye').onclick=()=>{hideOverlay=!hideOverlay;setPressed('eye',hideOverlay);$('eye').querySelector('use').setAttribute('href',hideOverlay?'#i-eyeoff':'#i-eye');draw()};
-function startPlumb(on){if(!src)return;if(selected)cancelEdit();plumbMode=on;plumbPts=[];setPressed('plumb',on);lastStepKey=null;refresh()}
-$('plumb').onclick=()=>startPlumb(!plumbMode);
+function startPlumb(on){if(!src)return;if(selected)cancelEdit();if(on)endReview();plumbMode=on;plumbPts=[];setPressed('plumb',on);lastStepKey=null;refresh()}
+/* ---------- automatické vyrovnání: úběžník svislic → natočení (roll) a sklon (pitch) telefonu ---------- */
+let calibMode=false,levelReview=false,autoLines=[],tiltDeg=null,origSrc=null,levelInfo=null;
+function eig3min(M){ // vlastní vektor nejmenšího vlastního čísla symetrické 3×3 (Jacobi)
+  const A=M.map(r=>r.slice()),V=[[1,0,0],[0,1,0],[0,0,1]];
+  for(let sweep=0;sweep<30;sweep++){let off=0;for(let p=0;p<3;p++)for(let q=p+1;q<3;q++)off+=A[p][q]*A[p][q];if(off<1e-18)break;
+    for(let p=0;p<3;p++)for(let q=p+1;q<3;q++){if(Math.abs(A[p][q])<1e-20)continue;
+      const th=(A[q][q]-A[p][p])/(2*A[p][q]),t=Math.sign(th||1)/(Math.abs(th)+Math.sqrt(th*th+1)),c=1/Math.sqrt(t*t+1),s=t*c;
+      for(let k=0;k<3;k++){const akp=A[k][p],akq=A[k][q];A[k][p]=c*akp-s*akq;A[k][q]=s*akp+c*akq}
+      for(let k=0;k<3;k++){const apk=A[p][k],aqk=A[q][k];A[p][k]=c*apk-s*aqk;A[q][k]=s*apk+c*aqk}
+      for(let k=0;k<3;k++){const vkp=V[k][p],vkq=V[k][q];V[k][p]=c*vkp-s*vkq;V[k][q]=s*vkp+c*vkq}}}
+  let m=0;for(let i=1;i<3;i++)if(A[i][i]<A[m][m])m=i;return[V[0][m],V[1][m],V[2][m]];
+}
+function detectVP(img){
+  const S=Math.min(1,800/Math.max(img.width,img.height)),W=Math.round(img.width*S),H=Math.round(img.height*S),cx=W/2,cy=H/2;
+  const cvs=document.createElement('canvas');cvs.width=W;cvs.height=H;const g=cvs.getContext('2d',{willReadFrequently:true});g.drawImage(img,0,0,W,H);
+  const d=g.getImageData(0,0,W,H).data,L=new Float32Array(W*H);
+  for(let i=0;i<W*H;i++)L[i]=0.299*d[i*4]+0.587*d[i*4+1]+0.114*d[i*4+2];
+  const ylim=Math.round(H*0.64); // spodní část bývá podlaha s pruhy, které míří k horizontu – vynechat
+  let E=[];
+  for(let y=1;y<ylim;y++)for(let x=1;x<W-1;x++){const i=y*W+x;
+    const gx=(L[i-W+1]+2*L[i+1]+L[i+W+1])-(L[i-W-1]+2*L[i-1]+L[i+W-1]),gy=(L[i+W-1]+2*L[i+W]+L[i+W+1])-(L[i-W-1]+2*L[i-W]+L[i-W+1]);
+    const ax=Math.abs(gx);if(ax>40&&ax>1.8*Math.abs(gy))E.push(ax,x-cx,y-cy)}
+  const MAXE=60000;if(E.length>3*MAXE){const m=[];for(let k=0;k<E.length;k+=3)m.push(E[k]);m.sort((a,b)=>b-a);const thr=m[MAXE];const f=[];for(let k=0;k<E.length;k+=3)if(E[k]>=thr)f.push(E[k],E[k+1],E[k+2]);E=f}
+  const NA=301,amin=-15,st=0.1,T=new Float32Array(NA);for(let a=0;a<NA;a++)T[a]=Math.tan((amin+a*st)*Math.PI/180);
+  const off=Math.ceil(H/2*Math.tan(15*Math.PI/180))+2,WB=W+2*off,acc=new Float32Array(NA*WB);
+  for(let k=0;k<E.length;k+=3){const x=E[k+1],y=E[k+2];for(let a=0;a<NA;a++){const b=Math.round(x-y*T[a]+cx)+off;acc[a*WB+b]++}}
+  // vrcholy = jednotlivé přímky
+  const peaks=[],minV=H*0.09,A=acc.slice();
+  for(let n=0;n<18;n++){let bi=0,bv=0;for(let i=0;i<A.length;i++)if(A[i]>bv){bv=A[i];bi=i}if(bv<minV)break;
+    const a=Math.floor(bi/WB),b=bi%WB;peaks.push({t:T[a],c:b-off-cx,v:bv});
+    for(let da=-12;da<=12;da++)for(let db=-7;db<=7;db++){const aa=a+da,bb=b+db;if(aa>=0&&aa<NA&&bb>=0&&bb<WB)A[aa*WB+bb]=0}}
+  // podpora přímek: rozsah v ose y, souvislost
+  peaks.forEach(p=>{p.n=0;p.sy=0;p.y0=1e9;p.y1=-1e9});
+  for(let k=0;k<E.length;k+=3){const x=E[k+1],y=E[k+2];for(const p of peaks)if(Math.abs(x-(p.c+y*p.t))<1.6){p.n++;p.sy+=y;if(y<p.y0)p.y0=y;if(y>p.y1)p.y1=y}}
+  let lines=peaks.filter(p=>p.n>0&&(p.y1-p.y0)>=H*0.11&&p.n>=(p.y1-p.y0)*0.55).map(p=>({t:p.t,c:p.c,w:p.n,ym:p.sy/p.n,len:p.y1-p.y0}));
+  if(!lines.length)return{ok:false};
+  // homogenní přímky v normovaných souřadnicích (u=x/H, v=y/H): u - t·v - c/H = 0
+  const hl=l=>{const a=1,b=-l.t,cc=-l.c/H,nn=Math.hypot(a,b);return[a/nn,b/nn,cc/nn]};
+  const cross=(p,q)=>[p[1]*q[2]-p[2]*q[1],p[2]*q[0]-p[0]*q[2],p[0]*q[1]-p[1]*q[0]];
+  const resid=(l,vp)=>{const xm=(l.c+l.ym*l.t)/H,ym=l.ym/H;let dx,dy;
+    if(Math.abs(vp[2])<1e-9){dx=vp[0];dy=vp[1]}else{dx=vp[0]/vp[2]-xm;dy=vp[1]/vp[2]-ym}
+    if(dy<0){dx=-dx;dy=-dy}return Math.abs(Math.atan2(dx,dy)-Math.atan(l.t))*180/Math.PI};
+  const plausible=vp=>{let dx,dy;if(Math.abs(vp[2])<1e-9){dx=vp[0];dy=vp[1]}else{dx=vp[0]/vp[2];dy=vp[1]/vp[2];if(Math.hypot(dx,dy)<1.3)return false}
+    if(dy<0){dx=-dx;dy=-dy}return Math.abs(Math.atan2(dx,dy))*180/Math.PI<12};
+  const cands=[];const HL=lines.map(hl);
+  for(let i=0;i<lines.length;i++){cands.push([lines[i].t,1,0]);for(let j=i+1;j<lines.length;j++)cands.push(cross(HL[i],HL[j]))}
+  let best=null,bs=-1;
+  for(const vp of cands){if(!plausible(vp))continue;let s=0;for(const l of lines)if(resid(l,vp)<0.35)s+=l.w*Math.min(1,l.len/(H*0.3));if(s>bs){bs=s;best=vp}}
+  if(!best)return{ok:false};
+  let inl=lines.filter(l=>resid(l,best)<0.35);
+  let vp=best;
+  if(inl.length>=2){const M=[[0,0,0],[0,0,0],[0,0,0]];inl.forEach(l=>{const h=hl(l);for(let r=0;r<3;r++)for(let c=0;c<3;c++)M[r][c]+=l.w*h[r]*h[c]});
+    const v2=eig3min(M);if(plausible(v2))vp=v2;inl=lines.filter(l=>resid(l,vp)<0.5)}
+  const conf=inl.reduce((s,l)=>s+l.len,0)/H;
+  // VP v normovaných souřadnicích → směr, vzdálenost (v násobcích výšky obrázku)
+  let dx,dy,Dn;if(Math.abs(vp[2])<1e-9||Math.hypot(vp[0]/vp[2],vp[1]/vp[2])>200){dx=vp[0];dy=vp[1];Dn=Infinity}else{dx=vp[0]/vp[2];dy=vp[1]/vp[2];Dn=Math.hypot(dx,dy)}
+  let sign=1;if(dy<0){dx=-dx;dy=-dy;sign=-1}
+  const roll=Math.atan2(dx,dy)*180/Math.PI;
+  return{ok:conf>=0.2,roll,Dn:sign*Dn,lines:inl.map(l=>({y0:l.ym-l.len/2,y1:l.ym+l.len/2,l})).map(({y0,y1,l})=>({x0:(l.c+y0*l.t)/S+img.width/2,y0:y0/S+img.height/2,x1:(l.c+y1*l.t)/S+img.width/2,y1:y1/S+img.height/2})),conf,n:inl.length};
+}
+function exifFocal35(buf){try{const v=new DataView(buf);if(v.getUint16(0)!==0xFFD8)return null;let o=2;
+  while(o<v.byteLength-4){const m=v.getUint16(o),len=v.getUint16(o+2);if(m===0xFFE1&&v.getUint32(o+4)===0x45786966){const t=o+10,le=v.getUint16(t)===0x4949;
+      const u16=p=>v.getUint16(t+p,le),u32=p=>v.getUint32(t+p,le);const ifd=(p,want)=>{const n=u16(p);for(let i=0;i<n;i++){const e=p+2+i*12;if(u16(e)===want)return e}return null};
+      const e0=ifd(u32(4),0x8769);if(e0==null)return null;const ex=u32(e0+8);const ef=ifd(ex,0xA405);return ef!=null?u16(ef+8)||null:null}
+    if((m&0xFF00)!==0xFF00)break;o+=2+len}}catch(e){}return null}
+function levelImage(img,rollDeg,Dn,f35){ // vrátí nový snímek: otočený o roll a s korigovanou perspektivou
+  const W=img.width,H=img.height,cx=W/2,cy=H/2;
+  const R=document.createElement('canvas');R.width=W;R.height=H;const rg=R.getContext('2d');rg.fillStyle='#1b1f27';rg.fillRect(0,0,W,H);
+  rg.save();rg.translate(cx,cy);rg.rotate(rollDeg*Math.PI/180);rg.drawImage(img,-cx,-cy);rg.restore();
+  const f=(f35||26)/43.27*Math.hypot(W,H),D=Dn*H; // ohnisko a vzdálenost úběžníku v pixelech
+  let pitch=isFinite(D)?Math.atan(f/Math.abs(D))*180/Math.PI*Math.sign(D):0;
+  if(!isFinite(D)||Math.abs(pitch)<0.7||Math.abs(pitch)>28)return{canvas:R,pitch:0,fwd:p=>p};
+  const al=-Math.atan(f/D),sa=Math.sin(al),ca=Math.cos(al);
+  const fwd=(x,y)=>{const den=y*sa+f*ca;return{x:f*x/den,y:f*(y*ca-f*sa)/den}}; // centrované souřadnice
+  const yt=fwd(0,-cy).y,yb=fwd(0,cy).y,c0=fwd(0,0).y,k=H/(yb-yt); // zachovat výšku snímku
+  let xmax=0;[-cy,cy].forEach(y=>{xmax=Math.max(xmax,Math.abs(fwd(cx,y).x))});
+  const Wo=Math.min(Math.round(2*xmax*k),Math.round(W*1.35)),Ho=H,O=document.createElement('canvas');O.width=Wo;O.height=Ho;
+  const og=O.getContext('2d');og.fillStyle='#1b1f27';og.fillRect(0,0,Wo,Ho);og.imageSmoothingQuality='high';
+  for(let r=0;r<Ho;r++){const yp=(r+0.5)/k+yt,den=-yp*sa+f*ca,ys=f*(yp*ca+f*sa)/den+cy,sx=f/den/k; // zdrojový řádek a měřítko
+    if(ys<0||ys>=H)continue;let x0=cx-(Wo/2)*sx,x1=cx+(Wo/2)*sx,d0=0,d1=Wo;
+    if(x0<0){d0=(-x0)/sx;x0=0}if(x1>W){d1=Wo-(x1-W)/sx;x1=W}if(x1-x0<1||d1-d0<1)continue;
+    og.drawImage(R,x0,Math.floor(ys),x1-x0,1,d0,r,d1-d0,1)}
+  return{canvas:O,pitch,fwd:p=>{const q=fwd(p.x-cx,p.y-cy);return{x:q.x*k+Wo/2,y:(q.y-yt)*k}}};
+}
+function autoLevel(){
+  if(!src)return;if(selected)cancelEdit();plumbMode=false;plumbPts=[];setPressed('plumb',false);
+  const img=origSrc||src;let r;try{r=detectVP(img)}catch(e){r={ok:false}}
+  if(!r.ok){levelReview=false;autoLines=[];startPlumb(true);
+    flash('Svislé hrany se na fotce nepodařilo spolehlivě najít. Vyrovnejte ji podle olovnice ručně, nebo dejte Přeskočit.',true);return}
+  if(!origSrc)origSrc=src;
+  const out=levelImage(origSrc,r.roll,r.Dn,origSrc._f35);out.canvas._origMpx=origSrc._origMpx;
+  const th=r.roll*Math.PI/180,cx=origSrc.width/2,cy=origSrc.height/2,c=Math.cos(th),s=Math.sin(th);
+  const R=(x,y)=>{x-=cx;y-=cy;return out.fwd({x:cx+x*c-y*s,y:cy+x*s+y*c})};autoLines=r.lines.map(L=>({a:R(L.x0,L.y0),b:R(L.x1,L.y1)}));
+  const had=hist.length;src=out.canvas;rot=0;pts={};hist=[];selected=null;selOrig=null;
+  levelInfo={roll:r.roll,pitch:out.pitch,n:r.n};tiltDeg=null;calibMode='auto';calibrated=true;levelReview=true;lastStepKey=null;
+  rebuildBase();aim={x:base.width/2,y:base.height*0.3};fit();refresh();
+  if(had)flash('Fotka byla znovu vyrovnána, body je potřeba umístit znovu.',true);
+}
+function undoLevel(){if(!origSrc)return;src=origSrc;origSrc=null;rot=0;pts={};hist=[];levelInfo=null;calibMode=false;calibrated=false;endReview();
+  rebuildBase();aim={x:base.width/2,y:base.height*0.3};fit();refresh();flash('Automatické vyrovnání zrušeno – zobrazena původní fotka.')}
+function endReview(){levelReview=false;autoLines=[];lastStepKey=null}
+
+
+$('plumb').onclick=()=>{if(plumbMode)startPlumb(false);else autoLevel()};
 function plumbAngle(){const a=plumbPts[0],b=aim;let[p,q]=a.y<b.y?[a,b]:[b,a];const dy=q.y-p.y;return dy>1?Math.atan((q.x-p.x)/dy)*180/Math.PI:0}
 function plumbLabel(){$('stepName').textContent=`Dolní konec · odklon ${fmt(Math.abs(plumbAngle()),1)}°`}
 $('sec').onclick=()=>{
+  if(levelReview){startPlumb(true);return}
   if(plumbMode){startPlumb(false);flash(calibrated?'Vyrovnání ponecháno.':'Vyrovnání přeskočeno. Můžete ho kdykoli spustit tlačítkem Vyrovnat.');return}
   if(selected)$('delp_').click();
 };
@@ -634,10 +742,11 @@ function selectPoint(k){
 }
 $('ok').onclick=()=>{
   if(!src){$('fileCam').click();return}
+  if(levelReview){endReview();refresh();return}
   if(plumbMode){plumbPts.push({...aim});
     if(plumbPts.length===2){let[a,b]=plumbPts;if(a.y>b.y)[a,b]=[b,a];const dx=b.x-a.x,dy=b.y-a.y;
       if(dy<base.height*.08){plumbPts=[];refresh();flash('Body olovnice jsou příliš blízko. Zaměřte ji co nejvýš a co nejníž.',true);return}
-      const alpha=Math.atan(dx/dy)*180/Math.PI;plumbMode=false;plumbPts=[];setPressed('plumb',false);calibrated=true;lastStepKey=null;setRotation(rot+alpha);
+      const alpha=Math.atan(dx/dy)*180/Math.PI;plumbMode=false;plumbPts=[];setPressed('plumb',false);calibrated=true;calibMode='plumb';tiltDeg=null;lastStepKey=null;setRotation(rot+alpha);
       flash(`Snímek vyrovnán podle olovnice (${fmt(alpha,2)}°).`);return}
     lastStepKey=null;refresh();return}
   if(selected){selected=null;selOrig=null;lastStepKey=null;refresh();flash('Poloha bodu potvrzena.');return}
@@ -645,6 +754,7 @@ $('ok').onclick=()=>{
   place(k,aim);hist.push(k);jumpToShoulder();refresh();
 };
 $('undo').onclick=()=>{
+  if(levelReview){undoLevel();return}
   if(selected){cancelEdit();refresh();return}
   if(plumbMode){if(plumbPts.length){plumbPts.pop();lastStepKey=null;refresh()}else startPlumb(false);return}
   const k=hist.pop();if(k){aim={...pts[k]};delete pts[k];lastStepKey=null;keepAimVisible();refresh()}
@@ -672,7 +782,7 @@ $('demo').onclick=()=>{loadDemo();closeSheet()};
 
 /* ---------- stav a nápověda ---------- */
 let toastT=null;
-function flash(t,warn){const el=$('toast');el.textContent=t;el.classList.toggle('warn',!!warn);el.classList.remove('hide');
+function flash(t,warn){const el=$('toast');el.textContent=t;el.classList.toggle('tw',!!warn);el.classList.remove('hide');
   clearTimeout(toastT);toastT=setTimeout(()=>el.classList.add('hide'),warn?6000:4200)}
 $('toast').onclick=()=>$('toast').classList.add('hide');
 function renderSteps(){
@@ -687,6 +797,10 @@ function hint(){
   let key,desc,warn=false;
   const sec=$('sec');sec.hidden=true;sec.classList.remove('danger');
   if(!src){n.textContent='📷';$('stepName').textContent='Pořiďte snímek';txt.textContent='Vyfotit';key='nosrc';desc='Začněte fotkou: Vyfotit, nebo vyberte z Galerie.'}
+  else if(levelReview){const I=levelInfo||{roll:rot,pitch:0};n.textContent='⊥';n.classList.add('done');
+    $('stepName').textContent=`Vyrovnáno ${fmt(Math.abs(I.roll),1)}°${I.pitch?` · sklon ${fmt(Math.abs(I.pitch),1)}°`:''}`;
+    txt.textContent='Pokračovat';key='review';sec.hidden=false;sec.textContent='Olovnicí ručně';
+    desc=`Fotka je srovnaná podle ${I.n>1?I.n+' svislých hran':'svislé hrany'} v záběru (žluté čáry)${I.pitch?` a opravená perspektiva – telefon byl skloněný o ${fmt(Math.abs(I.pitch),1)}° ${I.pitch>0?'dolů':'nahoru'}`:''}. Sedí-li čáry na hranách dveří nebo olovnici, dejte Pokračovat. Zpět ukáže původní fotku.`}
   else if(plumbMode){n.textContent=`${plumbPts.length+1}/2`;n.classList.add('edit');
     if(plumbPts.length){plumbLabel()}else $('stepName').textContent='Horní konec olovnice';
     txt.textContent=plumbPts.length?'Potvrdit dolní bod':'Potvrdit horní bod';ok.classList.add('edit');key='plumb'+plumbPts.length;
@@ -706,7 +820,7 @@ function hint(){
 function refresh(){
   $('demoBadge').hidden=!isDemo;$('chips').hidden=plumbMode;
   draw();renderResult();renderSteps();hint();updateZoom();
-  $('undo').disabled=!(hist.length||selected||plumbMode);$('plumb').disabled=!src;$('zfit').disabled=!src;
+  $('undo').disabled=!(hist.length||selected||plumbMode||levelReview);$('plumb').disabled=!src;$('zfit').disabled=!src;
   $('tabVal').textContent=lastRes?fmt(lastRes.total):(series.length?`série ${series.length}`:'');
 }
 
@@ -791,7 +905,8 @@ function qualityWarnings(r){
   const w=[];
   if(!src)return w;
   if(!isDemo&&src._origMpx&&src._origMpx<2)w.push('Snímek má méně než 2 Mpx. Použijte vyšší rozlišení, body se pak hledají přesněji.');
-  if(!calibrated)w.push('Snímek není vyrovnaný podle olovnice. Výškové indexy (HDI) jsou na náklon citlivé – náklon 1° posune výsledek u širokého trupu o několik desetin bodu.');
+  if(tiltDeg!=null&&Math.abs(tiltDeg)>1.5)w.push(`Svislé linie se na fotce sbíhají (o ${fmt(Math.abs(tiltDeg),1)}°) – telefon byl nakloněný dopředu nebo dozadu. Výškové poměry mohou být mírně zkreslené; příště držte telefon svisle v polovině výšky postavy.`);
+  if(!calibrated)w.push('Snímek není vyrovnaný. Výškové indexy (HDI) jsou na náklon citlivé – náklon 1° posune výsledek u širokého trupu o několik desetin bodu.');
   if(r&&r.e<base.height*.3)w.push('Trup zabírá jen malou část snímku. Přibližte (ne širokoúhlým objektivem) nebo ořízněte, aby šly body umístit přesněji.');
   const miss=PROTO.filter(p=>!proto[p.k]);
   if(miss.length)w.push(`Protokol focení: neodškrtnuto ${miss.length} z ${PROTO.length} bodů. Výsledek nebude označen jako změřený podle standardizovaného protokolu.`);
@@ -860,7 +975,7 @@ function resultText(){
   const s=summary();if(!s)return'';const dt=$('pdate').value?new Date($('pdate').value).toLocaleDateString('cs-CZ'):new Date().toLocaleDateString('cs-CZ');
   const head=s.st.n>1?`${def().name} ${fmt(s.st.m)} (průměr ze ${s.st.n} měření, SD ${fmt(s.st.sd)}, rozpětí ${fmt(s.st.min)}–${fmt(s.st.max)})`:`${def().name} ${fmt(s.st.m)} (1 měření)`;
   const parts=`Poslední měření: ${s.parts.map(p=>`${p.c.replace('‑','-')} ${fmt(p.v)}`).join('; ')}; ${s.parts.slice(3).map(p=>p.dir).join(', ')}.`;
-  const cond=[ $('dist').value?`vzdálenost ${String($('dist').value).replace('.',',')} m`:'', $('camh').value?`výška objektivu ${$('camh').value} cm`:'', calibrated?'snímek vyrovnán podle olovnice':'' ].filter(Boolean).join(', ');
+  const cond=[ $('dist').value?`vzdálenost ${String($('dist').value).replace('.',',')} m`:'', $('camh').value?`výška objektivu ${$('camh').value} cm`:'', calibMode==='auto'?`snímek automaticky vyrovnán podle svislých hran${levelInfo&&levelInfo.pitch?` vč. korekce perspektivy (sklon telefonu ${fmt(Math.abs(levelInfo.pitch),1)}°)`:''}`:(calibrated?'snímek vyrovnán podle olovnice':'') ].filter(Boolean).join(', ');
   const cs=compatSet(),compat=(type==='POTSI'&&cs.length)?` Pro srovnání s PotsiApp (střední čára přes C7): ${fmt(stats(cs).m)}.`:'';
   return `${head}.${compat} ${parts} Fotogrammetrie ${def().view}, ${dt}${protoOk()?', standardizovaný protokol (Stoliński 2017)':', protokol focení nedodržen v plném rozsahu'}${cond?`; ${cond}`:''}.${$('examiner').value?` Měřil(a): ${$('examiner').value}.`:''}`;
 }
@@ -873,7 +988,7 @@ $('save').onclick=()=>{
   const s=summary();if(!s)return;
   const full=renderFull(),th=document.createElement('canvas'),k=120/full.height;th.width=Math.round(full.width*k);th.height=120;th.getContext('2d').drawImage(full,0,0,th.width,th.height);
   saved.push({type,name:$('pname').value.trim()||(isDemo?'Ukázka':'Bez jména'),date:$('pdate').value,total:s.st.m,n:s.st.n,sd:s.st.sd,compat:(type==='POTSI'&&compatSet().length)?stats(compatSet()).m:null,
-    proto:protoOk(),calibrated,dist:$('dist').value,camh:$('camh').value,examiner:$('examiner').value.trim(),thumb:th.toDataURL('image/jpeg',.7),demo:isDemo});
+    proto:protoOk(),calibrated:calibMode||calibrated,dist:$('dist').value,camh:$('camh').value,examiner:$('examiner').value.trim(),thumb:th.toDataURL('image/jpeg',.7),demo:isDemo});
   series=[];pts={};hist=[];
   $('saveToast').textContent='Uloženo do přehledu níže';setTimeout(()=>$('saveToast').textContent='',2500);refresh();renderSaved();
 };
@@ -890,7 +1005,7 @@ function renderSaved(){
       const cls=within?'same':(dv>0?'up':'down');
       const lbl=lim===null?'chyba měření u ATSI není číselně publikována – posuzujte opatrně':(within?`v rámci chyby měření (±${fmt(lim)})`:(dv>0?'zhoršení nad chybu měření':'zlepšení nad chybu měření'));
       delta=`<span class="delta ${cls}">${dv>0?'+':''}${fmt(dv)} od ${first.date?new Date(first.date).toLocaleDateString('cs-CZ'):'1. měření'} · ${lbl}</span>`}
-    const cond=[m.compat!=null?`PotsiApp var. ${fmt(m.compat)}`:'',m.n>1?`průměr z ${m.n}`:'1 měření',m.proto?'protokol ✓':'protokol neúplný',m.calibrated?'olovnice ✓':'',m.dist?`${String(m.dist).replace('.',',')} m`:'',m.camh?`${m.camh} cm`:'',m.examiner].filter(Boolean).join(' · ');
+    const cond=[m.compat!=null?`PotsiApp var. ${fmt(m.compat)}`:'',m.n>1?`průměr z ${m.n}`:'1 měření',m.proto?'protokol ✓':'protokol neúplný',m.calibrated==='auto'?'vyrovnáno ✓':(m.calibrated?'olovnice ✓':''),m.dist?`${String(m.dist).replace('.',',')} m`:'',m.camh?`${m.camh} cm`:'',m.examiner].filter(Boolean).join(' · ');
     return `<div class="sv"><img src="${m.thumb}" alt=""><div><div class="t">${esc(m.name)}</div><div class="m">${m.type} · ${m.date?new Date(m.date).toLocaleDateString('cs-CZ'):'bez data'}${m.demo?' · ukázka':''}</div><div class="m">${esc(cond)}</div></div><div class="n">${fmt(m.total)}${delta}</div></div>`}).join('');
 }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));

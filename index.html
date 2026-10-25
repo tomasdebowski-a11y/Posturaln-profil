@@ -22,7 +22,7 @@
   --sapphire:#1f4fa3; --sapphire-soft:#e5ecf9; --gold:#b9861d; --gold-soft:#f7eed7;
   --ok:#2f7d4f; --ok-soft:#e3f2e8; --warn:#b4541a; --warn-soft:#fbeadf;
   --stage:#0d1017; --glass:rgba(20,24,34,.58); --glass-line:rgba(255,255,255,.16); --on-glass:#ffffff; --on-glass-dim:rgba(255,255,255,.62);
-  --aim:#5ec8f2; --pt:#f5c95c;
+  --aim:#3dff6e; --pt:#f5c95c;
   --f-ui:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-num:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
 }
@@ -56,7 +56,7 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 .gbtn:active,.tool:active{background:rgba(255,255,255,.22)}
 
 /* loupe a toast */
-#loupe{position:absolute;top:calc(112px + env(safe-area-inset-top,0px));left:12px;width:132px;height:132px;border-radius:50%;border:2px solid var(--pt);box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:none;background:#000}
+#loupe{position:absolute;top:calc(112px + env(safe-area-inset-top,0px));left:12px;width:132px;height:132px;border-radius:50%;border:2px solid #3dff6e;box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:none;background:#000}
 #loupe.right{left:auto;right:12px}
 .toast{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(144px + env(safe-area-inset-bottom,0px));width:min(92%,520px);border-radius:14px;padding:9px 13px;font-size:.86rem;line-height:1.35;text-align:center;cursor:pointer;transition:opacity .25s}
 .toast.hide{opacity:0;pointer-events:none}
@@ -92,6 +92,18 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 .app.min .mini{display:flex}
 .btnfocus:focus-visible,.tool:focus-visible,.gbtn:focus-visible,.chip:focus-visible,.okbtn:focus-visible{outline:2px solid var(--pt);outline-offset:2px}
 
+/* fotoaparát */
+.cam{position:absolute;inset:0;background:#000;z-index:30}
+#camVideo,#camOver{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+#camOver{pointer-events:none}
+.camtop{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);border-radius:16px;padding:8px 14px;text-align:center;display:grid;gap:2px;min-width:240px;max-width:calc(100% - 20px)}
+.camtop b{font-size:.95rem}
+.camread{font:500 .8rem var(--f-num);color:var(--on-glass-dim)}
+.camread b{color:#fff}
+.cambar{position:absolute;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-around;align-items:center}
+.shutter{width:78px;height:78px;border-radius:50%;border:4px solid #fff;background:rgba(255,255,255,.25);cursor:pointer;box-shadow:0 0 0 3px rgba(0,0,0,.35);transition:background .15s}
+.shutter.ok{background:#3dff6e}.shutter.near{background:#ffd23d}.shutter.far{background:#ff5a4e}
+.shutter:active{transform:scale(.95)}
 /* panel s výsledky */
 .sheet{position:absolute;inset:0;background:rgba(5,8,14,.45);display:flex;align-items:flex-end;justify-content:center;touch-action:none}
 .card{width:min(100%,680px);height:min(88%,900px);background:var(--bg);border-radius:20px 20px 0 0;display:flex;flex-direction:column;overflow:hidden;color:var(--ink);-webkit-user-select:text;user-select:text;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
@@ -230,6 +242,16 @@ details p{margin:6px 0;color:var(--muted)}
     <button class="gbtn glass" id="miniOk" aria-label="Umístit bod" style="color:var(--pt)"><svg class="i"><use href="#i-check"/></svg></button>
   </div>
 
+  <div class="cam" id="cam" hidden>
+    <video id="camVideo" playsinline muted autoplay></video>
+    <canvas id="camOver"></canvas>
+    <div class="camtop glass"><b id="camStatus">Narovnejte telefon</b><span class="camread" id="camRead">—</span></div>
+    <div class="cambar">
+      <button class="gbtn glass" id="camClose" aria-label="Zavřít fotoaparát">✕</button>
+      <button class="shutter" id="shutter" aria-label="Vyfotit"></button>
+      <button class="gbtn glass" id="camLib" aria-label="Vybrat z galerie"><svg class="i"><use href="#i-img"/></svg></button>
+    </div>
+  </div>
   <input id="fileLib" type="file" accept="image/*" hidden>
   <input id="fileCam" type="file" accept="image/*" capture="environment" hidden>
 
@@ -290,8 +312,8 @@ details p{margin:6px 0;color:var(--muted)}
       <div class="panel">
         <h2>Ovládání</h2>
         <ul class="help">
-          <li><b>1. Fotka</b> – Vyfotit, nebo vybrat z Galerie.</li>
-          <li><b>2. Vyrovnání</b> – proběhne samo: aplikace najde svislé linie v záběru (olovnici, zárubeň dveří, roh místnosti) a fotku podle nich srovná. Žluté čáry ukazují, podle čeho; když sedí, dejte Pokračovat. Jinak <b>Olovnicí ručně</b>: zaměřovač na horní konec olovnice, potvrdit, na dolní konec, potvrdit.</li>
+          <li><b>1. Fotka</b> – <b>Vyfotit</b> otevře fotoaparát s vodováhou: vodorovná čára a bublina ukazují náklon a sklon telefonu, spoušť zezelená, až je telefon rovně (náklon pod 0,5°, sklon pod 1°). Pacient má temenem a chodidly sedět na čárkovaných vodítkách. Fotku lze vybrat i z Galerie.</li>
+          <li><b>2. Vyrovnání</b> – u fotky z aplikace podle senzorů telefonu (a pro kontrolu podle hran), u fotky z galerie automaticky: aplikace najde svislé linie v záběru (olovnici, zárubeň dveří, roh místnosti) a fotku podle nich srovná. Žluté čáry ukazují, podle čeho; když sedí, dejte Pokračovat. Jinak <b>Olovnicí ručně</b>: zaměřovač na horní konec olovnice, potvrdit, na dolní konec, potvrdit.</li>
           <li><b>3. Body P1–P8</b> – zaměřovač posuňte na bod a potvrďte velkým tlačítkem. Po podpažní řase skočí zaměřovač nad ni a u ramene se posouvá jen nahoru a dolů – rameno leží podle metody na svislici z podpažní řasy. (Pořadí řasa → rameno se liší od PotsiApp.)</li>
           <li><b>Zaměřovač</b> posouváte jedním prstem kdekoli na fotce; neskočí pod prst, takže ho nezakryjete. Pomalý pohyb prstu = jemné doladění. Ťuknutím ho přesunete na dané místo.</li>
           <li><b>Dvěma prsty</b> fotku přibližujete a posouváte. Lišty se nepřibližují.</li>
@@ -364,7 +386,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.9.4.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.10.</p>
     </div>
     </div>
   </div>
@@ -494,7 +516,7 @@ function fit(){sizeCanvas();if(!src)return;const r=safeRect(),s=fitScale()*0.97;
 function clampS(s){return Math.max(fitScale()*0.5,Math.min(fitScale()*20,s))}
 function zoomAround(f,px,py){const s0=view.s,s=clampS(s0*f),wx=(px-view.tx)/s0,wy=(py-view.ty)/s0;view={s,tx:px-wx*s,ty:py-wy*s};draw();updateZoom()}
 function zoomAim(f){const p=toScreen(aim);zoomAround(f,p.x,p.y);keepAimVisible();draw()}
-function subText(){const d=def();return `${d.name} · ${d.view}${src?' · '+fmt(view.s/fitScale(),1)+'×':''}${rot?` · ${fmt(rot,1)}°`:''}${calibMode==='auto'?' · vyrovnáno ✓':(calibrated?' · olovnice ✓':'')}`}
+function subText(){const d=def();return `${d.name} · ${d.view}${src?' · '+fmt(view.s/fitScale(),1)+'×':''}${rot?` · ${fmt(rot,1)}°`:''}${calibMode==='plumb'?' · olovnice ✓':(calibMode?' · vyrovnáno ✓':(calibrated?' · olovnice ✓':''))}`}
 function updateZoom(){$('stepSub').textContent=subText()}
 function lockX(){if(plumbMode)return null;const k=selected||nextKey();return(k&&partner[k]&&pts[partner[k]])?pts[partner[k]].x:null}
 function jumpToShoulder(){const k=nextKey(),d=def();if(!k||!partner[k]||!pts[partner[k]])return;const a=pts[partner[k]],t=pts[d.top];
@@ -533,7 +555,7 @@ function onFile(e){
   e.target.value='';
 }
 $('fileLib').addEventListener('change',onFile);$('fileCam').addEventListener('change',onFile);
-$('camBtn').onclick=()=>$('fileCam').click();$('libBtn').onclick=()=>$('fileLib').click();
+$('camBtn').onclick=()=>openCam();$('libBtn').onclick=()=>$('fileLib').click();
 
 /* ---------- kreslení ---------- */
 function drawAim(g){
@@ -541,13 +563,13 @@ function drawAim(g){
   if(levelReview&&autoLines.length){const u=DPR();g.save();g.setLineDash([10*u,7*u]);g.lineWidth=2.2*u;g.strokeStyle='rgba(245,201,92,.95)';
     autoLines.forEach(L=>{const a=toScreen(L.a),b=toScreen(L.b);g.setLineDash([]);g.lineWidth=5*u;g.strokeStyle='rgba(13,16,23,.7)';g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke();g.setLineDash([9*u,6*u]);g.lineWidth=2.5*u;g.strokeStyle='#f5c95c';g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke()});g.restore()}
   if(levelReview)return;
-  if(plumbMode&&plumbPts.length===1){const a=toScreen(plumbPts[0]),b=toScreen(aim),u=DPR();g.save();g.setLineDash([8*u,6*u]);g.lineWidth=2*u;g.strokeStyle='#f5c95c';g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke();g.restore()}const p=toScreen(aim),u=DPR(),col=plumbMode?'#f5c95c':(selected?'#f5c95c':'#5ec8f2');
-  g.save();g.shadowColor='rgba(0,0,0,.75)';g.shadowBlur=3*u;g.lineWidth=1.4*u;g.strokeStyle='rgba(255,255,255,.95)';
-  [32,19,8].forEach(r=>{g.beginPath();g.arc(p.x,p.y,r*u,0,Math.PI*2);g.stroke()});
-  g.lineWidth=2*u;g.strokeStyle=col;g.beginPath();
-  [[0,-40,0,-4],[0,4,0,40],[-40,0,-4,0],[4,0,40,0]].forEach(([a,b,c,d])=>{g.moveTo(p.x+a*u,p.y+b*u);g.lineTo(p.x+c*u,p.y+d*u)});g.stroke();
-  if(lockX()!=null){g.shadowBlur=0;g.setLineDash([3*u,5*u]);g.strokeStyle='rgba(245,201,92,.9)';g.lineWidth=1.5*u;g.beginPath();g.moveTo(p.x,p.y-90*u);g.lineTo(p.x,p.y+90*u);g.stroke();g.setLineDash([])}
-  g.shadowBlur=0;g.fillStyle='#f5c95c';g.beginPath();g.arc(p.x,p.y,1.3*u,0,Math.PI*2);g.fill();g.restore();
+  if(plumbMode&&plumbPts.length===1){const a=toScreen(plumbPts[0]),b=toScreen(aim),u=DPR();g.save();g.setLineDash([8*u,6*u]);g.lineWidth=2*u;g.strokeStyle='#f5c95c';g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke();g.restore()}const p=toScreen(aim),u=DPR(),col=(plumbMode||selected)?'#ff4fd8':'#3dff6e',dark='rgba(0,0,0,.85)';
+  const two=(w,fn)=>{g.lineWidth=w+2.4*u;g.strokeStyle=dark;fn();g.stroke();g.lineWidth=w;g.strokeStyle=col;fn();g.stroke()};
+  g.save();g.lineCap='round';
+  [32,18].forEach(r=>two(1.4*u,()=>{g.beginPath();g.arc(p.x,p.y,r*u,0,Math.PI*2)}));
+  two(2*u,()=>{g.beginPath();[[0,-44,0,-5],[0,5,0,44],[-44,0,-5,0],[5,0,44,0]].forEach(([a,b,c,d])=>{g.moveTo(p.x+a*u,p.y+b*u);g.lineTo(p.x+c*u,p.y+d*u)})});
+  if(lockX()!=null){g.setLineDash([4*u,5*u]);two(1.4*u,()=>{g.beginPath();g.moveTo(p.x,p.y-100*u);g.lineTo(p.x,p.y-46*u);g.moveTo(p.x,p.y+46*u);g.lineTo(p.x,p.y+100*u)});g.setLineDash([])}
+  g.fillStyle=dark;g.beginPath();g.arc(p.x,p.y,2.2*u,0,Math.PI*2);g.fill();g.fillStyle=col;g.beginPath();g.arc(p.x,p.y,1.1*u,0,Math.PI*2);g.fill();g.restore();
 }
 function draw(){
   const g=ctx;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);
@@ -718,13 +740,91 @@ function autoLevel(){
 function undoLevel(){if(!origSrc)return;src=origSrc;origSrc=null;rot=0;pts={};hist=[];levelInfo=null;calibMode=false;calibrated=false;endReview();
   rebuildBase();aim={x:base.width/2,y:base.height*0.3};fit();refresh();flash('Automatické vyrovnání zrušeno – zobrazena původní fotka.')}
 function endReview(){levelReview=false;autoLines=[];lastStepKey=null}
+/* ---------- fotoaparát v aplikaci s vodováhou ---------- */
+let camStream=null,camRAF=0,upVec=null,upRaw=null,sensorOK=false,orientBound=false;
+const LEVEL_OK={roll:0.5,pitch:1.0},LEVEL_NEAR={roll:2,pitch:3};
+function onOrient(e){
+  if(e.beta==null||e.gamma==null)return;sensorOK=true;
+  const b=e.beta*Math.PI/180,g=e.gamma*Math.PI/180;
+  let u={x:-Math.sin(g)*Math.cos(b),y:Math.sin(b),z:Math.cos(g)*Math.cos(b)}; // směr „nahoru“ v souřadnicích telefonu
+  const ang=((screen.orientation&&screen.orientation.angle)||window.orientation||0)*Math.PI/180;
+  if(ang){const c=Math.cos(ang),s=Math.sin(ang);u={x:u.x*c+u.y*s,y:-u.x*s+u.y*c,z:u.z}}
+  upRaw=u;upVec=upVec?{x:upVec.x*0.8+u.x*0.2,y:upVec.y*0.8+u.y*0.2,z:upVec.z*0.8+u.z*0.2}:u;
+}
+function levelFrom(u){ // náklon (roll) = korekce otočení snímku, sklon (pitch) = kladný, když objektiv míří dolů
+  const n=Math.hypot(u.x,u.y,u.z)||1;return{roll:-Math.atan2(u.x,u.y)*180/Math.PI,pitch:Math.asin(Math.max(-1,Math.min(1,u.z/n)))*180/Math.PI}}
+async function openCam(){
+  if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){$('fileCam').click();return}
+  let permP=null;try{if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==='function')permP=DeviceOrientationEvent.requestPermission()}catch(e){}
+  const camP=navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:3840},height:{ideal:3840}}});
+  try{camStream=await camP}catch(e){camStream=null;flash('Fotoaparát v aplikaci není dostupný – otevírám systémový fotoaparát (bez vodováhy).',true);$('fileCam').click();return}
+  try{if(permP)await permP}catch(e){}
+  if(!orientBound){window.addEventListener('deviceorientation',onOrient);orientBound=true}
+  upVec=null;sensorOK=false;
+  const v=$('camVideo');v.srcObject=camStream;try{await v.play()}catch(e){}
+  $('cam').hidden=false;closeSheet();camLoop();
+  setTimeout(()=>{if(!sensorOK)$('camStatus').textContent='Polohové senzory nejsou dostupné – vodováha nefunguje, fotka se vyrovná podle hran.'},1500);
+}
+function closeCam(){cancelAnimationFrame(camRAF);if(camStream)camStream.getTracks().forEach(t=>t.stop());camStream=null;$('cam').hidden=true}
+function camLoop(){
+  camRAF=requestAnimationFrame(camLoop);
+  const c=$('camOver'),r=c.getBoundingClientRect(),d=DPR(),W=Math.round(r.width*d),H=Math.round(r.height*d);if(c.width!==W||c.height!==H){c.width=W;c.height=H}
+  const g=c.getContext('2d');g.clearRect(0,0,W,H);
+  const v=$('camVideo'),vw=v.videoWidth||3,vh=v.videoHeight||4,s=Math.min(W/vw,H/vh),fw=vw*s,fh=vh*s,fx=(W-fw)/2,fy=(H-fh)/2;
+  // vodítka postavy: střed, hlava, chodidla
+  g.save();g.lineWidth=1.5*d;g.setLineDash([8*d,8*d]);g.strokeStyle='rgba(255,255,255,.55)';
+  g.beginPath();g.moveTo(fx+fw/2,fy);g.lineTo(fx+fw/2,fy+fh);g.moveTo(fx+fw*0.2,fy+fh*0.06);g.lineTo(fx+fw*0.8,fy+fh*0.06);g.moveTo(fx+fw*0.2,fy+fh*0.95);g.lineTo(fx+fw*0.8,fy+fh*0.95);g.stroke();g.restore();
+  g.fillStyle='rgba(255,255,255,.7)';g.font=`600 ${11*d}px "IBM Plex Sans",sans-serif`;g.textAlign='center';
+  g.fillText('temeno',fx+fw/2,fy+fh*0.06-6*d);g.fillText('chodidla',fx+fw/2,fy+fh*0.95+16*d);
+  const sh=$('shutter');
+  if(!upVec){sh.className='shutter';$('camRead').textContent='—';return}
+  const L=levelFrom(upVec),ok=Math.abs(L.roll)<LEVEL_OK.roll&&Math.abs(L.pitch)<LEVEL_OK.pitch,near=Math.abs(L.roll)<LEVEL_NEAR.roll&&Math.abs(L.pitch)<LEVEL_NEAR.pitch;
+  const col=ok?'#3dff6e':(near?'#ffd23d':'#ff5a4e');
+  // umělý horizont přes celou šířku
+  const cx=W/2,cy=H/2,len=W*0.42,a=L.roll*Math.PI/180;
+  g.save();g.translate(cx,cy);g.rotate(-a);g.lineCap='round';
+  g.strokeStyle='rgba(0,0,0,.6)';g.lineWidth=7*d;g.beginPath();g.moveTo(-len,0);g.lineTo(-40*d,0);g.moveTo(40*d,0);g.lineTo(len,0);g.stroke();
+  g.strokeStyle=col;g.lineWidth=3*d;g.beginPath();g.moveTo(-len,0);g.lineTo(-40*d,0);g.moveTo(40*d,0);g.lineTo(len,0);g.stroke();g.restore();
+  // pevná vodorovná značka
+  g.strokeStyle='rgba(255,255,255,.8)';g.lineWidth=1.5*d;g.beginPath();g.moveTo(cx-len,cy);g.lineTo(cx-len+30*d,cy);g.moveTo(cx+len-30*d,cy);g.lineTo(cx+len,cy);g.stroke();
+  // bublina: posun = sklon (svisle) a náklon (vodorovně)
+  const R=34*d,bx=cx+Math.max(-1,Math.min(1,L.roll/4))*R*1.6,by=cy+Math.max(-1,Math.min(1,-L.pitch/6))*R*1.6;
+  g.strokeStyle='rgba(255,255,255,.85)';g.lineWidth=1.5*d;g.beginPath();g.arc(cx,cy,R,0,Math.PI*2);g.stroke();
+  g.beginPath();g.arc(cx,cy,9*d,0,Math.PI*2);g.stroke();
+  g.fillStyle=col;g.strokeStyle='rgba(0,0,0,.7)';g.lineWidth=2*d;g.beginPath();g.arc(bx,by,8*d,0,Math.PI*2);g.fill();g.stroke();
+  $('camRead').innerHTML=`náklon <b>${fmt(Math.abs(L.roll),1)}°</b> · sklon <b>${fmt(Math.abs(L.pitch),1)}° ${L.pitch>0.05?'dolů':(L.pitch<-0.05?'nahoru':'')}</b>`;
+  $('camStatus').textContent=ok?'Rovně – můžete fotit':(Math.abs(L.pitch)>=LEVEL_OK.pitch?(L.pitch>0?'Nakloňte horní hranu telefonu od sebe':'Nakloňte horní hranu telefonu k sobě'):(L.roll>0?'Pootočte telefon doleva':'Pootočte telefon doprava'));
+  sh.className='shutter '+(ok?'ok':(near?'near':'far'));
+}
+async function grabFrame(){
+  const v=$('camVideo');
+  try{if(window.ImageCapture&&camStream){const ic=new ImageCapture(camStream.getVideoTracks()[0]);const blob=await ic.takePhoto();const bm=await createImageBitmap(blob);
+    const c=document.createElement('canvas');c.width=bm.width;c.height=bm.height;c.getContext('2d').drawImage(bm,0,0);return c}}catch(e){}
+  const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);return c;
+}
+async function shoot(){
+  if(!camStream)return;const u=upVec?{...upVec}:null;const frame=await grabFrame();closeCam();
+  if(!frame.width){flash('Snímek se nepodařilo pořídit, zkuste to znovu.',true);return}
+  frame._origMpx=frame.width*frame.height/1e6;frame._f35=26;
+  if(isDemo)series=[];pts={};hist=[];newImage(frame,false);
+  if(!u){autoLevel();return}
+  const L=levelFrom(u),f=26/43.27*Math.hypot(frame.width,frame.height),Dn=Math.abs(L.pitch)<0.05?Infinity:(f/Math.tan(L.pitch*Math.PI/180))/frame.height;
+  origSrc=frame;const out=levelImage(frame,L.roll,Dn,26);out.canvas._origMpx=frame._origMpx;
+  src=out.canvas;rot=0;
+  // kontrola podle hran ve vyrovnaném snímku
+  let chk=null;try{const r=detectVP(src);if(r.ok){const pr=isFinite(r.Dn)?Math.atan(f/(r.Dn*src.height))*180/Math.PI:0;chk={roll:r.roll,pitch:pr,n:r.n}}}catch(e){}
+  levelInfo={roll:L.roll,pitch:out.pitch||0,sensor:true,raw:L,chk};calibMode='sensor';calibrated=true;levelReview=true;autoLines=[];lastStepKey=null;
+  rebuildBase();aim={x:base.width/2,y:base.height*0.3};fit();refresh();
+}
+$('camClose').onclick=closeCam;$('shutter').onclick=shoot;$('camLib').onclick=()=>{closeCam();$('fileLib').click()};
+
 
 
 $('plumb').onclick=()=>{if(plumbMode)startPlumb(false);else autoLevel()};
 function plumbAngle(){const a=plumbPts[0],b=aim;let[p,q]=a.y<b.y?[a,b]:[b,a];const dy=q.y-p.y;return dy>1?Math.atan((q.x-p.x)/dy)*180/Math.PI:0}
 function plumbLabel(){$('stepName').textContent=`Dolní konec · odklon ${fmt(Math.abs(plumbAngle()),1)}°`}
 $('sec').onclick=()=>{
-  if(levelReview){startPlumb(true);return}
+  if(levelReview){if(levelInfo&&levelInfo.sensor)autoLevel();else startPlumb(true);return}
   if(plumbMode){startPlumb(false);flash(calibrated?'Vyrovnání ponecháno.':'Vyrovnání přeskočeno. Můžete ho kdykoli spustit tlačítkem Vyrovnat.');return}
   if(selected)$('delp_').click();
 };
@@ -741,7 +841,7 @@ function selectPoint(k){
   selected=k;selOrig={...pts[k]};aim={...pts[k]};keepAimVisible();lastStepKey=null;refresh();showLoupe();
 }
 $('ok').onclick=()=>{
-  if(!src){$('fileCam').click();return}
+  if(!src){openCam();return}
   if(levelReview){endReview();refresh();return}
   if(plumbMode){plumbPts.push({...aim});
     if(plumbPts.length===2){let[a,b]=plumbPts;if(a.y>b.y)[a,b]=[b,a];const dx=b.x-a.x,dy=b.y-a.y;
@@ -797,10 +897,12 @@ function hint(){
   let key,desc,warn=false;
   const sec=$('sec');sec.hidden=true;sec.classList.remove('danger');
   if(!src){n.textContent='📷';$('stepName').textContent='Pořiďte snímek';txt.textContent='Vyfotit';key='nosrc';desc='Začněte fotkou: Vyfotit, nebo vyberte z Galerie.'}
-  else if(levelReview){const I=levelInfo||{roll:rot,pitch:0};n.textContent='⊥';n.classList.add('done');
-    $('stepName').textContent=`Vyrovnáno ${fmt(Math.abs(I.roll),1)}°${I.pitch?` · sklon ${fmt(Math.abs(I.pitch),1)}°`:''}`;
-    txt.textContent='Pokračovat';key='review';sec.hidden=false;sec.textContent='Olovnicí ručně';
-    desc=`Fotka je srovnaná podle ${I.n>1?I.n+' svislých hran':'svislé hrany'} v záběru (žluté čáry)${I.pitch?` a opravená perspektiva – telefon byl skloněný o ${fmt(Math.abs(I.pitch),1)}° ${I.pitch>0?'dolů':'nahoru'}`:''}. Sedí-li čáry na hranách dveří nebo olovnici, dejte Pokračovat. Zpět ukáže původní fotku.`}
+  else if(levelReview){const I=levelInfo||{roll:rot,pitch:0};n.textContent='⊥';n.classList.add('done');txt.textContent='Pokračovat';key='review';sec.hidden=false;
+    if(I.sensor){const C=I.chk,bad=C&&(Math.abs(C.roll)>1||Math.abs(C.pitch)>2);
+      $('stepName').textContent=`Vyrovnáno senzory · ${fmt(Math.abs(I.raw.roll),1)}° · sklon ${fmt(Math.abs(I.raw.pitch),1)}°`;sec.textContent='Podle hran';
+      desc=`Fotka je srovnaná podle polohových senzorů telefonu (náklon ${fmt(Math.abs(I.raw.roll),1)}°, sklon ${fmt(Math.abs(I.raw.pitch),1)}°). `+(C?`Kontrola podle ${C.n} hran v místnosti: zbývá ${fmt(Math.abs(C.roll),1)}° náklonu a ${fmt(Math.abs(C.pitch),1)}° sklonu.`+(bad?' Hrany a senzory se rozcházejí – zkontrolujte fotku, případně dejte Podle hran.':' Sedí to.'):'Hrany pro kontrolu nebyly v záběru nalezeny.');warn=!!bad}
+    else{$('stepName').textContent=`Vyrovnáno ${fmt(Math.abs(I.roll),1)}°${I.pitch?` · sklon ${fmt(Math.abs(I.pitch),1)}°`:''}`;sec.textContent='Olovnicí ručně';
+      desc=`Fotka je srovnaná podle ${I.n>1?I.n+' svislých hran':'svislé hrany'} v záběru (žluté čáry)${I.pitch?` a opravená perspektiva – telefon byl skloněný o ${fmt(Math.abs(I.pitch),1)}° ${I.pitch>0?'dolů':'nahoru'}`:''}. Sedí-li čáry na hranách dveří nebo olovnici, dejte Pokračovat. Zpět ukáže původní fotku.`}}
   else if(plumbMode){n.textContent=`${plumbPts.length+1}/2`;n.classList.add('edit');
     if(plumbPts.length){plumbLabel()}else $('stepName').textContent='Horní konec olovnice';
     txt.textContent=plumbPts.length?'Potvrdit dolní bod':'Potvrdit horní bod';ok.classList.add('edit');key='plumb'+plumbPts.length;
@@ -859,9 +961,9 @@ function drawLoupe(w){
   const L=loupe.width,zoom=3,sw=(140/zoom)*d/view.s; // úsek snímku ve skutečných pixelech
   lctx.fillStyle='#000';lctx.fillRect(0,0,L,L);lctx.imageSmoothingQuality='high';
   lctx.drawImage(base,w.x-sw/2,w.y-sw/2,sw,sw,0,0,L,L);
-  lctx.strokeStyle='#e3b653';lctx.lineWidth=2;lctx.beginPath();lctx.moveTo(L/2,L/2-30);lctx.lineTo(L/2,L/2-6);lctx.moveTo(L/2,L/2+6);lctx.lineTo(L/2,L/2+30);
+  lctx.strokeStyle='#3dff6e';lctx.lineWidth=2;lctx.beginPath();lctx.moveTo(L/2,L/2-30);lctx.lineTo(L/2,L/2-6);lctx.moveTo(L/2,L/2+6);lctx.lineTo(L/2,L/2+30);
   lctx.moveTo(L/2-30,L/2);lctx.lineTo(L/2-6,L/2);lctx.moveTo(L/2+6,L/2);lctx.lineTo(L/2+30,L/2);lctx.stroke();
-  lctx.fillStyle='#e3b653';lctx.fillRect(L/2-1,L/2-1,2,2);
+  lctx.fillStyle='#3dff6e';lctx.fillRect(L/2-1,L/2-1,2,2);
 }
 
 function snapShoulders(){for(const s in partner){const a=partner[s];if(pts[s]&&pts[a])pts[s].x=pts[a].x}}
@@ -975,7 +1077,7 @@ function resultText(){
   const s=summary();if(!s)return'';const dt=$('pdate').value?new Date($('pdate').value).toLocaleDateString('cs-CZ'):new Date().toLocaleDateString('cs-CZ');
   const head=s.st.n>1?`${def().name} ${fmt(s.st.m)} (průměr ze ${s.st.n} měření, SD ${fmt(s.st.sd)}, rozpětí ${fmt(s.st.min)}–${fmt(s.st.max)})`:`${def().name} ${fmt(s.st.m)} (1 měření)`;
   const parts=`Poslední měření: ${s.parts.map(p=>`${p.c.replace('‑','-')} ${fmt(p.v)}`).join('; ')}; ${s.parts.slice(3).map(p=>p.dir).join(', ')}.`;
-  const cond=[ $('dist').value?`vzdálenost ${String($('dist').value).replace('.',',')} m`:'', $('camh').value?`výška objektivu ${$('camh').value} cm`:'', calibMode==='auto'?`snímek automaticky vyrovnán podle svislých hran${levelInfo&&levelInfo.pitch?` vč. korekce perspektivy (sklon telefonu ${fmt(Math.abs(levelInfo.pitch),1)}°)`:''}`:(calibrated?'snímek vyrovnán podle olovnice':'') ].filter(Boolean).join(', ');
+  const cond=[ $('dist').value?`vzdálenost ${String($('dist').value).replace('.',',')} m`:'', $('camh').value?`výška objektivu ${$('camh').value} cm`:'', calibMode==='sensor'?`snímek pořízen s vodováhou a vyrovnán podle polohových senzorů (náklon ${fmt(Math.abs(levelInfo.raw.roll),1)}°, sklon ${fmt(Math.abs(levelInfo.raw.pitch),1)}°)`:calibMode==='auto'?`snímek automaticky vyrovnán podle svislých hran${levelInfo&&levelInfo.pitch?` vč. korekce perspektivy (sklon telefonu ${fmt(Math.abs(levelInfo.pitch),1)}°)`:''}`:(calibrated?'snímek vyrovnán podle olovnice':'') ].filter(Boolean).join(', ');
   const cs=compatSet(),compat=(type==='POTSI'&&cs.length)?` Pro srovnání s PotsiApp (střední čára přes C7): ${fmt(stats(cs).m)}.`:'';
   return `${head}.${compat} ${parts} Fotogrammetrie ${def().view}, ${dt}${protoOk()?', standardizovaný protokol (Stoliński 2017)':', protokol focení nedodržen v plném rozsahu'}${cond?`; ${cond}`:''}.${$('examiner').value?` Měřil(a): ${$('examiner').value}.`:''}`;
 }
@@ -1005,7 +1107,7 @@ function renderSaved(){
       const cls=within?'same':(dv>0?'up':'down');
       const lbl=lim===null?'chyba měření u ATSI není číselně publikována – posuzujte opatrně':(within?`v rámci chyby měření (±${fmt(lim)})`:(dv>0?'zhoršení nad chybu měření':'zlepšení nad chybu měření'));
       delta=`<span class="delta ${cls}">${dv>0?'+':''}${fmt(dv)} od ${first.date?new Date(first.date).toLocaleDateString('cs-CZ'):'1. měření'} · ${lbl}</span>`}
-    const cond=[m.compat!=null?`PotsiApp var. ${fmt(m.compat)}`:'',m.n>1?`průměr z ${m.n}`:'1 měření',m.proto?'protokol ✓':'protokol neúplný',m.calibrated==='auto'?'vyrovnáno ✓':(m.calibrated?'olovnice ✓':''),m.dist?`${String(m.dist).replace('.',',')} m`:'',m.camh?`${m.camh} cm`:'',m.examiner].filter(Boolean).join(' · ');
+    const cond=[m.compat!=null?`PotsiApp var. ${fmt(m.compat)}`:'',m.n>1?`průměr z ${m.n}`:'1 měření',m.proto?'protokol ✓':'protokol neúplný',m.calibrated==='sensor'?'vodováha ✓':(m.calibrated==='auto'?'vyrovnáno ✓':(m.calibrated?'olovnice ✓':'')),m.dist?`${String(m.dist).replace('.',',')} m`:'',m.camh?`${m.camh} cm`:'',m.examiner].filter(Boolean).join(' · ');
     return `<div class="sv"><img src="${m.thumb}" alt=""><div><div class="t">${esc(m.name)}</div><div class="m">${m.type} · ${m.date?new Date(m.date).toLocaleDateString('cs-CZ'):'bez data'}${m.demo?' · ukázka':''}</div><div class="m">${esc(cond)}</div></div><div class="n">${fmt(m.total)}${delta}</div></div>`}).join('');
 }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));

@@ -127,6 +127,10 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 @keyframes tzGlint{0%,100%{background-position:100% 0}50%{background-position:0 0}}
 @keyframes tzFloat{0%,100%{translate:0 0}50%{translate:0 -4px}}
 @media (prefers-reduced-motion:reduce){.tz,.npcard .tz::before,.npcard .tz::after{animation:none!important}.npcard .tz::before,.npcard .tz::after{opacity:0!important}}
+.expbox{display:grid;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.expbox .btn.primary{background:var(--pt);color:#14213d;border:0;min-height:48px;justify-content:center;font-weight:700}
+.expbox .row .btn{flex:1;justify-content:center}
+.expbox .btn .i{width:20px;height:20px}
 .npgrow{flex:1}
 .npbtns{display:grid;gap:10px}
 .nphint{margin:2px 0 0;text-align:center;font-size:12px;color:rgba(255,255,255,.55)}
@@ -336,7 +340,7 @@ details p{margin:6px 0;color:var(--muted)}
   <div class="ask" id="ask" hidden>
     <div class="askcard glass" role="alertdialog" aria-labelledby="askT">
       <b id="askT">Zahodit rozpracované měření?</b>
-      <p>Body umístěné na současné fotce se ztratí. Chcete-li je zachovat, uložte měření ve Výsledku.</p>
+      <p id="askP">Body umístěné na současné fotce se ztratí. Chcete-li je zachovat, uložte měření ve Výsledku.</p>
       <div class="nprow"><button class="npbtn glass" id="askNo">Ponechat</button><button class="npbtn danger" id="askYes">Zahodit</button></div>
     </div>
   </div>
@@ -480,7 +484,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.12.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.13.</p>
     </div>
     </div>
   </div>
@@ -655,7 +659,7 @@ function clearPhoto(){src=null;origSrc=null;isDemo=false;pts={};hist=[];selected
 let askGo=null;
 function startNew(kind){ // Vyfotit / Galerie: odloží současnou fotku; při neuložených bodech se nejdřív zeptá
   const go=()=>{clearPhoto();if(kind==='cam')openCam();else $('fileLib').click()};
-  if(src&&!isDemo&&hist.length){askGo=go;$('ask').hidden=false;return}
+  if(src&&!isDemo&&hist.length){askGo=go;$('askT').textContent='Zahodit rozpracované měření?';$('askP').textContent='Body umístěné na současné fotce se ztratí. Chcete-li je zachovat, uložte měření ve Výsledku.';$('askYes').textContent='Zahodit';$('ask').hidden=false;return}
   go();
 }
 $('askYes').onclick=()=>{$('ask').hidden=true;const g=askGo;askGo=null;if(g)g()};
@@ -933,8 +937,13 @@ function plumbLabel(){$('stepName').textContent=`Dolní konec · odklon ${fmt(Ma
 $('sec').onclick=()=>{
   if(levelReview){if(levelInfo&&levelInfo.sensor)autoLevel();else startPlumb(true);return}
   if(plumbMode){startPlumb(false);flash(calibrated?'Vyrovnání ponecháno.':'Vyrovnání přeskočeno. Můžete ho kdykoli spustit tlačítkem Vyrovnat.');return}
-  if(selected)$('delp_').click();
+  if(selected){$('delp_').click();return}
+  if(src&&!nextKey())newMeasure();
 };
+function newMeasure(){ // zpět na úvodní obrazovku; série opakovaných měření zůstává
+  askGo=()=>{clearPhoto();flash('Nové měření – vyberte typ a pořiďte snímek.')};
+  $('askT').textContent='Začít nové měření?';$('askP').textContent='Body z této fotky se zahodí. Pokud jste výsledek ještě neuložili do telefonu nebo nezkopírovali, udělejte to nejdřív ve Výsledku.';$('askYes').textContent='Nové měření';$('ask').hidden=false;
+}
 $('collapse').onclick=()=>{app.classList.add('min');requestAnimationFrame(draw)};
 $('expand').onclick=()=>{app.classList.remove('min');requestAnimationFrame(()=>{keepAimVisible();draw()})};
 $('miniOk').onclick=()=>$('ok').click();
@@ -1032,7 +1041,7 @@ function hint(){
     desc='Posuňte zaměřovač, bod jde s ním. Potvrďte, nebo zrušte ťuknutím na číslo bodu.'}
   else if(nk){const p=d.pts[i];n.textContent=`${i+1}/8`;$('stepName').textContent=`P${i+1} · ${p.n}`;txt.textContent=`Umístit P${i+1}`;key=nk;desc=p.t}
   else{const sn=sanity();n.textContent='✓';n.classList.add('done');$('stepName').textContent=lastRes?`${d.name} ${fmt(lastRes.total)}`:'Hotovo';
-    txt.textContent='Výsledek';ok.classList.add('res');key='done'+sn.length;
+    txt.textContent='Výsledek';ok.classList.add('res');key='done'+sn.length;sec.hidden=false;sec.textContent='Nové měření';
     desc=sn.length?'Pozor: '+sn[0]:'Všechny body jsou umístěné. Bod opravíte ťuknutím na jeho číslo.';warn=!!sn.length}
   if(key!==lastStepKey){lastStepKey=key;if(src)flash(desc,warn);else $('toast').classList.add('hide')}
 }
@@ -1158,6 +1167,7 @@ function renderResult(){
   if(sn.length&&lastRes)$('result').insertAdjacentHTML('afterbegin',`<div class="warn" style="margin-bottom:10px"><b>Body jsou pravděpodobně umístěné špatně – výsledek neplatí.</b><br>${sn.join('<br>')}<br>Opravte bod ťuknutím na jeho číslo na obrazovce Měření.</div>`);
   $('warns').innerHTML=w.map(x=>`<div class="warn">${x}</div>`).join('')+(lastRes&&!w.length?'<div class="okmsg">Snímek vyrovnaný, protokol dodržen, měření opakované – výsledek je dobře srovnatelný.</div>':'');
   $('save').disabled=!(lastRes||series.length);
+  if(lastRes||series.length)setTimeout(()=>prepExport(),60);
 }
 function currentSet(){const a=series.map(s=>s.total);if(lastRes)a.push(lastRes.total);return a}
 function renderSeries(){
@@ -1171,12 +1181,17 @@ function renderSeries(){
     <div class="row">
       <button class="btn" id="addSeries" ${lastRes?'':'disabled'}>＋ Přidat do série a měřit znovu</button>
       ${series.length?'<button class="btn" id="clearSeries">Nová série</button>':''}
-      <button class="btn" id="copy" ${(lastRes||series.length)?'':'disabled'}>Kopírovat do záznamu</button>
-    </div><span class="toastline" id="copyToast"></span></div>`;
+    </div>
+    <div class="expbox">
+      <button class="btn primary" id="expImg" ${(lastRes||series.length)?'':'disabled'}><svg class="i"><use href="#i-img"/></svg>Uložit fotku do telefonu</button>
+      <div class="row"><button class="btn" id="expBoth" ${(lastRes||series.length)?'':'disabled'}>Fotka + popis</button>
+      <button class="btn" id="copy" ${(lastRes||series.length)?'':'disabled'}>Kopírovat do záznamu</button></div>
+      <span class="toastline" id="copyToast"></span>
+    </div></div>`;
   const a=$('addSeries');if(a)a.onclick=()=>{series.push({total:lastRes.total,parts:lastRes.parts});pts={};hist=[];refresh();
     show('measure');flash(`Měření ${series.length} přidáno do série. Pořiďte další snímek nebo umístěte body znovu.`)};
   const c=$('clearSeries');if(c)c.onclick=()=>{series=[];refresh()};
-  $('copy').onclick=copyResult;
+  $('copy').onclick=copyResult;$('expImg').onclick=()=>exportShare(false);$('expBoth').onclick=()=>exportShare(true);
 }
 function summary(){
   const all=currentSet();if(!all.length)return null;const st=stats(all);
@@ -1189,6 +1204,55 @@ function resultText(){
   const parts=`Poslední měření: ${s.parts.map(p=>`${p.c.replace('‑','-')} ${fmt(p.v)}`).join('; ')}; ${s.parts.slice(3).map(p=>p.dir).join(', ')}.`;
   const cond=[ $('dist').value?`vzdálenost ${String($('dist').value).replace('.',',')} m`:'', $('camh').value?`výška objektivu ${$('camh').value} cm`:'', calibMode==='sensor'?`snímek pořízen s vodováhou a vyrovnán podle polohových senzorů (náklon ${fmt(Math.abs(levelInfo.raw.roll),1)}°, sklon ${fmt(Math.abs(levelInfo.raw.pitch),1)}°)`:calibMode==='auto'?`snímek automaticky vyrovnán podle svislých hran${levelInfo&&levelInfo.pitch?` vč. korekce perspektivy (sklon telefonu ${fmt(Math.abs(levelInfo.pitch),1)}°)`:''}`:(calibrated?'snímek vyrovnán podle olovnice':'') ].filter(Boolean).join(', ');
   return `${head}. ${parts} Fotogrammetrie ${def().view}, ${dt}${protoOk()?', standardizovaný protokol (Stoliński 2017)':', protokol focení nedodržen v plném rozsahu'}${cond?`; ${cond}`:''}.${$('examiner').value?` Měřil(a): ${$('examiner').value}.`:''}`;
+}
+
+// ---- Export: fotka s osami, body a výsledkem v jednom obrázku (do galerie / kartotéky)
+function exportCanvas(){
+  const s=summary();if(!s||!base)return null;
+  const keepH=hideOverlay,keepS=selected;hideOverlay=false;selected=null;
+  const ph=renderFull();hideOverlay=keepH;selected=keepS;
+  const W=ph.width,u=W/1000,band=Math.round(250*u),c=document.createElement('canvas');c.width=W;c.height=ph.height+band;
+  const g=c.getContext('2d');g.drawImage(ph,0,0);
+  const y0=ph.height;g.fillStyle='#0d1017';g.fillRect(0,y0,W,band);
+  g.fillStyle='#f5c95c';g.fillRect(0,y0,W,Math.max(2,4*u));
+  const d=def(),pad=40*u,mono='"IBM Plex Mono",ui-monospace,Menlo,monospace',sans='"IBM Plex Sans",system-ui,-apple-system,sans-serif';
+  g.textBaseline='alphabetic';g.textAlign='left';
+  g.fillStyle='#f5c95c';g.font=`600 ${34*u}px ${mono}`;g.fillText(d.name,pad,y0+64*u);
+  g.fillStyle='#ffffff';g.font=`600 ${112*u}px ${mono}`;g.fillText(fmt(s.st.m),pad,y0+180*u);
+  const vw=g.measureText(fmt(s.st.m)).width;
+  g.fillStyle='rgba(255,255,255,.65)';g.font=`500 ${26*u}px ${sans}`;
+  g.fillText(s.st.n>1?`průměr ${s.st.n} měření · SD ${fmt(s.st.sd)}`:'1 měření',pad+vw+22*u,y0+176*u);
+  // dílčí indexy vpravo
+  const px=W*0.56,cols=2;g.font=`500 ${24*u}px ${mono}`;
+  s.parts.forEach((p,i)=>{const cx=px+(i%cols)*(W*0.21),cy=y0+70*u+Math.floor(i/cols)*44*u;
+    g.fillStyle='rgba(255,255,255,.55)';g.fillText(p.c.replace('‑','-'),cx,cy);
+    g.fillStyle='#ffffff';g.textAlign='right';g.fillText(fmt(p.v),cx+W*0.19,cy);g.textAlign='left'});
+  const dt=$('pdate').value?new Date($('pdate').value).toLocaleDateString('cs-CZ'):new Date().toLocaleDateString('cs-CZ');
+  const who=$('pname').value.trim();
+  g.fillStyle='rgba(255,255,255,.55)';g.font=`500 ${22*u}px ${sans}`;
+  g.fillText([who,dt,d.view,calibMode?'vyrovnáno':'',protoOk()?'protokol 8/8':''].filter(Boolean).join(' · '),pad,y0+band-26*u);
+  g.textAlign='right';g.fillText('Posturální profil',W-pad,y0+band-26*u);
+  return c;
+}
+let expFile=null,expKey='';
+function expName(){const d=def(),who=$('pname').value.trim().replace(/[^\p{L}\p{N}]+/gu,'_');const dt=($('pdate').value||new Date().toISOString().slice(0,10));
+  return `${d.name}_${who?who+'_':''}${dt}.jpg`}
+function prepExport(){const s=summary();if(!s){expFile=null;return Promise.resolve(null)}
+  const key=JSON.stringify([type,pts,s.st.m,$('pname').value,$('pdate').value]);if(expFile&&key===expKey)return Promise.resolve(expFile);
+  const c=exportCanvas();if(!c)return Promise.resolve(null);
+  return new Promise(res=>c.toBlob(b=>{expFile=b?new File([b],expName(),{type:'image/jpeg'}):null;expKey=key;res(expFile)},'image/jpeg',0.92))}
+async function exportShare(withText){
+  const t=$('copyToast'),say=m=>{if(t)t.textContent=m};
+  const ready=expFile&&expKey;const f=await prepExport();if(!f){say('Nejdřív dokončete měření.');return}
+  const txt=withText?resultText():'';
+  if(withText){try{await navigator.clipboard.writeText(txt)}catch(e){}}
+  const data={files:[f]};if(withText){data.text=txt;data.title=expName()}
+  if(navigator.canShare&&navigator.canShare(data)){
+    try{await navigator.share(data);say(withText?'Hotovo. Popis je zároveň ve schránce – stačí vložit.':'Hotovo – v nabídce zvolte „Uložit obrázek“.');}
+    catch(e){if(e.name==='AbortError')say('');else if(!ready)say('Obrázek je připravený – ťukněte prosím ještě jednou.');else say('Sdílení se nepodařilo: '+e.message)}
+    return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  say(withText?'Obrázek stažen, popis je ve schránce.':'Obrázek stažen do složky Stažené.');
 }
 function copyResult(){
   const txt=resultText();if(!txt)return;const t=$('copyToast');

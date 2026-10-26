@@ -42,7 +42,7 @@ button{font-family:inherit;-webkit-tap-highlight-color:transparent}
 svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
 /* horní lišta */
-.topbar{position:absolute;top:calc(8px + env(safe-area-inset-top,0px));left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));display:flex;gap:8px;align-items:center;pointer-events:none}
+.topbar{z-index:6;position:absolute;top:calc(8px + env(safe-area-inset-top,0px));left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));display:flex;gap:8px;align-items:center;pointer-events:none}
 .topbar>*{pointer-events:auto}
 .stepcard{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border-radius:18px;padding:6px 12px 6px 6px;cursor:pointer}
 .stepnum{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;font:600 .84rem var(--f-num);border:2px solid var(--aim);color:var(--aim)}
@@ -56,13 +56,13 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 .gbtn:active,.tool:active{background:rgba(255,255,255,.22)}
 
 /* loupe a toast */
-#loupe{position:absolute;top:calc(112px + env(safe-area-inset-top,0px));left:12px;width:132px;height:132px;border-radius:50%;border:2px solid #3dff6e;box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:none;background:#000}
+#loupe{position:absolute;top:calc(70px + env(safe-area-inset-top,0px));left:12px;width:132px;height:132px;border-radius:50%;border:2px solid #3dff6e;box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:none;background:#000}
 #loupe.right{left:auto;right:12px}
-.toast{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(144px + env(safe-area-inset-bottom,0px));width:min(92%,520px);border-radius:14px;padding:9px 13px;font-size:.86rem;line-height:1.35;text-align:center;cursor:pointer;transition:opacity .25s}
+.toast{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(190px + env(safe-area-inset-bottom,0px));width:min(92%,520px);border-radius:14px;padding:9px 13px;font-size:.86rem;line-height:1.35;text-align:center;cursor:pointer;transition:opacity .25s}
 .toast.hide{opacity:0;pointer-events:none}
 .toast.tw{border-color:rgba(240,160,106,.85);background:rgba(58,30,14,.78)}
 .zl{position:absolute;left:12px;bottom:calc(152px + env(safe-area-inset-bottom,0px));font:600 .76rem var(--f-num);padding:4px 9px;border-radius:999px;pointer-events:none}
-.demo{position:absolute;left:50%;transform:translateX(-50%);top:calc(110px + env(safe-area-inset-top,0px));font-size:.72rem;padding:4px 9px;border-radius:999px;pointer-events:none;color:#14213d;background:rgba(247,238,215,.92);border:0}
+.demo{position:absolute;left:50%;transform:translateX(-50%);top:calc(68px + env(safe-area-inset-top,0px));font-size:.72rem;padding:4px 9px;border-radius:999px;pointer-events:none;color:#14213d;background:rgba(247,238,215,.92);border:0}
 
 /* spodní ovládání */
 .bottom{position:absolute;left:0;right:0;bottom:0;padding:0 max(10px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));display:grid;gap:8px;pointer-events:none;max-width:560px;margin:0 auto}
@@ -82,22 +82,53 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 .okbtn.res{background:#ffffff}
 .okbtn:disabled{opacity:.45}
 .okbtn:active{transform:scale(.98)}
-.chiprow{position:absolute;top:calc(64px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);display:flex;gap:5px;padding:4px;border-radius:999px;max-width:calc(100% - 20px)}
+.chiprow{justify-self:center;display:flex;align-items:center;gap:5px;padding:4px;border-radius:999px;max-width:100%;overflow-x:auto;scrollbar-width:none}
 .chip{flex:none;width:34px;height:34px;border-radius:50%;border:1.5px solid rgba(255,255,255,.35);background:transparent;color:var(--on-glass-dim);font:600 .76rem var(--f-num);cursor:pointer;padding:0}
 .chip.done{background:var(--pt);border-color:var(--pt);color:#14213d}
 .chip.cur{border:2px solid var(--aim);color:var(--aim)}
 .chip.sel{background:var(--aim);border-color:var(--aim);color:#0d1017;box-shadow:0 0 0 3px rgba(94,200,242,.35)}
 .mini{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));display:none;gap:8px}
-.app.min .topbar .stepcard,.app.min .topbar #menuBtn,.app.min .bottom,.app.min .toast,.app.min .demo,.app.min .chiprow{display:none}
+.app.min .topbar .stepcard,.app.min .topbar #menuBtn,.app.min .bottom,.app.min .toast,.app.min .demo,.app.min .typemenu{display:none}
 .app.min .mini{display:flex}
 .btnfocus:focus-visible,.tool:focus-visible,.gbtn:focus-visible,.chip:focus-visible,.okbtn:focus-visible{outline:2px solid var(--pt);outline-offset:2px}
 
-/* prázdná obrazovka a dotaz */
-.nophoto{position:absolute;left:50%;top:50%;transform:translate(-50%,-55%);width:min(88%,360px);display:grid;justify-items:center;gap:8px;text-align:center;color:var(--on-glass)}
-.nophoto svg.big{width:56px;height:56px;color:var(--on-glass-dim);stroke-width:1.3}
-.nophoto b{font-size:1.2rem}
-.nophoto p{margin:0 0 6px;color:var(--on-glass-dim);font-size:.92rem}
-.nprow{display:flex;gap:10px;width:100%}
+/* úvodní obrazovka s volbou typu */
+.nophoto{position:absolute;inset:0;z-index:5;background:var(--stage);display:flex;flex-direction:column;gap:18px;color:var(--on-glass);
+  padding:calc(14px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));max-width:560px;margin:0 auto;overflow:auto}
+.npbrand{display:flex;align-items:center;gap:10px;min-height:48px;padding-right:60px}
+.npmark{width:34px;height:34px;border-radius:9px;background:#1f4fa3;display:grid;place-items:center;flex:none}
+.npbrand b{font-size:16px}
+.nphead{display:grid;gap:6px;margin-top:10px}
+.nphead h1{margin:0;font-size:30px;line-height:1.15}
+.nphead p{margin:0;color:var(--on-glass-dim);font-size:15px}
+.npcards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.npcard{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 10px 16px;border-radius:20px;border:1px solid var(--glass-line);background:var(--glass);color:var(--on-glass);cursor:pointer;font-family:inherit}
+.npcard b{font-size:17px}.npcard i{font:600 13px var(--f-num);font-style:normal;color:var(--on-glass-dim)}.npcard small{font-size:12px;color:var(--on-glass-dim);line-height:1.3}
+.npcard[aria-checked="true"]{border:2px solid var(--pt);background:rgba(245,201,92,.12)}
+.npcard[aria-checked="true"] i{color:var(--pt)}
+.npck{position:absolute;top:10px;right:10px;width:24px;height:24px;border-radius:50%;background:var(--pt);color:#14213d;display:none;place-items:center}
+.npck svg{width:14px;height:14px;stroke-width:3}
+.npcard[aria-checked="true"] .npck{display:grid}
+.npgrow{flex:1}
+.npbtns{display:grid;gap:10px}
+.nphint{margin:2px 0 0;text-align:center;font-size:12px;color:rgba(255,255,255,.55)}
+.app.nosrc .topbar{justify-content:flex-end}
+.app.nosrc .stepcard,.app.nosrc .bottom,.app.nosrc .toast,.app.nosrc .mini{display:none!important}
+/* štítek a nabídka typu */
+.typepill{flex:none;min-height:40px;display:flex;align-items:center;gap:3px;padding:0 9px 0 12px;border-radius:20px;border:1.5px solid var(--pt);background:rgba(245,201,92,.14);color:var(--pt);font:600 13px var(--f-num);cursor:pointer}
+.typepill[aria-expanded="true"]{background:var(--pt);color:#14213d}
+.typemenu{position:absolute;z-index:12;top:calc(68px + env(safe-area-inset-top,0px));right:max(70px,env(safe-area-inset-right,0px));width:min(262px,calc(100% - 80px));padding:8px;border-radius:20px;background:#1a2030;border:1px solid rgba(255,255,255,.18);box-shadow:0 18px 40px rgba(0,0,0,.5);display:grid;gap:6px;color:#fff}
+.topt{display:flex;align-items:center;gap:12px;min-height:60px;padding:0 12px;border-radius:14px;border:0;background:transparent;color:#fff;text-align:left;font-family:inherit;cursor:pointer}
+.topt span{flex:1;display:grid;gap:2px}.topt b{font-size:15px}.topt i{font:600 15px var(--f-num);font-style:normal}.topt small{font-size:12px;color:var(--on-glass-dim)}
+.topt .ck{color:var(--pt);stroke-width:2.4;visibility:hidden}
+.topt[aria-checked="true"]{background:rgba(245,201,92,.14)}.topt[aria-checked="true"] i{color:var(--pt)}.topt[aria-checked="true"] .ck{visibility:visible}
+.twarn{padding:8px 10px;border-radius:12px;background:rgba(240,160,106,.14);color:#ffd9c2;font-size:12px;line-height:1.4}
+.stitle{font-size:1rem}
+/* řada bodů s okem */
+.chips{display:flex;gap:5px}
+.csep{width:1px;height:24px;background:rgba(255,255,255,.2);margin:0 3px;flex:none}
+.eyebtn{width:36px;height:36px;border-radius:50%;border:0;background:transparent;color:#fff;display:grid;place-items:center;padding:0;cursor:pointer;flex:none}
+.eyebtn[aria-pressed="true"]{color:var(--pt);background:rgba(245,201,92,.2)}
 .npbtn{flex:1;min-height:54px;border-radius:27px;border:0;font:600 1rem var(--f-ui);display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;color:var(--on-glass)}
 .npbtn.primary{background:var(--pt);color:#14213d}
 .npbtn.danger{background:#e2553f;color:#fff}
@@ -118,7 +149,7 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 .shutter.ok{background:#3dff6e}.shutter.near{background:#ffd23d}.shutter.far{background:#ff5a4e}
 .shutter:active{transform:scale(.95)}
 /* panel s výsledky */
-.sheet{position:absolute;inset:0;background:rgba(5,8,14,.45);display:flex;align-items:flex-end;justify-content:center;touch-action:none}
+.sheet{z-index:20;position:absolute;inset:0;background:rgba(5,8,14,.45);display:flex;align-items:flex-end;justify-content:center;touch-action:none}
 .card{width:min(100%,680px);height:min(88%,900px);background:var(--bg);border-radius:20px 20px 0 0;display:flex;flex-direction:column;overflow:hidden;color:var(--ink);-webkit-user-select:text;user-select:text;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
 .grab{width:42px;height:5px;border-radius:3px;background:var(--line);margin:8px auto 2px}
 .shead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px max(14px,env(safe-area-inset-right,0px)) 8px max(14px,env(safe-area-inset-left,0px))}
@@ -225,17 +256,22 @@ details p{margin:6px 0;color:var(--muted)}
   <div class="topbar">
     <div class="stepcard glass" id="stepcard" role="button" tabindex="0" title="Zobrazit popis bodu">
       <div class="stepnum" id="stepNum">1/8</div>
-      <div class="steptxt"><b id="stepName">C7</b><span id="stepSub">POTSI</span></div>
+      <div class="steptxt"><b id="stepName">C7</b><span id="stepSub">zezadu</span></div>
+      <button class="typepill" id="typeBtn" aria-haspopup="menu" aria-expanded="false" aria-label="Typ měření, změnit"><span id="typeTxt">POTSI</span><svg class="i" style="width:16px;height:16px;stroke-width:2.2"><use href="#i-down"/></svg></button>
     </div>
-    <button class="gbtn glass" id="eye" aria-pressed="false" aria-label="Skrýt vyznačení"><svg class="i"><use href="#i-eye"/></svg></button>
     <button class="gbtn glass" id="menuBtn" aria-label="Výsledek, protokol a návod"><svg class="i"><use href="#i-menu"/></svg></button>
   </div>
 
-    <div class="chiprow glass" id="chips" aria-label="Body P1–P8, ťuknutím opravíte"></div>
+  <div class="typemenu" id="typeMenu" role="menu" aria-label="Typ měření" hidden>
+    <button class="topt" role="menuitemradio" data-type="POTSI" aria-checked="true"><span><b>Záda · <i>POTSI</i></b><small>snímek zezadu</small></span><svg class="i ck"><use href="#i-check"/></svg></button>
+    <button class="topt" role="menuitemradio" data-type="ATSI" aria-checked="false"><span><b>Hrudník · <i>ATSI</i></b><small>snímek zepředu</small></span><svg class="i ck"><use href="#i-check"/></svg></button>
+    <div class="twarn" id="typeWarn" hidden></div>
+  </div>
   <div class="demo" id="demoBadge">Ukázka – smyšlená silueta</div>
   <div class="toast glass hide" id="toast" role="status"></div>
 
   <div class="bottom" id="bottom">
+    <div class="chiprow glass" id="chiprow"><span class="chips" id="chips" aria-label="Body P1–P8, ťuknutím opravíte"></span><span class="csep"></span><button class="eyebtn" id="eye" aria-pressed="false" aria-label="Skrýt body a čáry"><svg class="i"><use href="#i-eye"/></svg></button></div>
     <div class="tools glass" role="toolbar" aria-label="Nástroje">
       <button class="tool" id="camBtn"><svg class="i"><use href="#i-cam"/></svg><small>Vyfotit</small></button>
       <button class="tool" id="libBtn"><svg class="i"><use href="#i-img"/></svg><small>Galerie</small></button>
@@ -252,16 +288,30 @@ details p{margin:6px 0;color:var(--muted)}
 
   <div class="mini">
     <button class="gbtn glass" id="expand" aria-label="Zobrazit ovládání"><svg class="i"><use href="#i-up"/></svg></button>
+    <button class="gbtn glass" id="miniEye" aria-label="Skrýt body a čáry"><svg class="i"><use href="#i-eye"/></svg></button>
     <button class="gbtn glass" id="miniOk" aria-label="Umístit bod" style="color:var(--pt)"><svg class="i"><use href="#i-check"/></svg></button>
   </div>
 
   <div class="nophoto" id="nophoto" hidden>
-    <svg class="i big" aria-hidden="true"><use href="#i-cam"/></svg>
-    <b>Nové měření</b>
-    <p>Vyfoťte pacienta s vodováhou, nebo vyberte fotku z galerie.</p>
-    <div class="nprow">
-      <button class="npbtn primary" id="npCam"><svg class="i"><use href="#i-cam"/></svg>Vyfotit</button>
-      <button class="npbtn glass" id="npLib"><svg class="i"><use href="#i-img"/></svg>Galerie</button>
+    <div class="npbrand"><div class="npmark" aria-hidden="true"><svg width="16" height="20" viewBox="0 0 22 26" fill="none"><path d="M11 1v24" stroke="#fff" stroke-width="1.8" stroke-dasharray="2 2.4"/><path d="M3 6h16M4 12h14M5 18h12" stroke="#f5d488" stroke-width="2.4" stroke-linecap="round"/></svg></div><b>Posturální profil</b></div>
+    <div class="nphead"><h1>Nové měření</h1><p>Co budete měřit?</p></div>
+    <div class="npcards" role="radiogroup" aria-label="Typ měření">
+      <button class="npcard" role="radio" data-type="POTSI" aria-checked="true">
+        <span class="npck" aria-hidden="true"><svg class="i"><use href="#i-check"/></svg></span>
+        <svg width="86" height="118" viewBox="0 0 86 118" fill="none" aria-hidden="true"><circle cx="43" cy="14" r="11" fill="#c8a07f"/><path d="M22 32 Q43 24 64 32 L62 62 Q66 78 60 96 L26 96 Q20 78 24 62 Z" fill="#d9a98b"/><path d="M43 30 C46 50 40 70 43 92" stroke="#8a5a40" stroke-width="1.6"/><path d="M43 6 V112" stroke="#f5c95c" stroke-width="1.2" stroke-dasharray="3 3"/><circle cx="43" cy="30" r="3.4" fill="#3dff6e" stroke="#0d1017" stroke-width="1.2"/><circle cx="43" cy="92" r="3.4" fill="#3dff6e" stroke="#0d1017" stroke-width="1.2"/><circle cx="24" cy="62" r="3" fill="#f5c95c" stroke="#0d1017"/><circle cx="62" cy="62" r="3" fill="#f5c95c" stroke="#0d1017"/></svg>
+        <b>Záda</b><i>POTSI</i><small>snímek zezadu<br>C7 · rýha</small>
+      </button>
+      <button class="npcard" role="radio" data-type="ATSI" aria-checked="false">
+        <span class="npck" aria-hidden="true"><svg class="i"><use href="#i-check"/></svg></span>
+        <svg width="86" height="118" viewBox="0 0 86 118" fill="none" aria-hidden="true"><circle cx="43" cy="14" r="11" fill="#d9a98b"/><path d="M22 32 Q43 24 64 32 L62 62 Q66 78 60 96 L26 96 Q20 78 24 62 Z" fill="#d9a98b"/><path d="M37 33 Q43 38 49 33" stroke="#8a5a40" stroke-width="1.6"/><circle cx="43" cy="66" r="2.2" fill="#8a5a40"/><path d="M43 6 V112" stroke="#f5c95c" stroke-width="1.2" stroke-dasharray="3 3"/><circle cx="43" cy="34" r="3.4" fill="#3dff6e" stroke="#0d1017" stroke-width="1.2"/><circle cx="43" cy="66" r="3.4" fill="#3dff6e" stroke="#0d1017" stroke-width="1.2"/><circle cx="24" cy="62" r="3" fill="#f5c95c" stroke="#0d1017"/><circle cx="62" cy="62" r="3" fill="#f5c95c" stroke="#0d1017"/></svg>
+        <b>Hrudník</b><i>ATSI</i><small>snímek zepředu<br>jugulum · pupek</small>
+      </button>
+    </div>
+    <div class="npgrow"></div>
+    <div class="npbtns">
+      <button class="npbtn primary" id="npCam"><svg class="i"><use href="#i-cam"/></svg>Vyfotit s vodováhou</button>
+      <button class="npbtn glass" id="npLib"><svg class="i"><use href="#i-img"/></svg>Vybrat z galerie</button>
+      <p class="nphint">Typ jde během měření přepnout štítkem v horní liště.</p>
     </div>
   </div>
   <div class="ask" id="ask" hidden>
@@ -288,10 +338,7 @@ details p{margin:6px 0;color:var(--muted)}
     <div class="card" role="dialog" aria-modal="true" aria-label="Výsledek a nastavení">
       <div class="grab"></div>
       <div class="shead">
-        <div class="seg" role="group" aria-label="Typ měření">
-          <button id="tPOTSI" aria-pressed="true">POTSI · zezadu</button>
-          <button id="tATSI" aria-pressed="false">ATSI · zepředu</button>
-        </div>
+        <b class="stitle" id="sheetTitle">POTSI · zezadu</b>
         <button class="xbtn" id="closeSheet" aria-label="Zavřít">✕</button>
       </div>
       <div class="stabs" role="tablist">
@@ -414,7 +461,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.10.2.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.11.</p>
     </div>
     </div>
   </div>
@@ -534,7 +581,7 @@ const toWorld=(px,py)=>({x:(px-view.tx)/view.s,y:(py-view.ty)/view.s});
 const toScreen=p=>({x:p.x*view.s+view.tx,y:p.y*view.s+view.ty});
 function safeRect(){ // část displeje mezi lištami, v pixelech plátna
   const d=DPR(),c=cv.getBoundingClientRect(),min=app.classList.contains('min');
-  const t=min?0:Math.max(0,$('chips').getBoundingClientRect().bottom-c.top)+8;
+  const t=min?0:Math.max(0,$('stepcard').getBoundingClientRect().bottom-c.top)+8;
   const b=min?c.height:Math.min(c.height,$('bottom').getBoundingClientRect().top-c.top)-8;
   return{l:0,t:t*d,r:cv.width,b:Math.max(t+40,b)*d};
 }
@@ -544,7 +591,7 @@ function fit(){sizeCanvas();if(!src)return;const r=safeRect(),s=fitScale()*0.97;
 function clampS(s){return Math.max(fitScale()*0.5,Math.min(fitScale()*20,s))}
 function zoomAround(f,px,py){const s0=view.s,s=clampS(s0*f),wx=(px-view.tx)/s0,wy=(py-view.ty)/s0;view={s,tx:px-wx*s,ty:py-wy*s};draw();updateZoom()}
 function zoomAim(f){const p=toScreen(aim);zoomAround(f,p.x,p.y);keepAimVisible();draw()}
-function subText(){const d=def();return `${d.name} · ${d.view}${src?' · '+fmt(view.s/fitScale(),1)+'×':''}${rot?` · ${fmt(rot,1)}°`:''}${calibMode==='plumb'?' · olovnice ✓':(calibMode?' · vyrovnáno ✓':(calibrated?' · olovnice ✓':''))}`}
+function subText(){const d=def();return `${d.view}${src?' · '+fmt(view.s/fitScale(),1)+'×':''}${rot?` · ${fmt(rot,1)}°`:''}${calibMode==='plumb'?' · olovnice ✓':(calibMode?' · vyrovnáno ✓':(calibrated?' · olovnice ✓':''))}`}
 function updateZoom(){$('stepSub').textContent=subText()}
 function lockX(){if(plumbMode)return null;const k=selected||nextKey();return(k&&partner[k]&&pts[partner[k]])?pts[partner[k]].x:null}
 function jumpToShoulder(){const k=nextKey(),d=def();if(!k||!partner[k]||!pts[partner[k]])return;const a=pts[partner[k]],t=pts[d.top];
@@ -564,6 +611,7 @@ function setRotation(nr){
   rot=nr;snapShoulders();rebuildBase();refresh();
 }
 function newImage(c,demo){
+  app.classList.remove('nosrc');$('nophoto').hidden=true;
   src=c;isDemo=demo;rot=0;calibrated=false;calibMode=false;levelReview=false;autoLines=[];tiltDeg=null;origSrc=null;levelInfo=null;selected=null;selOrig=null;plumbMode=false;plumbPts=[];
   rebuildBase();aim={x:base.width/2,y:base.height*0.3};lastStepKey=null;fit();
 }
@@ -676,7 +724,8 @@ function hold(btn,fn){let t=null,r=null;
 }
 $('zfit').onclick=()=>{fit();keepAimVisible();draw()};
 function setPressed(id,v){$(id).setAttribute('aria-pressed',String(v))}
-$('eye').onclick=()=>{hideOverlay=!hideOverlay;setPressed('eye',hideOverlay);$('eye').querySelector('use').setAttribute('href',hideOverlay?'#i-eyeoff':'#i-eye');draw()};
+function toggleEye(){hideOverlay=!hideOverlay;['eye','miniEye'].forEach(id=>{setPressed(id,hideOverlay);$(id).querySelector('use').setAttribute('href',hideOverlay?'#i-eyeoff':'#i-eye')});draw()}
+$('eye').onclick=toggleEye;$('miniEye').onclick=toggleEye;
 function startPlumb(on){if(!src)return;if(selected)cancelEdit();if(on)endReview();plumbMode=on;plumbPts=[];setPressed('plumb',on);lastStepKey=null;refresh()}
 /* ---------- automatické vyrovnání: úběžník svislic → natočení (roll) a sklon (pitch) telefonu ---------- */
 let calibMode=false,levelReview=false,autoLines=[],tiltDeg=null,origSrc=null,levelInfo=null;
@@ -870,7 +919,7 @@ $('sec').onclick=()=>{
 $('collapse').onclick=()=>{app.classList.add('min');requestAnimationFrame(draw)};
 $('expand').onclick=()=>{app.classList.remove('min');requestAnimationFrame(()=>{keepAimVisible();draw()})};
 $('miniOk').onclick=()=>$('ok').click();
-$('stepcard').onclick=()=>{lastStepKey=null;hint()};
+$('stepcard').onclick=e=>{if(e.target.closest('#typeBtn'))return;lastStepKey=null;hint()};
 $('stepcard').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();lastStepKey=null;hint()}};
 function cancelEdit(){if(selected&&selOrig)pts[selected]={...selOrig};selected=null;selOrig=null}
 function selectPoint(k){
@@ -902,12 +951,21 @@ const delp_=document.createElement('button');delp_.id='delp_';delp_.hidden=true;
 $('delp_').onclick=()=>{const k=selected;if(!k)return;delete pts[k];hist=hist.filter(x=>x!==k);selected=null;selOrig=null;lastStepKey=null;refresh()};
 
 /* ---------- typ měření a panel ---------- */
+function syncType(){const d=def();$('typeTxt').textContent=d.name;$('sheetTitle').textContent=`${d.name} · ${d.view}`;
+  document.querySelectorAll('[data-type]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.type===type)))}
 function setType(t){
-  if(t===type)return;type=t;setPressed('tPOTSI',t==='POTSI');setPressed('tATSI',t==='ATSI');
+  closeTypeMenu();if(t===type)return;type=t;syncType();
   series=[];selected=null;selOrig=null;
-  if(isDemo)loadDemo();else{const had=hist.length;pts={};hist=[];lastStepKey=null;refresh();if(had)flash(`Přepnuto na ${t}. Body z předchozího typu byly smazány.`,true)}
+  if(isDemo)loadDemo();else{const had=hist.length;pts={};hist=[];lastStepKey=null;refresh();if(had)flash(`Přepnuto na ${t}. Umístěné body byly smazány, fotka zůstala.`,true);else flash(`Měříte ${t==='POTSI'?'záda – POTSI':'hrudník – ATSI'}.`)}
 }
-$('tPOTSI').onclick=()=>setType('POTSI');$('tATSI').onclick=()=>setType('ATSI');
+function openTypeMenu(){const n=(src&&!isDemo)?hist.length:0,w=$('typeWarn');
+  w.hidden=!n;w.textContent=n?`Přepnutím se ${n===1?'smaže 1 umístěný bod':(n<5?`smažou ${n} umístěné body`:`smaže ${n} umístěných bodů`)}. Fotka zůstane.`:'';
+  $('typeMenu').hidden=false;$('typeBtn').setAttribute('aria-expanded','true')}
+function closeTypeMenu(){$('typeMenu').hidden=true;$('typeBtn').setAttribute('aria-expanded','false')}
+$('typeBtn').addEventListener('click',e=>{e.stopPropagation();if($('typeMenu').hidden)openTypeMenu();else closeTypeMenu()});
+document.querySelectorAll('.topt').forEach(b=>b.onclick=e=>{e.stopPropagation();setType(b.dataset.type)});
+document.querySelectorAll('.npcard').forEach(b=>b.onclick=()=>{type=b.dataset.type;syncType();lastStepKey=null;refresh()});
+document.addEventListener('pointerdown',e=>{if(!$('typeMenu').hidden&&!e.target.closest('#typeMenu')&&!e.target.closest('#typeBtn'))closeTypeMenu()},true);
 function openSheet(t){$('sheet').hidden=false;stab(t||'result')}
 function closeSheet(){$('sheet').hidden=true}
 function stab(t){document.querySelectorAll('.stab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.t===t)));
@@ -959,7 +1017,7 @@ function hint(){
   if(key!==lastStepKey){lastStepKey=key;if(src)flash(desc,warn);else $('toast').classList.add('hide')}
 }
 function refresh(){
-  $('demoBadge').hidden=!isDemo||!src;$('chips').hidden=plumbMode||!src;$('nophoto').hidden=!!src;document.querySelector('.actrow').style.visibility=src?'':'hidden';
+  $('demoBadge').hidden=!isDemo||!src;$('chiprow').hidden=plumbMode||levelReview||!src;$('nophoto').hidden=!!src;app.classList.toggle('nosrc',!src);syncType();
   draw();renderResult();renderSteps();hint();updateZoom();
   $('undo').disabled=!(hist.length||selected||plumbMode||levelReview);$('plumb').disabled=!src;$('zfit').disabled=!src;
   $('tabVal').textContent=lastRes?fmt(lastRes.total):(series.length?`série ${series.length}`:'');

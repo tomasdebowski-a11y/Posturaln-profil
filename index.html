@@ -57,13 +57,13 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 .gbtn:active,.tool:active{background:rgba(255,255,255,.22)}
 
 /* loupe a toast */
-#loupe{position:absolute;top:calc(70px + env(safe-area-inset-top,0px));left:12px;width:132px;height:132px;border-radius:50%;border:2px solid #3dff6e;box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:none;background:#000}
+#loupe{position:absolute;top:calc(112px + env(safe-area-inset-top,0px));left:12px;width:132px;height:132px;border-radius:50%;border:2px solid #3dff6e;box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:none;background:#000}
 #loupe.right{left:auto;right:12px}
 .toast{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(190px + env(safe-area-inset-bottom,0px));width:min(92%,520px);border-radius:14px;padding:9px 13px;font-size:.86rem;line-height:1.35;text-align:center;cursor:pointer;transition:opacity .25s}
 .toast.hide{opacity:0;pointer-events:none}
 .toast.tw{border-color:rgba(240,160,106,.85);background:rgba(58,30,14,.78)}
 .zl{position:absolute;left:12px;bottom:calc(152px + env(safe-area-inset-bottom,0px));font:600 .76rem var(--f-num);padding:4px 9px;border-radius:999px;pointer-events:none}
-.demo{position:absolute;left:50%;transform:translateX(-50%);top:calc(68px + env(safe-area-inset-top,0px));font-size:.72rem;padding:4px 9px;border-radius:999px;pointer-events:none;color:#14213d;background:rgba(247,238,215,.92);border:0}
+.demo{position:absolute;left:50%;transform:translateX(-50%);top:calc(100px + env(safe-area-inset-top,0px));font-size:.72rem;padding:4px 9px;border-radius:999px;pointer-events:none;color:#14213d;background:rgba(247,238,215,.92);border:0}
 
 /* spodní ovládání */
 .bottom{position:absolute;left:0;right:0;bottom:0;padding:0 max(10px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));display:grid;gap:8px;pointer-events:none;max-width:560px;margin:0 auto}
@@ -151,6 +151,58 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 .evtxt{margin:10px 0 0;font-size:.9rem;line-height:1.45;color:var(--ink)}
 .evnote{margin:8px 0 0;font-size:.74rem;line-height:1.4;color:var(--muted)}
 .evtrend{margin-top:12px}.evtrend svg{display:block;width:100%;height:auto}
+
+/* v0.15 – ergonomie */
+.stepcard{flex-wrap:wrap;row-gap:4px;padding-bottom:8px}
+.stepcard .steptxt{flex:1}
+.segbar{order:5;flex-basis:100%;display:flex;gap:4px;padding:2px 2px 0 50px}
+.segbar button{flex:1;min-width:0;height:22px;border:0;background:none;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.segbar button i{display:block;width:100%;height:5px;border-radius:3px;background:rgba(255,255,255,.2)}
+.segbar button small{font:600 9px/1 var(--f-num);color:var(--on-glass-dim)}
+.segbar button.done i{background:var(--pt)}
+.segbar button.cur i{background:var(--aim)}.segbar button.cur small{color:var(--aim)}
+.segbar button.sel i{background:#5ec8f2;box-shadow:0 0 0 2px rgba(94,200,242,.35)}.segbar button.sel small{color:#5ec8f2}
+.stepnum.edit{background:#5ec8f2;border-color:#5ec8f2}
+.okbtn.edit{background:#5ec8f2;color:#0d1017}
+#lbtn,#rbtn{width:56px;height:56px}
+#lbtn.del{color:#ffb4a0}
+#lbtn:disabled{opacity:.35}
+.moreback{position:absolute;inset:0;z-index:15;background:rgba(5,8,14,.5)}
+.moremenu{position:absolute;z-index:16;left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));max-width:540px;margin:0 auto;background:#141a26;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:6px;display:grid;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.moremenu button{display:flex;align-items:center;gap:14px;min-height:52px;padding:8px 12px;border:0;background:none;color:var(--on-glass);font:500 15px var(--f-ui);text-align:left;border-radius:14px;cursor:pointer}
+.moremenu button:active{background:rgba(255,255,255,.08)}
+.moremenu button+button{border-top:1px solid rgba(255,255,255,.06)}
+.moremenu small{display:block;font-size:12px;color:var(--on-glass-dim);margin-top:2px}
+.moremenu .i{width:22px;height:22px;flex:none;color:#c9d3e6}
+.moremenu .mgold,.moremenu .mgold .i{color:var(--pt);font-weight:600}
+.moremenu button:disabled{opacity:.35}
+.npdraft{display:flex;align-items:center;gap:12px;padding:10px 10px 10px 8px;border-radius:18px;border:1.5px solid rgba(245,201,92,.55);background:linear-gradient(160deg,rgba(245,201,92,.16),rgba(18,23,33,.72))}
+.npdraft img{width:48px;height:64px;object-fit:cover;border-radius:9px;flex:none;background:#222}
+.npdraft .dtx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.npdraft small{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--pt)}
+.npdraft b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.npdraft span{font:500 11.5px var(--f-num);color:var(--on-glass-dim)}
+.npdraft .dseg{display:flex;gap:3px;margin-top:3px}.npdraft .dseg i{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.18)}.npdraft .dseg i.d{background:var(--pt)}
+.npdraft .dbtns{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.dgo{height:42px;border-radius:21px;border:0;background:var(--pt);color:#14213d;font:700 14px var(--f-ui);padding:0 16px;cursor:pointer}
+.dx{width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.08);color:var(--on-glass-dim);display:grid;place-items:center;cursor:pointer;padding:0}.dx .i{width:16px;height:16px}
+/* výsledek na celou obrazovku */
+.sheet .card{width:100%;height:100%;max-width:680px;border-radius:0}
+.sheet .grab{display:none}
+.shead{padding-top:calc(8px + env(safe-area-inset-top,0px))}
+.pfield{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px 6px 4px 14px;margin-bottom:12px}
+.pfield span{font-size:.85rem;color:var(--muted);flex:none}
+.pfield input{flex:1;min-width:0;border:0;background:transparent;font:600 1rem var(--f-ui);color:var(--ink);padding:10px 4px;outline:none}
+.resfoot{flex:none;display:grid;gap:8px;padding:10px max(14px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:var(--surface)}
+.resfoot .btn.primary{background:var(--pt);color:#14213d;border:0;min-height:52px;font-weight:700;font-size:1rem}
+.resfoot .btn .i{width:20px;height:20px}
+.rfrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.resfoot .toastline:empty{display:none}
+.sdots{display:flex;align-items:center;gap:12px}.sdots .d{display:flex;gap:5px}.sdots .d i{width:11px;height:11px;border-radius:50%;border:2px solid var(--gold)}.sdots .d i.f{background:var(--gold)}
+.sdots .t{flex:1;font-size:.86rem;color:var(--muted);line-height:1.3}
+details.det{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+details.det summary{cursor:pointer;font-weight:600;font-size:.9rem;color:var(--sapphire);padding:6px 0;list-style:none}
+details.det summary::after{content:" ▾"}details.det[open] summary::after{content:" ▴"}
 .npgrow{flex:1}
 .npbtns{display:grid;gap:10px}
 .nphint{margin:2px 0 0;text-align:center;font-size:12px;color:rgba(255,255,255,.55)}
@@ -287,6 +339,9 @@ details p{margin:6px 0;color:var(--muted)}
   <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
   <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></symbol>
   <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 20V11M10 20V5M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.7" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
 </svg>
 
@@ -300,6 +355,7 @@ details p{margin:6px 0;color:var(--muted)}
     <div class="stepcard glass" id="stepcard" role="button" tabindex="0" title="Zobrazit popis bodu">
       <div class="stepnum" id="stepNum">1/8</div>
       <div class="steptxt"><b id="stepName">C7</b><span id="stepSub">zezadu</span></div>
+      <span class="segbar" id="chips" role="group" aria-label="Body P1–P8, ťuknutím opravíte"></span>
       <button class="typepill" id="typeBtn" aria-haspopup="menu" aria-expanded="false" aria-label="Typ měření, změnit"><span id="typeTxt">POTSI</span><svg class="i" style="width:16px;height:16px;stroke-width:2.2"><use href="#i-down"/></svg></button>
     </div>
     <button class="gbtn glass" id="menuBtn" aria-label="Výsledek, protokol a návod"><svg class="i"><use href="#i-menu"/></svg></button>
@@ -314,8 +370,8 @@ details p{margin:6px 0;color:var(--muted)}
   <div class="toast glass hide" id="toast" role="status"></div>
 
   <div class="bottom" id="bottom">
-    <div class="chiprow glass" id="chiprow"><span class="chips" id="chips" aria-label="Body P1–P8, ťuknutím opravíte"></span><span class="csep"></span><button class="eyebtn" id="eye" aria-pressed="false" aria-label="Skrýt body a čáry"><svg class="i"><use href="#i-eye"/></svg></button></div>
-    <div class="tools glass" role="toolbar" aria-label="Nástroje">
+    <div id="chiprow" hidden><button class="eyebtn" id="eye" aria-pressed="false" aria-label="Skrýt body a čáry"><svg class="i"><use href="#i-eye"/></svg></button><button id="collapse" hidden></button></div>
+    <div class="tools glass" hidden role="toolbar" aria-label="Nástroje">
       <button class="tool" id="camBtn"><svg class="i"><use href="#i-cam"/></svg><small>Vyfotit</small></button>
       <button class="tool" id="libBtn"><svg class="i"><use href="#i-img"/></svg><small>Galerie</small></button>
       <button class="tool" id="plumb" aria-pressed="false"><svg class="i"><use href="#i-plumb"/></svg><small>Vyrovnat</small></button>
@@ -323,10 +379,23 @@ details p{margin:6px 0;color:var(--muted)}
       <button class="tool" id="zfit"><svg class="i"><use href="#i-fit"/></svg><small>Celá fotka</small></button>
     </div>
     <div class="actrow">
-      <button class="gbtn glass" id="collapse" aria-label="Skrýt ovládání"><svg class="i"><use href="#i-down"/></svg></button>
+      <button class="gbtn glass" id="lbtn" aria-label="Zpět o krok"><svg class="i"><use href="#i-undo"/></svg></button>
       <button class="secbtn glass" id="sec" hidden>Přeskočit</button>
       <button class="okbtn" id="ok" aria-label="Potvrdit bod pod zaměřovačem"><svg class="i"><use href="#i-check"/></svg><span id="okTxt">Umístit P1</span></button>
+      <button class="gbtn glass" id="rbtn" aria-label="Další volby" aria-haspopup="menu"><svg class="i"><use href="#i-more"/></svg></button>
     </div>
+  </div>
+  <div class="moreback" id="moreBack" hidden></div>
+  <div class="moremenu" id="moreMenu" role="menu" hidden>
+    <button role="menuitem" data-m="level"><svg class="i"><use href="#i-plumb"/></svg><span>Vyrovnat snímek<small>automaticky, nebo olovnicí ručně</small></span></button>
+    <button role="menuitem" data-m="fit"><svg class="i"><use href="#i-fit"/></svg><span>Celá fotka<small>oddálit na celý snímek</small></span></button>
+    <button role="menuitem" data-m="eye"><svg class="i"><use href="#i-eye"/></svg><span id="mEyeT">Skrýt body a osy<small>pro kontrolu fotky</small></span></button>
+    <button role="menuitem" data-m="min"><svg class="i"><use href="#i-down"/></svg><span>Skrýt ovládání<small>fotka bez lišt</small></span></button>
+    <button role="menuitem" data-m="cam"><svg class="i"><use href="#i-cam"/></svg><span>Vyfotit znovu</span></button>
+    <button role="menuitem" data-m="lib"><svg class="i"><use href="#i-img"/></svg><span>Jiná fotka z galerie</span></button>
+    <button role="menuitem" data-m="pause" class="mgold"><svg class="i"><use href="#i-pause"/></svg><span>Přerušit – dokončím později<small>fotka i body zůstanou v telefonu</small></span></button>
+    <button role="menuitem" data-m="new"><svg class="i"><use href="#i-cam"/></svg><span>Nové měření<small>zpět na úvodní obrazovku</small></span></button>
+    <button role="menuitem" data-m="proto"><svg class="i"><use href="#i-menu"/></svg><span>Protokol a návod</span></button>
   </div>
 
   <div class="mini">
@@ -337,6 +406,11 @@ details p{margin:6px 0;color:var(--muted)}
 
   <div class="nophoto" id="nophoto" hidden>
     <div class="npbrand"><div class="npmark" aria-hidden="true"><svg width="16" height="20" viewBox="0 0 22 26" fill="none"><path d="M11 1v24" stroke="#fff" stroke-width="1.8" stroke-dasharray="2 2.4"/><path d="M3 6h16M4 12h14M5 18h12" stroke="#f5d488" stroke-width="2.4" stroke-linecap="round"/></svg></div><b>Posturální profil</b></div>
+    <div class="npdraft" id="npDraft" hidden>
+      <img id="dThumb" alt="">
+      <div class="dtx"><small>ROZPRACOVANÉ MĚŘENÍ</small><b id="dTitle">—</b><span id="dSub">—</span><span class="dseg" id="dSeg"></span></div>
+      <div class="dbtns"><button class="dgo" id="dGo">Pokračovat</button><button class="dx" id="dDel" aria-label="Smazat rozpracované měření"><svg class="i"><use href="#i-x"/></svg></button></div>
+    </div>
     <div class="nphead"><h1>Nové měření</h1><p>Co budete měřit?</p></div>
     <div class="npcards" role="radiogroup" aria-label="Typ měření">
       <button class="npcard" role="radio" data-type="POTSI" aria-checked="true">
@@ -354,7 +428,7 @@ details p{margin:6px 0;color:var(--muted)}
     <div class="npbtns">
       <button class="npbtn primary" id="npCam"><svg class="i"><use href="#i-cam"/></svg>Vyfotit s vodováhou</button>
       <button class="npbtn glass" id="npLib"><svg class="i"><use href="#i-img"/></svg>Vybrat z galerie</button>
-      <p class="nphint">Typ jde během měření přepnout štítkem v horní liště.</p>
+      <p class="nphint">Rozpracované měření se ukládá v telefonu samo. Smaže se po uložení výsledku.</p>
     </div>
   </div>
   <div class="ask" id="ask" hidden>
@@ -390,8 +464,8 @@ details p{margin:6px 0;color:var(--muted)}
         <button class="stab" role="tab" data-t="info" aria-selected="false">Návod</button>
       </div>
       <div class="sbody" id="t-result">
+      <label class="pfield"><span>Pacient</span><input id="pname" type="text" autocomplete="off" placeholder="jméno nebo číslo karty"></label>
       <div class="panel">
-        <h2>Výsledek</h2>
         <div id="result"></div>
         <div id="seriesBox"></div>
       </div>
@@ -399,7 +473,6 @@ details p{margin:6px 0;color:var(--muted)}
       <div class="panel">
         <h2>Přehled pacientů v aplikaci</h2>
         <div class="fields">
-          <label class="f">Pacient (jméno nebo číslo karty)<input id="pname" type="text" autocomplete="off" placeholder="např. Novák Jan"></label>
           <label class="f">Datum<input id="pdate" type="date"></label>
         </div>
         <div class="row" style="margin-top:10px">
@@ -412,6 +485,11 @@ details p{margin:6px 0;color:var(--muted)}
         <div class="saved" id="saved"></div>
       </div>
     </div>
+      <div class="resfoot" id="resFoot">
+        <button class="btn primary" id="expImg" disabled><svg class="i"><use href="#i-img"/></svg>Uložit fotku s výsledkem</button>
+        <div class="rfrow"><button class="btn" id="copy" disabled>Kopírovat text</button><button class="btn" id="newM">Nové měření</button></div>
+        <span class="toastline" id="copyToast"></span>
+      </div>
       <div class="sbody" id="t-proto" hidden>
       <div class="panel">
         <h2>Protokol focení <span class="cnt" id="protoCnt"></span></h2>
@@ -504,7 +582,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.14.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.15.</p>
     </div>
     </div>
   </div>
@@ -655,6 +733,7 @@ function setRotation(nr){
 }
 function freeC(c){try{if(c&&c.getContext&&c!==base&&c!==cv){c.width=0;c.height=0}}catch(e){}}
 function newImage(c,demo){
+  draftOff=false;draftImgOf=null;
   if(src&&src!==c)freeC(src);if(origSrc&&origSrc!==c&&origSrc!==src)freeC(origSrc);
   app.classList.remove('nosrc');$('nophoto').hidden=true;
   src=c;isDemo=demo;rot=0;calibrated=false;calibMode=false;levelReview=false;autoLines=[];tiltDeg=null;origSrc=null;levelInfo=null;selected=null;selOrig=null;plumbMode=false;plumbPts=[];
@@ -680,7 +759,7 @@ function clearPhoto(){src=null;origSrc=null;isDemo=false;pts={};hist=[];selected
   levelReview=false;autoLines=[];levelInfo=null;calibMode=false;calibrated=false;rot=0;lastStepKey=null;closeSheet();refresh()}
 let askGo=null;
 function startNew(kind){ // Vyfotit / Galerie: odloží současnou fotku; při neuložených bodech se nejdřív zeptá
-  const go=()=>{clearPhoto();if(kind==='cam')openCam();else $('fileLib').click()};
+  const go=()=>{if(src&&!isDemo)dropDraft();clearPhoto();if(kind==='cam')openCam();else $('fileLib').click()};
   if(src&&!isDemo&&hist.length){askGo=go;$('askT').textContent='Zahodit rozpracované měření?';$('askP').textContent='Body umístěné na současné fotce se ztratí. Chcete-li je zachovat, uložte měření ve Výsledku.';$('askYes').textContent='Zahodit';$('ask').hidden=false;return}
   go();
 }
@@ -966,7 +1045,7 @@ $('sec').onclick=()=>{
   if(src&&!nextKey())newMeasure();
 };
 function newMeasure(){ // zpět na úvodní obrazovku; série opakovaných měření zůstává
-  askGo=()=>{clearPhoto();flash('Nové měření – vyberte typ a pořiďte snímek.')};
+  askGo=()=>{dropDraft();clearPhoto();flash('Nové měření – vyberte typ a pořiďte snímek.')};
   $('askT').textContent='Začít nové měření?';$('askP').textContent='Body z této fotky se zahodí. Pokud jste výsledek ještě neuložili do telefonu nebo nezkopírovali, udělejte to nejdřív ve Výsledku.';$('askYes').textContent='Nové měření';$('ask').hidden=false;
 }
 $('collapse').onclick=()=>{app.classList.add('min');requestAnimationFrame(draw)};
@@ -1003,6 +1082,63 @@ $('undo').onclick=()=>{
 const delp_=document.createElement('button');delp_.id='delp_';delp_.hidden=true;document.body.appendChild(delp_);
 $('delp_').onclick=()=>{const k=selected;if(!k)return;delete pts[k];hist=hist.filter(x=>x!==k);selected=null;selOrig=null;lastStepKey=null;refresh()};
 
+
+/* ---------- v0.15: boční tlačítka, nabídka Více ---------- */
+function sideBtns(){
+  const l=$('lbtn'),r=$('rbtn'),lu=l.querySelector('use'),ru=r.querySelector('use');
+  if(selected){lu.setAttribute('href','#i-del');l.classList.add('del');l.disabled=false;l.setAttribute('aria-label','Smazat bod');
+    ru.setAttribute('href','#i-x');r.setAttribute('aria-label','Zrušit úpravu')}
+  else{lu.setAttribute('href','#i-undo');l.classList.remove('del');l.disabled=$('undo').disabled;l.setAttribute('aria-label','Zpět o krok');
+    ru.setAttribute('href','#i-more');r.setAttribute('aria-label','Další volby')}
+}
+$('lbtn').onclick=()=>{if(selected){$('delp_').click();flash('Bod smazán – umístěte ho znovu.')}else $('undo').click()};
+$('rbtn').onclick=()=>{if(selected){cancelEdit();lastStepKey=null;refresh();flash('Úprava zrušena, bod zůstal na původním místě.');return}openMore()};
+function openMore(){const m=$('moreMenu');
+  m.querySelector('[data-m="level"]').disabled=!src;m.querySelector('[data-m="fit"]').disabled=!src;m.querySelector('[data-m="pause"]').disabled=!src||isDemo;m.querySelector('[data-m="new"]').disabled=!src;
+  $('mEyeT').firstChild.textContent=hideOverlay?'Ukázat body a osy':'Skrýt body a osy';
+  m.hidden=false;$('moreBack').hidden=false}
+function closeMore(){$('moreMenu').hidden=true;$('moreBack').hidden=true}
+$('moreBack').onclick=closeMore;
+$('moreMenu').querySelectorAll('button').forEach(b=>b.onclick=()=>{closeMore();const m=b.dataset.m;
+  if(m==='level')$('plumb').click();else if(m==='fit')$('zfit').click();else if(m==='eye')toggleEye();
+  else if(m==='min')$('collapse').click();else if(m==='cam')$('camBtn').click();else if(m==='lib')$('libBtn').click();
+  else if(m==='pause')pauseMeasure();else if(m==='new')newMeasure();else if(m==='proto')openSheet('proto')});
+$('newM').onclick=()=>{closeSheet();newMeasure()};
+
+/* ---------- v0.15: rozpracované měření v telefonu (IndexedDB) ---------- */
+const KV={db:null,open(){if(this.db)return Promise.resolve(this.db);return new Promise((res,rej)=>{try{const r=indexedDB.open('posturalni-profil',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>{this.db=r.result;res(r.result)};r.onerror=()=>rej(r.error)}catch(e){rej(e)}})},
+  async get(k){try{const d=await this.open();return await new Promise(res=>{const q=d.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null)})}catch(e){return null}},
+  async set(k,v){try{const d=await this.open();await new Promise(res=>{const t=d.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=res;t.onerror=res;t.onabort=res})}catch(e){}},
+  async del(k){try{const d=await this.open();await new Promise(res=>{const t=d.transaction('kv','readwrite');t.objectStore('kv').delete(k);t.oncomplete=res;t.onerror=res})}catch(e){}}};
+let draftT=null,draftImgOf=null,draftOff=false,draftThumb='';
+function scheduleDraft(){if(!src||isDemo||draftOff)return;clearTimeout(draftT);draftT=setTimeout(saveDraft,700)}
+async function saveDraft(){
+  if(!src||isDemo||draftOff)return;
+  if(draftImgOf!==src){const s0=src;const blob=await new Promise(r=>s0.toBlob(r,'image/jpeg',0.92));if(!blob||s0!==src)return;await KV.set('draftImg',blob);draftImgOf=s0;
+    const t=document.createElement('canvas'),k=128/Math.max(s0.width,s0.height);t.width=Math.round(s0.width*k);t.height=Math.round(s0.height*k);t.getContext('2d').drawImage(s0,0,0,t.width,t.height);draftThumb=t.toDataURL('image/jpeg',.7);freeC(t)}
+  let li=null;try{li=levelInfo?JSON.parse(JSON.stringify(levelInfo)):null}catch(e){}
+  await KV.set('draft',{v:1,time:Date.now(),type,rot,pts:JSON.parse(JSON.stringify(pts)),hist:[...hist],series:JSON.parse(JSON.stringify(series)),
+    pname:$('pname').value,calibMode,calibrated,levelInfo:li,thumb:draftThumb,n:hist.length});
+}
+async function dropDraft(){clearTimeout(draftT);draftImgOf=null;await KV.del('draft');await KV.del('draftImg');showDraftCard()}
+async function showDraftCard(){const d=await KV.get('draft'),c=$('npDraft');if(!d){c.hidden=true;return}
+  const t=new Date(d.time),today=new Date().toDateString()===t.toDateString();
+  $('dThumb').src=d.thumb||'';$('dTitle').textContent=`${d.pname?d.pname+' · ':''}${d.type}`;
+  $('dSub').textContent=`${today?'dnes':t.toLocaleDateString('cs-CZ')} ${t.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'})} · ${d.n?d.n+' z 8 bodů':'jen fotka'}`;
+  $('dSeg').innerHTML=Array.from({length:8},(_,i)=>`<i class="${i<d.n?'d':''}"></i>`).join('');c.hidden=false}
+async function resumeDraft(){const d=await KV.get('draft'),blob=await KV.get('draftImg');if(!d||!blob){flash('Rozpracované měření se nepodařilo načíst.',true);dropDraft();return}
+  let bm;try{bm=await createImageBitmap(blob)}catch(e){const im=new Image();im.src=URL.createObjectURL(blob);await im.decode();bm=im}
+  const c=document.createElement('canvas');c.width=bm.width;c.height=bm.height;c.getContext('2d').drawImage(bm,0,0);if(bm.close)bm.close();
+  type=d.type;syncType();draftOff=false;newImage(c,false);draftImgOf=c;draftThumb=d.thumb||'';
+  rot=d.rot||0;rebuildBase();pts=d.pts||{};hist=d.hist||[];series=d.series||[];$('pname').value=d.pname||'';
+  calibMode=d.calibMode||false;calibrated=!!d.calibrated;levelInfo=d.levelInfo;levelReview=false;
+  const nk=nextKey();if(nk&&hist.length){const last=pts[hist[hist.length-1]];if(last)aim={...last}}
+  fit();keepAimVisible();lastStepKey=null;refresh();flash(nk?'Pokračujete tam, kde jste skončil.':'Měření je kompletní – ťukněte na Výsledek.');
+}
+async function pauseMeasure(){clearTimeout(draftT);await saveDraft();clearPhoto();showDraftCard();flash('Měření uloženo v telefonu. Pokračujete z úvodní obrazovky.')}
+$('dGo').onclick=resumeDraft;
+$('dDel').onclick=()=>{askGo=()=>dropDraft();$('askT').textContent='Smazat rozpracované měření?';$('askP').textContent='Fotka i umístěné body z telefonu zmizí.';$('askYes').textContent='Smazat';$('ask').hidden=false};
+$('copy').onclick=copyResult;$('expImg').onclick=exportShare;
 /* ---------- typ měření a panel ---------- */
 function syncType(){const d=def();$('typeTxt').textContent=d.name;$('sheetTitle').textContent=`${d.name} · ${d.view}`;
   document.querySelectorAll('[data-type]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.type===type)))}
@@ -1038,8 +1174,8 @@ function flash(t,warn){const el=$('toast');el.textContent=t;el.classList.toggle(
 $('toast').onclick=()=>$('toast').classList.add('hide');
 function renderSteps(){
   const nk=nextKey();
-  $('chips').innerHTML=def().pts.map((p,i)=>`<button class="chip ${pts[p.k]?'done':''} ${p.k===nk&&!selected?'cur':''} ${p.k===selected?'sel':''}" data-k="${p.k}" aria-label="P${i+1} ${p.n}${pts[p.k]?' – upravit':''}">${i+1}</button>`).join('');
-  $('chips').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{const k=b.dataset.k;if(pts[k])selectPoint(k);else flash(`P${def().pts.findIndex(p=>p.k===k)+1} ještě není umístěný. Body se umisťují postupně tlačítkem ✓.`)});
+  $('chips').innerHTML=def().pts.map((p,i)=>`<button class="${pts[p.k]?'done':''} ${p.k===nk&&!selected?'cur':''} ${p.k===selected?'sel':''}" data-k="${p.k}" aria-label="P${i+1} ${p.n}${pts[p.k]?' – upravit':''}"><i></i><small>${i+1}</small></button>`).join('');
+  $('chips').querySelectorAll('button').forEach(b=>b.onclick=e=>{e.stopPropagation();const k=b.dataset.k;if(pts[k])selectPoint(k);else flash(`P${def().pts.findIndex(p=>p.k===k)+1} ještě není umístěný. Body se umisťují postupně velkým tlačítkem.`)});
 }
 function hint(){
   const d=def(),nk=nextKey(),i=d.pts.findIndex(x=>x.k===nk),n=$('stepNum'),ok=$('ok'),txt=$('okTxt');
@@ -1062,19 +1198,19 @@ function hint(){
       :'Vyrovnání fotky: dejte zaměřovač na horní konec olovnice (nebo svislé hrany dveří) a potvrďte. Nemáte-li v záběru nic svislého, dejte Přeskočit.'}
   else if(selected){const j=d.pts.findIndex(x=>x.k===selected);n.textContent='P'+(j+1);n.classList.add('edit');
     $('stepName').textContent='Úprava: '+d.pts[j].n;txt.textContent='Potvrdit';ok.classList.add('edit');key='edit'+selected;
-    sec.hidden=false;sec.textContent='Smazat';sec.classList.add('danger');
-    desc='Posuňte zaměřovač, bod jde s ním. Potvrďte, nebo zrušte ťuknutím na číslo bodu.'}
+    
+    desc='Posuňte zaměřovač, bod jde s ním. Vlevo smazat, vpravo zrušit úpravu.'}
   else if(nk){const p=d.pts[i];n.textContent=`${i+1}/8`;$('stepName').textContent=`P${i+1} · ${p.n}`;txt.textContent=`Umístit P${i+1}`;key=nk;desc=p.t}
   else{const sn=sanity();n.textContent='✓';n.classList.add('done');$('stepName').textContent=lastRes?`${d.name} ${fmt(lastRes.total)}`:'Hotovo';
-    txt.textContent='Výsledek';ok.classList.add('res');key='done'+sn.length;sec.hidden=false;sec.textContent='Nové měření';
+    txt.textContent='Výsledek';ok.classList.add('res');key='done'+sn.length;
     desc=sn.length?'Pozor: '+sn[0]:'Všechny body jsou umístěné. Bod opravíte ťuknutím na jeho číslo.';warn=!!sn.length}
   if(key!==lastStepKey){lastStepKey=key;if(src)flash(desc,warn);else $('toast').classList.add('hide')}
 }
 function refresh(){
-  $('demoBadge').hidden=!isDemo||!src;$('chiprow').hidden=plumbMode||levelReview||!src;$('nophoto').hidden=!!src;app.classList.toggle('nosrc',!src);syncType();
-  draw();renderResult();renderSteps();hint();updateZoom();
+  $('demoBadge').hidden=!isDemo||!src;$('nophoto').hidden=!!src;app.classList.toggle('nosrc',!src);syncType();
+  draw();renderResult();renderSteps();hint();updateZoom();sideBtns();scheduleDraft();
   $('undo').disabled=!(hist.length||selected||plumbMode||levelReview);$('plumb').disabled=!src;$('zfit').disabled=!src;
-  $('tabVal').textContent=lastRes?fmt(lastRes.total):(series.length?`série ${series.length}`:'');
+  $('tabVal').textContent=lastRes?fmt(lastRes.total):(series.length?`${series.length}×`:'');
 }
 
 /* ---------- kreslení ---------- */
@@ -1218,7 +1354,7 @@ function renderResult(){
     else{
       lastRes=r;const mx=Math.max(20,...r.parts.map(p=>p.v));
       box.innerHTML=`<div class="total"><span class="val">${fmt(r.total)}</span><span class="lbl">${def().name} – toto měření${isDemo?' <span class="st" style="font-weight:400;color:var(--muted)">(ukázka)</span>':''}</span></div>
-      <div class="parts">${r.parts.map(p=>`<div class="part"><code>${p.c}</code><div class="bar"><i style="width:${Math.min(100,p.v/mx*100)}%"></i></div><span class="v">${fmt(p.v)}</span><span class="dir">${p.dir}</span></div>`).join('')}</div>`;
+      <details class="det"><summary>Podrobnosti: dílčí indexy</summary><div class="parts">${r.parts.map(p=>`<div class="part"><code>${p.c}</code><div class="bar"><i style="width:${Math.min(100,p.v/mx*100)}%"></i></div><span class="v">${fmt(p.v)}</span><span class="dir">${p.dir}</span></div>`).join('')}</div></details>`;
     }
   }
   renderSeries();
@@ -1230,26 +1366,17 @@ function renderResult(){
 }
 function currentSet(){const a=series.map(s=>s.total);if(lastRes)a.push(lastRes.total);return a}
 function renderSeries(){
-  const box=$('seriesBox');const all=currentSet();
+  const box=$('seriesBox');const all=currentSet();const has=!!(lastRes||series.length);
+  $('expImg').disabled=!has;$('copy').disabled=!has;
   if(!all.length){box.innerHTML='';return}
-  const st=stats(all);
-  box.innerHTML=`<div class="series">
-    <div class="row" style="justify-content:space-between"><strong style="font-size:.9rem">Opakované měření</strong><span class="ref">doporučeno 3×</span></div>
-    <div class="chips">${series.map((s,i)=>`<span class="chip">${i+1}. ${fmt(s.total)}</span>`).join('')}${lastRes?`<span class="chip cur">${series.length+1}. ${fmt(lastRes.total)}</span>`:''}</div>
-    ${st.n>1?`<div class="total"><span class="val" style="font-size:1.8rem">${fmt(st.m)}</span><span class="pm">± ${fmt(st.sd)} SD · rozpětí ${fmt(st.min)}–${fmt(st.max)} · n = ${st.n}</span></div>`:''}
-    <div class="row">
-      <button class="btn" id="addSeries" ${lastRes?'':'disabled'}>＋ Přidat do série a měřit znovu</button>
-      ${series.length?'<button class="btn" id="clearSeries">Nová série</button>':''}
-    </div>
-    <div class="expbox">
-      <button class="btn primary" id="expImg" ${(lastRes||series.length)?'':'disabled'}><svg class="i"><use href="#i-img"/></svg>Uložit fotku s výsledkem</button>
-      <button class="btn" id="copy" ${(lastRes||series.length)?'':'disabled'}>Kopírovat jen text do záznamu</button>
-      <span class="toastline" id="copyToast"></span>
-    </div></div>`;
-  const a=$('addSeries');if(a)a.onclick=()=>{series.push({total:lastRes.total,parts:lastRes.parts});pts={};hist=[];refresh();
-    show('measure');flash(`Měření ${series.length} přidáno do série. Pořiďte další snímek nebo umístěte body znovu.`)};
+  const st=stats(all),n=all.length;
+  box.innerHTML=`<div class="sdots"><span class="d">${[0,1,2].map(i=>`<i class="${i<n?'f':''}"></i>`).join('')}</span>
+    <span class="t">${n>=3?`Série ${n} měření – zobrazuji průměr ${fmt(st.m)} ± ${fmt(st.sd)} SD.`:n===2?`2 měření (průměr ${fmt(st.m)}). Doporučeno 3.`:'Doporučeno 3 měření pro přesnost.'}</span>
+    ${lastRes?`<button class="btn" id="addSeries" style="color:var(--gold);border-color:var(--gold)">Změřit znovu</button>`:''}</div>
+    ${series.length?`<div class="row" style="margin-top:8px;gap:6px;flex-wrap:wrap">${series.map((s,i)=>`<span class="chip">${i+1}. ${fmt(s.total)}</span>`).join('')}${lastRes?`<span class="chip cur">${series.length+1}. ${fmt(lastRes.total)}</span>`:''}<button class="btn" id="clearSeries" style="min-height:32px;font-size:.8rem">Zrušit sérii</button></div>`:''}`;
+  const a=$('addSeries');if(a)a.onclick=()=>{series.push({total:lastRes.total,parts:lastRes.parts});pts={};hist=[];closeSheet();refresh();
+    flash(`Měření ${series.length} uloženo do série. Umístěte body znovu, nebo přes ⋯ pořiďte nový snímek.`)};
   const c=$('clearSeries');if(c)c.onclick=()=>{series=[];refresh()};
-  $('copy').onclick=copyResult;$('expImg').onclick=exportShare;
 }
 function summary(){
   const all=currentSet();if(!all.length)return null;const st=stats(all);
@@ -1307,7 +1434,7 @@ function exportShare(){ // vše synchronně v rámci ťuknutí – iOS jinak sd�
   const bin=atob(url.split(',')[1]),arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
   const f=new File([arr],expName(),{type:'image/jpeg'}),data={files:[f]};
   if(navigator.canShare&&navigator.canShare(data)){
-    navigator.share(data).then(()=>say('Hotovo. Popis hodnot je ve schránce – v kartotéce ho stačí vložit.'))
+    navigator.share(data).then(()=>{say('Hotovo. Popis hodnot je ve schránce – v kartotéce ho stačí vložit.');draftOff=true;dropDraft()})
       .catch(e=>say(e.name==='AbortError'?'':'Uložení se nepodařilo, zkuste to znovu.'));
     say('V nabídce zvolte „Uložit obrázek“.');return}
   const a=document.createElement('a');a.href=url;a.download=f.name;document.body.appendChild(a);a.click();a.remove();
@@ -1324,7 +1451,7 @@ $('save').onclick=()=>{
   saved.push({type,name:$('pname').value.trim()||(isDemo?'Ukázka':'Bez jména'),date:$('pdate').value,total:s.st.m,n:s.st.n,sd:s.st.sd,
     proto:protoOk(),calibrated:calibMode||calibrated,dist:$('dist').value,camh:$('camh').value,examiner:$('examiner').value.trim(),thumb:th.toDataURL('image/jpeg',.7),demo:isDemo});
   series=[];pts={};hist=[];
-  $('saveToast').textContent='Uloženo do přehledu níže';setTimeout(()=>$('saveToast').textContent='',2500);refresh();renderSaved();
+  draftOff=true;dropDraft();$('saveToast').textContent='Uloženo do přehledu níže';setTimeout(()=>$('saveToast').textContent='',2500);refresh();renderSaved();
 };
 function renderSaved(){
   const box=$('saved');
@@ -1343,7 +1470,7 @@ function renderSaved(){
     return `<div class="sv"><img src="${m.thumb}" alt=""><div><div class="t">${esc(m.name)}</div><div class="m">${m.type} · ${m.date?new Date(m.date).toLocaleDateString('cs-CZ'):'bez data'}${m.demo?' · ukázka':''}</div><div class="m">${esc(cond)}</div></div><div class="n">${fmt(m.total)}${delta}</div></div>`}).join('');
 }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-renderProto();refresh();renderSaved();
+renderProto();refresh();renderSaved();showDraftCard();
 requestAnimationFrame(()=>{fit();keepAimVisible();refresh()});
 })();</script>
 

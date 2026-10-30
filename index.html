@@ -527,7 +527,7 @@ details p{margin:6px 0;color:var(--muted)}
         <ul>
           <li>Pacient svlečený do spodního prádla (dívky úzká podprsenka), bosý. Horní konec intergluteální rýhy musí být odkrytý, jinak POTSI nelze spočítat.</li>
           <li>Delší vlasy stažené sponou, aby nezakrývaly krk a kontury trupu.</li>
-          <li>Před focením palpačně najděte a dermografem (netoxickou tužkou) označte trn C7 a středy akromií; u ATSI i střed jugula. Označené body se na snímku hledají přesněji než body odhadované od oka.</li>
+          <li>Před focením palpačně najděte a dermografem (netoxickou tužkou) označte trn C7; u ATSI střed jugula. Označené body se na snímku hledají přesněji než body odhadované od oka.</li>
         </ul>
         <h3>Postavení</h3>
         <ul>
@@ -557,9 +557,12 @@ details p{margin:6px 0;color:var(--muted)}
       <div class="body">
         <ul>
           <li><b>0 = plná symetrie trupu.</b> Index je poměrový, nezávisí na vzdálenosti ani výšce pacienta; je ale citlivý na náklon fotoaparátu, otočení pacienta a jeho postoj.</li>
-          <li><b>Chyba měření:</b> u POTSI autoři metody uvádějí průměrnou chybu opakovaného měření 5,5 bodu u téhož hodnotitele a 6,4 bodu mezi hodnotiteli (Suzuki 1999). Změnu menší než tato hodnota nelze považovat za skutečné zlepšení ani zhoršení. Aplikace takovou změnu označí „v rámci chyby měření“.</li>
+          <li><b>Chyba měření:</b> u POTSI autoři metody uvádějí průměrnou chybu opakovaného měření 5,5 bodu u téhož hodnotitele a 6,4 bodu mezi hodnotiteli (Suzuki 1999, měřeno z moiré snímků). U ATSI z fotografie uvádí Stoliński (2012) 1,2 a 3,1 bodu. Změnu menší než tato hodnota nelze považovat za skutečné zlepšení ani zhoršení. Aplikace takovou změnu označí „v rámci chyby měření“.</li>
           <li><b>Stabilita:</b> u zdravých dětí se POTSI ani ATSI při opakovaném focení po hodině a po týdnu významně nelišily (Stoliński 2017) – při dodržení protokolu je metoda vhodná pro sledování v čase.</li>
-          <li><b>Orientační hodnoty:</b> zdravé děti 7–10 let měly průměr ATSI 24,3 (421 dětí, Stoliński 2013); v menším souboru zdravých dětí vycházel POTSI kolem 18–22 a ATSI kolem 20–22 (Stoliński 2017). U pacientů se skoliózou je POTSI významně vyšší než u zdravých (Suzuki 1999). Pro dospělé jednotná norma zavedená není.</li>
+          <li><b>Pásma hodnocení POTSI:</b> do 27,5 norma (horní hranice podle Suzukiho a Inamiho 1999, převzatá Mínguézem 2007); 27,5–42 nad hranicí normy; nad 42 výrazně zvýšená asymetrie. Hranice 42 je odvozená (průměr + 1 SD zdravých dětí 28,5 ± 13,3, Matlęga 2020), v literatuře jako hranice publikovaná není.</li>
+          <li><b>Pásma hodnocení ATSI:</b> do 32,3 norma (Stoliński 2012, 70 zdravých dětí 6–7 let, průměr 22,6 ± 10,8); 32,3–44,2 nad hranicí normy; nad 44,2 výrazně zvýšená (odvozeno jako průměr + 2 SD). Pro dospělé jednotná norma zavedená není.</li>
+          <li><b>Hodnoty zdravých dětí v literatuře:</b> POTSI 17,9–19,0 u pětiletých (moiré), 21–22 v kontrolní skupině dětí (Stoliński), 28,5 ± 13,3 (Matlęga 2020). U pacientů se skoliózou je POTSI významně vyšší (Suzuki 1999). Vztah ke Cobbovu úhlu je jen střední (r ≈ 0,4–0,7).</li>
+          <li><b>Střední čára:</b> aplikace ji vede svisle přes začátek intergluteální rýhy (u ATSI přes pupek) podle Suzukiho a Stolińského. Některé aplikace ji vedou přes C7 – jejich čísla nejsou s touto metodikou přímo srovnatelná.</li>
           <li><b>Hranice „POTSI ≤ 10 = norma“</b>, se kterou pracují některé aplikace, s publikovanými daty zdravých dětí nesouhlasí – nepoužívejte ji k závěrům.</li>
           <li><b>Co fotografie neumí:</b> je dvourozměrná, neměří rotaci trupu. Doplňte Adamsův předklonový test se skoliometrem (ATR). RTG s Cobbovým úhlem zůstává zlatým standardem pro diagnózu skoliózy; fotogrammetrie slouží k dokumentaci a sledování bez záření.</li>
           <li><b>Nejcennější informace</b> je trend u téhož pacienta: stejný protokol, stejný hodnotitel, průměr ze 3 měření.</li>
@@ -582,7 +585,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.15.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.16.</p>
     </div>
     </div>
   </div>
@@ -618,7 +621,7 @@ const DEFS={
     ]}
 };
 const PROTO=[
-  {k:'mark',t:'Body označeny dermografem',s:'C7 a akromia po palpaci; u ATSI i jugulum'},
+  {k:'mark',t:'Body označeny dermografem',s:'C7 po palpaci; u ATSI jugulum'},
   {k:'cam',t:'Stativ, fotoaparát ve vodováze a kolmo',s:'bez širokoúhlého objektivu'},
   {k:'dist',t:'Vzdálenost kolem 3 m, objektiv v polovině výšky postavy',s:''},
   {k:'plumb',t:'Olovnice nebo svislice v záběru',s:'a snímek vyrovnaný tlačítkem Vyrovnat'},
@@ -1313,16 +1316,21 @@ let lastRes=null;
 function protoOk(){return PROTO.every(p=>proto[p.k])}
 
 // ---- Vyhodnocení: referenční rozmezí zdravých dětí (validovaná norma neexistuje)
-const REF={POTSI:{m:21.3,sd:10.0,src:'zdravé děti 7–10 let, Stoliński 2017'},ATSI:{m:22.6,sd:10.8,src:'zdravé děti, Stoliński 2012'}};
-function zoneOf(v){const R=REF[type];return v<=R.m+R.sd?1:(v<=R.m+2*R.sd?2:3)}
+// Hranice podle literatury (ověřeno 30. 10. 2026):
+// POTSI: horní hranice normy 27,5 (Suzuki a Inami 1999, Mínguez 2007); 42 ≈ průměr + 1 SD zdravých dětí 28,5 ± 13,3 (Matlęga 2020) – odvozeno, ne publikováno jako hranice.
+// ATSI: horní hranice normy 32,3 (Stoliński 2012, děti 6–7 let, průměr 22,6 ± 10,8); 44,2 = průměr + 2 SD téhož souboru – odvozeno.
+const REF={
+  POTSI:{z1:27.5,z2:42,src1:'horní hranice normy 27,5 podle Suzukiho a Inamiho (1999) a Mínguéze (2007)',src2:'hranice 42 je odvozená (průměr + 1 SD zdravých dětí 28,5 ± 13,3, Matlęga 2020), v literatuře jako hranice uvedena není'},
+  ATSI:{z1:32.3,z2:44.2,src1:'horní hranice normy 32,3 podle Stolińského (2012; děti 6–7 let, průměr 22,6 ± 10,8)',src2:'hranice 44,2 je odvozená (průměr + 2 SD téhož souboru), v literatuře jako hranice uvedena není'}};
+function zoneOf(v){const R=REF[type];return v<=R.z1?1:(v<=R.z2?2:3)}
 function evalHTML(v){
-  const R=REF[type];if(!R)return'';const z1=R.m+R.sd,z2=R.m+2*R.sd,max=Math.max(z2*1.45,v*1.12),P=x=>Math.max(0,Math.min(100,x/max*100));
-  const z=zoneOf(v),names=['','V běžném rozmezí','Hraničně zvýšená asymetrie','Výrazně zvýšená asymetrie'];
+  const R=REF[type];if(!R)return'';const z1=R.z1,z2=R.z2,max=Math.max(z2*1.45,v*1.12),P=x=>Math.max(0,Math.min(100,x/max*100));
+  const z=zoneOf(v),names=['','V normě','Nad hranicí normy','Výrazně zvýšená asymetrie'];
   const err=MEAS_ERR[type]?MEAS_ERR[type].intra:null;
   const who=$('pname').value.trim();
   const hist2=who?[...saved].filter(m=>m.type===type&&m.name===who&&!m.demo).sort((a,b)=>(a.date||'').localeCompare(b.date||'')):[];
   const prev=hist2.length?hist2[hist2.length-1]:null;
-  const txt=[`${def().name} ${fmt(v)} – ${z===1?`asymetrie trupu odpovídá tomu, co se běžně vyskytuje u zdravých dětí (průměr ${fmt(R.m)}).`:z===2?`vyšší než u většiny zdravých dětí (nad ${fmt(z1)}). Vhodné sledovat.`:`výrazně nad hodnotami zdravých dětí (nad ${fmt(z2)}). Doporučeno další vyšetření.`}`];
+  const txt=[`${def().name} ${fmt(v)} – ${z===1?`v normě podle literatury (do ${fmt(z1)}).`:z===2?`nad hranicí normy (${fmt(z1)}). Vhodné sledovat a měření zopakovat.`:`výrazně nad hranicí normy (nad ${fmt(z2)}). Doporučeno další vyšetření.`}`];
   if(prev){const dv=v-prev.total,lim=err;txt.push(`Oproti ${prev.date?new Date(prev.date).toLocaleDateString('cs-CZ'):'minulému měření'} (${fmt(prev.total)}) ${dv>=0?'+':''}${fmt(dv)} – ${lim==null?'chyba měření u ATSI není publikována, posuzujte opatrně':Math.abs(dv)<lim?'v rámci chyby měření, tedy beze změny':dv>0?'zhoršení větší než chyba měření':'zlepšení větší než chyba měření'}.`)}
   let trend='';
   const T=[...hist2.map(m=>({v:m.total,l:m.date?new Date(m.date).toLocaleDateString('cs-CZ',{day:'numeric',month:'numeric',year:'2-digit'}):'–'})),{v,l:'dnes',cur:1}];
@@ -1339,10 +1347,10 @@ function evalHTML(v){
       ${err!=null?`<div class="err" style="left:${P(v-err)}%;right:${100-P(v+err)}%"></div>`:''}
       ${prev?`<div class="prev" style="left:${P(prev.total)}%" title="minulé měření"></div>`:''}
       <div class="mk" style="left:${P(v)}%"><span>${fmt(v)}</span><i></i></div></div>
-    <div class="evticks"><span style="left:0;transform:none">0</span><span style="left:${P(R.m)}%">⌀ ${fmt(R.m)}</span><span style="left:${P(z1)}%">${fmt(z1)}</span><span style="left:${P(z2)}%">${fmt(z2)}</span></div>
-    <div class="evleg"><span><i class="s1" style="background:#cdebd9"></i>běžné u zdravých</span><span><i style="background:#f6e2b1"></i>hraniční</span><span><i style="background:#f3c9c0"></i>výrazně zvýšené</span>${err!=null?'<span><i style="border:1.5px dashed #5b6782;background:none"></i>chyba měření ±'+fmt(err)+'</span>':''}${prev?'<span><i style="border-radius:50%;border:2px solid #5b6782;background:#fff;width:9px;height:9px"></i>minule</span>':''}</div>
+    <div class="evticks"><span style="left:0;transform:none">0</span><span style="left:${P(z1)}%">${fmt(z1)}</span><span style="left:${P(z2)}%">${fmt(z2)}</span></div>
+    <div class="evleg"><span><i class="s1" style="background:#cdebd9"></i>norma</span><span><i style="background:#f6e2b1"></i>nad hranicí normy</span><span><i style="background:#f3c9c0"></i>výrazně zvýšené</span>${err!=null?'<span><i style="border:1.5px dashed #5b6782;background:none"></i>chyba měření ±'+fmt(err)+'</span>':''}${prev?'<span><i style="border-radius:50%;border:2px solid #5b6782;background:#fff;width:9px;height:9px"></i>minule</span>':''}</div>
     <p class="evtxt">${txt.join('<br>')}</p>${trend}
-    <p class="evnote">Referenční rozmezí: ${R.src} (průměr ${fmt(R.m)} ± ${fmt(R.sd)} SD). Validovaná norma neexistuje – slouží k orientaci a ke sledování vývoje, ne jako diagnóza.</p>
+    <p class="evnote">Pásma: ${R.src1}; ${R.src2}. Slouží k orientaci a ke sledování vývoje, ne jako diagnóza.</p>
   </div>`;
 }
 function renderResult(){
@@ -1408,7 +1416,7 @@ function exportCanvas(){
   const vw=g.measureText(fmt(s.st.m)).width;
   g.fillStyle='rgba(255,255,255,.65)';g.font=`500 ${26*u}px ${sans}`;
   g.fillText(s.st.n>1?`průměr ${s.st.n} měření · SD ${fmt(s.st.sd)}`:'1 měření',pad+vw+22*u,y0+176*u);
-  if(REF[type]){const z=zoneOf(s.st.m),zc=['','#3fbf7a','#e8b53a','#e2624b'][z],zt=['','běžné rozmezí','hraniční','výrazně zvýšené'][z];
+  if(REF[type]){const z=zoneOf(s.st.m),zc=['','#3fbf7a','#e8b53a','#e2624b'][z],zt=['','v normě','nad hranicí normy','výrazně zvýšené'][z];
     g.fillStyle=zc;g.beginPath();g.arc(pad+vw+34*u,y0+126*u,11*u,0,Math.PI*2);g.fill();
     g.font=`600 ${26*u}px ${sans}`;g.fillText(zt,pad+vw+54*u,y0+136*u)}
   // dílčí indexy vpravo

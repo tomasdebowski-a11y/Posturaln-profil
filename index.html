@@ -203,6 +203,30 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 details.det{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
 details.det summary{cursor:pointer;font-weight:600;font-size:.9rem;color:var(--sapphire);padding:6px 0;list-style:none}
 details.det summary::after{content:" ▾"}details.det[open] summary::after{content:" ▴"}
+
+/* v0.17 – fotky do zásoby */
+.npqueue{display:grid;gap:8px;padding:10px;border-radius:18px;border:1.5px solid rgba(245,201,92,.5);background:linear-gradient(160deg,rgba(245,201,92,.13),rgba(18,23,33,.72))}
+.qhead{display:flex;justify-content:space-between;align-items:center;padding:0 4px}
+.qhead small{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--pt)}
+.qhead span{font:600 12px var(--f-num);color:var(--on-glass-dim)}
+.qlist{display:grid;gap:6px;max-height:248px;overflow:auto}
+.qrow{display:flex;align-items:center;gap:10px;padding:6px;border-radius:13px;background:rgba(255,255,255,.05)}
+.qrow img{width:40px;height:54px;object-fit:cover;border-radius:8px;flex:none;background:#222}
+.qrow .qt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.qrow b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qrow .qs{font:500 11px var(--f-num);color:var(--on-glass-dim)}
+.qrow .dseg{display:flex;gap:3px;margin-top:2px}.qrow .dseg i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.18)}.qrow .dseg i.d{background:var(--pt)}
+.qrow .dgo{height:38px;font-size:13px;padding:0 14px}
+.nprow2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.askcard .nprow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.askcard .nprow .npbtn{min-height:48px;border-radius:24px;padding:0 10px;font-size:.95rem}
+.askcard .nprow .npbtn.glass{border:1px solid rgba(255,255,255,.18)}
+.npbtn.gold{color:var(--pt);border-color:rgba(245,201,92,.5)}
+.camq{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(112px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;padding:6px 8px 6px 6px;border-radius:999px;background:rgba(20,26,38,.85);border:1px solid rgba(245,201,92,.5);color:#fff;font:600 13px var(--f-ui);white-space:nowrap}
+.camtype{height:34px;border-radius:17px;border:1.5px solid var(--pt);background:rgba(245,201,92,.14);color:var(--pt);font:700 13px var(--f-num);padding:0 12px;cursor:pointer}
+.cam.flash::after{content:"";position:absolute;inset:0;background:#fff;opacity:.7;animation:camFlash .35s ease-out forwards;pointer-events:none}
+@keyframes camFlash{to{opacity:0}}
+.qin{width:100%;box-sizing:border-box;margin:4px 0 12px;height:46px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font:500 16px var(--f-ui);padding:0 12px}
 .npgrow{flex:1}
 .npbtns{display:grid;gap:10px}
 .nphint{margin:2px 0 0;text-align:center;font-size:12px;color:rgba(255,255,255,.55)}
@@ -406,10 +430,9 @@ details p{margin:6px 0;color:var(--muted)}
 
   <div class="nophoto" id="nophoto" hidden>
     <div class="npbrand"><div class="npmark" aria-hidden="true"><svg width="16" height="20" viewBox="0 0 22 26" fill="none"><path d="M11 1v24" stroke="#fff" stroke-width="1.8" stroke-dasharray="2 2.4"/><path d="M3 6h16M4 12h14M5 18h12" stroke="#f5d488" stroke-width="2.4" stroke-linecap="round"/></svg></div><b>Posturální profil</b></div>
-    <div class="npdraft" id="npDraft" hidden>
-      <img id="dThumb" alt="">
-      <div class="dtx"><small>ROZPRACOVANÉ MĚŘENÍ</small><b id="dTitle">—</b><span id="dSub">—</span><span class="dseg" id="dSeg"></span></div>
-      <div class="dbtns"><button class="dgo" id="dGo">Pokračovat</button><button class="dx" id="dDel" aria-label="Smazat rozpracované měření"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="npqueue" id="npQueue" hidden>
+      <div class="qhead"><small>FOTKY K MĚŘENÍ</small><span id="qCount"></span></div>
+      <div class="qlist" id="qList"></div>
     </div>
     <div class="nphead"><h1>Nové měření</h1><p>Co budete měřit?</p></div>
     <div class="npcards" role="radiogroup" aria-label="Typ měření">
@@ -427,8 +450,8 @@ details p{margin:6px 0;color:var(--muted)}
     <div class="npgrow"></div>
     <div class="npbtns">
       <button class="npbtn primary" id="npCam"><svg class="i"><use href="#i-cam"/></svg>Vyfotit s vodováhou</button>
-      <button class="npbtn glass" id="npLib"><svg class="i"><use href="#i-img"/></svg>Vybrat z galerie</button>
-      <p class="nphint">Rozpracované měření se ukládá v telefonu samo. Smaže se po uložení výsledku.</p>
+      <div class="nprow2"><button class="npbtn glass" id="npLib"><svg class="i"><use href="#i-img"/></svg>Z galerie</button><button class="npbtn glass gold" id="npQuick"><svg class="i"><use href="#i-pause"/></svg>Fotit do zásoby</button></div>
+      <p class="nphint"><b>Fotit do zásoby</b> = jen vyfotíte (i víc snímků), body zadáte později v klidu. Fotky i rozpracovaná měření zůstávají v telefonu, smažou se po uložení výsledku.</p>
     </div>
   </div>
   <div class="ask" id="ask" hidden>
@@ -438,10 +461,20 @@ details p{margin:6px 0;color:var(--muted)}
       <div class="nprow"><button class="npbtn glass" id="askNo">Ponechat</button><button class="npbtn danger" id="askYes">Zahodit</button></div>
     </div>
   </div>
+  <div class="ask" id="qName" hidden>
+    <div class="askcard glass" role="dialog" aria-labelledby="qNameT">
+      <b id="qNameT">Uloženo do zásoby</b>
+      <p id="qNameP">Ke komu fotky patří? (nepovinné – pomůže je později najít)</p>
+      <input id="qNameIn" type="text" autocomplete="off" placeholder="jméno nebo číslo karty" class="qin">
+      <div class="nprow"><button class="npbtn glass" id="qNameSkip">Přeskočit</button><button class="npbtn primary" id="qNameOk">Uložit</button></div>
+    </div>
+  </div>
+  <input id="fileQ" type="file" accept="image/*" multiple hidden>
   <div class="cam" id="cam" hidden>
     <video id="camVideo" playsinline muted autoplay></video>
     <canvas id="camOver"></canvas>
     <div class="camtop glass"><b id="camStatus">Narovnejte telefon</b><span class="camread" id="camRead">—</span></div>
+    <div class="camq" id="camQ" hidden><button class="camtype" id="camType">POTSI ⇄</button><span id="camQn">Do zásoby · 0 fotek</span></div>
     <div class="cambar">
       <button class="gbtn glass" id="camClose" aria-label="Zavřít fotoaparát">✕</button>
       <button class="shutter" id="shutter" aria-label="Vyfotit"></button>
@@ -511,6 +544,7 @@ details p{margin:6px 0;color:var(--muted)}
         <ul class="help">
           <li><b>1. Fotka</b> – <b>Vyfotit</b> otevře fotoaparát s vodováhou: vodorovná čára a bublina ukazují náklon a sklon telefonu, spoušť zezelená, až je telefon rovně (náklon pod 0,5°, sklon pod 1°). Pacient má temenem a chodidly sedět na čárkovaných vodítkách. Fotku lze vybrat i z Galerie.</li>
           <li><b>2. Vyrovnání</b> – u fotky z aplikace podle senzorů telefonu (a pro kontrolu podle hran), u fotky z galerie automaticky: aplikace najde svislé linie v záběru (olovnici, zárubeň dveří, roh místnosti) a fotku podle nich srovná. Žluté čáry ukazují, podle čeho; když sedí, dejte Pokračovat. Jinak <b>Olovnicí ručně</b>: zaměřovač na horní konec olovnice, potvrdit, na dolní konec, potvrdit.</li>
+          <li><b>Fotit do zásoby</b> – na úvodní obrazovce. Otevře fotoaparát s vodováhou, ale po vyfocení zůstane otevřený, takže pořídíte víc snímků za sebou (POTSI/ATSI přepnete štítkem dole). Na konci zadáte jméno pacienta. Fotky čekají v seznamu <b>Fotky k měření</b> a body do nich zadáte později v klidu – vyrovnání podle senzorů se použije až při otevření. Do zásoby jde i víc fotek najednou z galerie (ikona galerie ve fotoaparátu). Rozpracované měření se do seznamu vrací i přes ⋯ → Přerušit.</li>
           <li><b>3. Body P1–P8</b> – zaměřovač posuňte na bod a potvrďte velkým tlačítkem. Po podpažní řase skočí zaměřovač nad ni a u ramene se posouvá jen nahoru a dolů – rameno leží podle metody na svislici z podpažní řasy.</li>
           <li><b>Zaměřovač</b> posouváte jedním prstem kdekoli na fotce; neskočí pod prst, takže ho nezakryjete. Pomalý pohyb prstu = jemné doladění. Ťuknutím ho přesunete na dané místo.</li>
           <li><b>Dvěma prsty</b> fotku přibližujete a posouváte. Lišty se nepřibližují.</li>
@@ -585,7 +619,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.16.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.17.</p>
     </div>
     </div>
   </div>
@@ -736,7 +770,7 @@ function setRotation(nr){
 }
 function freeC(c){try{if(c&&c.getContext&&c!==base&&c!==cv){c.width=0;c.height=0}}catch(e){}}
 function newImage(c,demo){
-  draftOff=false;draftImgOf=null;
+  draftOff=false;draftImgOf=null;curId=null;
   if(src&&src!==c)freeC(src);if(origSrc&&origSrc!==c&&origSrc!==src)freeC(origSrc);
   app.classList.remove('nosrc');$('nophoto').hidden=true;
   src=c;isDemo=demo;rot=0;calibrated=false;calibMode=false;levelReview=false;autoLines=[];tiltDeg=null;origSrc=null;levelInfo=null;selected=null;selOrig=null;plumbMode=false;plumbPts=[];
@@ -761,10 +795,9 @@ $('fileLib').addEventListener('change',onFile);$('fileCam').addEventListener('ch
 function clearPhoto(){src=null;origSrc=null;isDemo=false;pts={};hist=[];selected=null;selOrig=null;plumbMode=false;plumbPts=[];setPressed('plumb',false);
   levelReview=false;autoLines=[];levelInfo=null;calibMode=false;calibrated=false;rot=0;lastStepKey=null;closeSheet();refresh()}
 let askGo=null;
-function startNew(kind){ // Vyfotit / Galerie: odloží současnou fotku; při neuložených bodech se nejdřív zeptá
-  const go=()=>{if(src&&!isDemo)dropDraft();clearPhoto();if(kind==='cam')openCam();else $('fileLib').click()};
-  if(src&&!isDemo&&hist.length){askGo=go;$('askT').textContent='Zahodit rozpracované měření?';$('askP').textContent='Body umístěné na současné fotce se ztratí. Chcete-li je zachovat, uložte měření ve Výsledku.';$('askYes').textContent='Zahodit';$('ask').hidden=false;return}
-  go();
+function startNew(kind){ // Vyfotit / Galerie: současná fotka se uloží do seznamu Fotky k měření, nic se neztratí
+  if(src&&!isDemo){clearTimeout(draftT);saveDraft().then(showDraftCard)}
+  clearPhoto();if(kind==='cam')openCam();else $('fileLib').click();
 }
 $('askYes').onclick=()=>{$('ask').hidden=true;const g=askGo;askGo=null;if(g)g()};
 $('askNo').onclick=()=>{$('ask').hidden=true;askGo=null};
@@ -1022,6 +1055,9 @@ async function shoot(){
   if(!camStream)return;const u=upVec?{...upVec}:null;const frame=await grabFrame();closeCam();
   if(!frame.width){flash('Snímek se nepodařilo pořídit, zkuste to znovu.',true);return}
   frame._origMpx=frame.width*frame.height/1e6;frame._f35=26;
+  processShot(frame,u);
+}
+function processShot(frame,u){
   if(isDemo)series=[];pts={};hist=[];newImage(frame,false);
   if(!u){autoLevel();return}
   const L=levelFrom(u),f=26/43.27*Math.hypot(frame.width,frame.height),Dn=Math.abs(L.pitch)<0.05?Infinity:(f/Math.tan(L.pitch*Math.PI/180))/frame.height;
@@ -1034,7 +1070,7 @@ async function shoot(){
   levelInfo={roll:L.roll,pitch:out.pitch||0,sensor:true,raw:L,chk};calibMode='sensor';calibrated=true;levelReview=true;autoLines=[];lastStepKey=null;
   rebuildBase();aim={x:base.width/2,y:base.height*0.3};fit();refresh();
 }
-$('camClose').onclick=closeCam;$('shutter').onclick=shoot;$('camLib').onclick=()=>{closeCam();$('fileLib').click()};
+$('camClose').onclick=()=>{closeCam();if(quickMode)endQuick()};$('shutter').onclick=()=>quickMode?quickShoot():shoot();$('camLib').onclick=()=>{closeCam();if(quickMode){$('fileQ').click()}else $('fileLib').click()};
 
 
 
@@ -1113,34 +1149,89 @@ const KV={db:null,open(){if(this.db)return Promise.resolve(this.db);return new P
   async get(k){try{const d=await this.open();return await new Promise(res=>{const q=d.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null)})}catch(e){return null}},
   async set(k,v){try{const d=await this.open();await new Promise(res=>{const t=d.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=res;t.onerror=res;t.onabort=res})}catch(e){}},
   async del(k){try{const d=await this.open();await new Promise(res=>{const t=d.transaction('kv','readwrite');t.objectStore('kv').delete(k);t.oncomplete=res;t.onerror=res})}catch(e){}}};
-let draftT=null,draftImgOf=null,draftOff=false,draftThumb='';
+let draftT=null,draftImgOf=null,draftOff=false,draftThumb='',curId=null;
+const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+async function qList(){return (await KV.get('queue'))||[]}
+async function qPut(meta){const q=(await qList()).filter(x=>x.id!==meta.id);q.unshift(meta);await KV.set('queue',q)}
+async function qDel(id){if(!id)return;const q=(await qList()).filter(x=>x.id!==id);await KV.set('queue',q);await KV.del('img:'+id);await KV.del('st:'+id)}
+function thumbOf(c){const t=document.createElement('canvas'),k=128/Math.max(c.width,c.height);t.width=Math.round(c.width*k);t.height=Math.round(c.height*k);t.getContext('2d').drawImage(c,0,0,t.width,t.height);const u=t.toDataURL('image/jpeg',.7);freeC(t);return u}
 function scheduleDraft(){if(!src||isDemo||draftOff)return;clearTimeout(draftT);draftT=setTimeout(saveDraft,700)}
 async function saveDraft(){
   if(!src||isDemo||draftOff)return;
-  if(draftImgOf!==src){const s0=src;const blob=await new Promise(r=>s0.toBlob(r,'image/jpeg',0.92));if(!blob||s0!==src)return;await KV.set('draftImg',blob);draftImgOf=s0;
-    const t=document.createElement('canvas'),k=128/Math.max(s0.width,s0.height);t.width=Math.round(s0.width*k);t.height=Math.round(s0.height*k);t.getContext('2d').drawImage(s0,0,0,t.width,t.height);draftThumb=t.toDataURL('image/jpeg',.7);freeC(t)}
+  if(!curId)curId=newId();
   let li=null;try{li=levelInfo?JSON.parse(JSON.stringify(levelInfo)):null}catch(e){}
-  await KV.set('draft',{v:1,time:Date.now(),type,rot,pts:JSON.parse(JSON.stringify(pts)),hist:[...hist],series:JSON.parse(JSON.stringify(series)),
-    pname:$('pname').value,calibMode,calibrated,levelInfo:li,thumb:draftThumb,n:hist.length});
+  // stav se zachytí hned (synchronně), aby ho nepřepsala další akce
+  const id=curId,s0=src,needImg=draftImgOf!==s0,st={rot,pts:JSON.parse(JSON.stringify(pts)),hist:[...hist],series:JSON.parse(JSON.stringify(series)),calibMode,calibrated,levelInfo:li},
+    meta={id,time:Date.now(),type,pname:$('pname').value,n:hist.length,thumb:needImg?thumbOf(s0):draftThumb,raw:false};
+  if(needImg){draftImgOf=s0;draftThumb=meta.thumb}
+  await KV.set('st:'+id,st);
+  if(needImg){const blob=await new Promise(r=>s0.toBlob(r,'image/jpeg',0.92));if(blob)await KV.set('img:'+id,blob)}
+  await qPut(meta);
 }
-async function dropDraft(){clearTimeout(draftT);draftImgOf=null;await KV.del('draft');await KV.del('draftImg');showDraftCard()}
-async function showDraftCard(){const d=await KV.get('draft'),c=$('npDraft');if(!d){c.hidden=true;return}
-  const t=new Date(d.time),today=new Date().toDateString()===t.toDateString();
-  $('dThumb').src=d.thumb||'';$('dTitle').textContent=`${d.pname?d.pname+' · ':''}${d.type}`;
-  $('dSub').textContent=`${today?'dnes':t.toLocaleDateString('cs-CZ')} ${t.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'})} · ${d.n?d.n+' z 8 bodů':'jen fotka'}`;
-  $('dSeg').innerHTML=Array.from({length:8},(_,i)=>`<i class="${i<d.n?'d':''}"></i>`).join('');c.hidden=false}
-async function resumeDraft(){const d=await KV.get('draft'),blob=await KV.get('draftImg');if(!d||!blob){flash('Rozpracované měření se nepodařilo načíst.',true);dropDraft();return}
-  let bm;try{bm=await createImageBitmap(blob)}catch(e){const im=new Image();im.src=URL.createObjectURL(blob);await im.decode();bm=im}
-  const c=document.createElement('canvas');c.width=bm.width;c.height=bm.height;c.getContext('2d').drawImage(bm,0,0);if(bm.close)bm.close();
-  type=d.type;syncType();draftOff=false;newImage(c,false);draftImgOf=c;draftThumb=d.thumb||'';
-  rot=d.rot||0;rebuildBase();pts=d.pts||{};hist=d.hist||[];series=d.series||[];$('pname').value=d.pname||'';
-  calibMode=d.calibMode||false;calibrated=!!d.calibrated;levelInfo=d.levelInfo;levelReview=false;
+async function dropDraft(){clearTimeout(draftT);const id=curId;curId=null;draftImgOf=null;await qDel(id);showDraftCard()}
+async function migrateOld(){const d=await KV.get('draft');if(!d)return;const img=await KV.get('draftImg');
+  if(img){const id=newId();await KV.set('img:'+id,img);await KV.set('st:'+id,{rot:d.rot,pts:d.pts,hist:d.hist,series:d.series,calibMode:d.calibMode,calibrated:d.calibrated,levelInfo:d.levelInfo});
+    await qPut({id,time:d.time,type:d.type,pname:d.pname,n:d.n||0,thumb:d.thumb,raw:false})}
+  await KV.del('draft');await KV.del('draftImg')}
+async function showDraftCard(){
+  const q=await qList(),box=$('npQueue');if(!q.length){box.hidden=true;return}
+  const now=new Date();
+  $('qCount').textContent=q.length===1?'1':String(q.length);
+  $('qList').innerHTML=q.map(m=>{const t=new Date(m.time),today=now.toDateString()===t.toDateString();
+    const when=`${today?'dnes':t.toLocaleDateString('cs-CZ',{day:'numeric',month:'numeric'})} ${t.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'})}`;
+    const st=m.raw?'jen fotka':(m.n?`${m.n} z 8 bodů`:'jen fotka');
+    return `<div class="qrow"><img src="${m.thumb||''}" alt=""><div class="qt"><b>${esc(m.pname||'Bez jména')} · ${m.type}</b><span class="qs">${when} · ${st}</span><span class="dseg">${Array.from({length:8},(_,i)=>`<i class="${i<(m.n||0)?'d':''}"></i>`).join('')}</span></div>
+      <button class="dgo" data-go="${m.id}">${m.n?'Pokračovat':'Změřit'}</button><button class="dx" data-del="${m.id}" aria-label="Smazat"><svg class="i"><use href="#i-x"/></svg></button></div>`}).join('');
+  $('qList').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>resumeItem(b.dataset.go));
+  $('qList').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const id=b.dataset.del;askGo=async()=>{await qDel(id);showDraftCard()};
+    $('askT').textContent='Smazat tuto fotku?';$('askP').textContent='Fotka i případné umístěné body z telefonu zmizí.';$('askYes').textContent='Smazat';$('ask').hidden=false});
+  box.hidden=false;
+}
+async function blobToCanvas(blob){let bm;try{bm=await createImageBitmap(blob)}catch(e){const im=new Image();im.src=URL.createObjectURL(blob);await im.decode();bm=im}
+  const c=document.createElement('canvas');c.width=bm.width;c.height=bm.height;c.getContext('2d').drawImage(bm,0,0);if(bm.close)bm.close();return c}
+async function resumeItem(id){
+  const m=(await qList()).find(x=>x.id===id),blob=await KV.get('img:'+id),st=(await KV.get('st:'+id))||{};
+  if(!m||!blob){flash('Fotku se nepodařilo načíst.',true);await qDel(id);showDraftCard();return}
+  const c=await blobToCanvas(blob);type=m.type;syncType();draftOff=false;$('pname').value=m.pname||'';series=[];
+  if(m.raw){ // fotka ze zásoby – teprve teď se vyrovná
+    c._origMpx=c.width*c.height/1e6;c._f35=26;
+    if(st.up)processShot(c,st.up);else{pts={};hist=[];newImage(c,false);autoLevel()}
+    curId=id;draftThumb=m.thumb||'';return}
+  newImage(c,false);curId=id;draftImgOf=c;draftThumb=m.thumb||'';
+  rot=st.rot||0;rebuildBase();pts=st.pts||{};hist=st.hist||[];series=st.series||[];
+  calibMode=st.calibMode||false;calibrated=!!st.calibrated;levelInfo=st.levelInfo||null;levelReview=false;
   const nk=nextKey();if(nk&&hist.length){const last=pts[hist[hist.length-1]];if(last)aim={...last}}
   fit();keepAimVisible();lastStepKey=null;refresh();flash(nk?'Pokračujete tam, kde jste skončil.':'Měření je kompletní – ťukněte na Výsledek.');
 }
 async function pauseMeasure(){clearTimeout(draftT);await saveDraft();clearPhoto();showDraftCard();flash('Měření uloženo v telefonu. Pokračujete z úvodní obrazovky.')}
-$('dGo').onclick=resumeDraft;
-$('dDel').onclick=()=>{askGo=()=>dropDraft();$('askT').textContent='Smazat rozpracované měření?';$('askP').textContent='Fotka i umístěné body z telefonu zmizí.';$('askYes').textContent='Smazat';$('ask').hidden=false};
+/* fotky do zásoby */
+let quickMode=false,quickIds=[];
+function quickLabel(){$('camQn').textContent=`Do zásoby · ${quickIds.length} ${quickIds.length===1?'fotka':(quickIds.length>=2&&quickIds.length<=4?'fotky':'fotek')}`;$('camType').textContent=`${type} ⇄`}
+async function startQuick(){quickMode=true;quickIds=[];await openCam();if(camStream){$('camQ').hidden=false;quickLabel()}else quickMode=false}
+async function quickShoot(){
+  const u=upVec?{...upVec}:null;const frame=await grabFrame();if(!frame.width){flash('Snímek se nepodařilo pořídit.',true);return}
+  const cam=$('cam');cam.classList.remove('flash');void cam.offsetWidth;cam.classList.add('flash');
+  const id=newId(),blob=await new Promise(r=>frame.toBlob(r,'image/jpeg',0.92)),th=thumbOf(frame);freeC(frame);
+  await KV.set('img:'+id,blob);await KV.set('st:'+id,{up:u});await qPut({id,time:Date.now(),type,pname:'',n:0,thumb:th,raw:true});
+  quickIds.push(id);quickLabel();
+}
+async function quickImport(files){
+  for(const f of files){try{const c=await blobToCanvas(f),k=Math.min(1,3000/Math.max(c.width,c.height));let cc=c;
+      if(k<1){cc=document.createElement('canvas');cc.width=Math.round(c.width*k);cc.height=Math.round(c.height*k);cc.getContext('2d').drawImage(c,0,0,cc.width,cc.height);freeC(c)}
+      const id=newId(),blob=await new Promise(r=>cc.toBlob(r,'image/jpeg',0.92)),th=thumbOf(cc);freeC(cc);
+      await KV.set('img:'+id,blob);await KV.set('st:'+id,{});await qPut({id,time:Date.now(),type,pname:'',n:0,thumb:th,raw:true});quickIds.push(id)}catch(e){}}
+}
+function endQuick(){quickMode=false;$('camQ').hidden=true;
+  if(!quickIds.length){showDraftCard();return}
+  $('qNameIn').value='';$('qNameT').textContent=`Uloženo do zásoby: ${quickIds.length} ${quickIds.length===1?'fotka':(quickIds.length<=4?'fotky':'fotek')}`;$('qName').hidden=false;setTimeout(()=>$('qNameIn').focus(),50)}
+async function finishQuick(name){$('qName').hidden=true;const ids=quickIds;quickIds=[];
+  if(name){const q=await qList();q.forEach(m=>{if(ids.includes(m.id))m.pname=name});await KV.set('queue',q)}
+  showDraftCard();flash('Fotky jsou na úvodní obrazovce v seznamu Fotky k měření.')}
+$('qNameOk').onclick=()=>finishQuick($('qNameIn').value.trim());$('qNameSkip').onclick=()=>finishQuick('');
+$('qNameIn').onkeydown=e=>{if(e.key==='Enter')finishQuick($('qNameIn').value.trim())};
+$('npQuick').onclick=startQuick;
+$('camType').onclick=()=>{type=type==='POTSI'?'ATSI':'POTSI';syncType();quickLabel()};
+$('fileQ').addEventListener('change',async e=>{const fs=[...(e.target.files||[])];e.target.value='';if(!fs.length){endQuick();return}flash('Ukládám fotky…');await quickImport(fs);endQuick()});
 $('copy').onclick=copyResult;$('expImg').onclick=exportShare;
 /* ---------- typ měření a panel ---------- */
 function syncType(){const d=def();$('typeTxt').textContent=d.name;$('sheetTitle').textContent=`${d.name} · ${d.view}`;
@@ -1478,7 +1569,7 @@ function renderSaved(){
     return `<div class="sv"><img src="${m.thumb}" alt=""><div><div class="t">${esc(m.name)}</div><div class="m">${m.type} · ${m.date?new Date(m.date).toLocaleDateString('cs-CZ'):'bez data'}${m.demo?' · ukázka':''}</div><div class="m">${esc(cond)}</div></div><div class="n">${fmt(m.total)}${delta}</div></div>`}).join('');
 }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-renderProto();refresh();renderSaved();showDraftCard();
+renderProto();refresh();renderSaved();migrateOld().then(showDraftCard);
 requestAnimationFrame(()=>{fit();keepAimVisible();refresh()});
 })();</script>
 

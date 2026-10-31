@@ -223,6 +223,12 @@ details.det summary::after{content:" ▾"}details.det[open] summary::after{conte
 .askcard .nprow .npbtn.glass{border:1px solid rgba(255,255,255,.18)}
 .npbtn.gold{color:var(--pt);border-color:rgba(245,201,92,.5)}
 .camq{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(112px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;padding:6px 8px 6px 6px;border-radius:999px;background:rgba(20,26,38,.85);border:1px solid rgba(245,201,92,.5);color:#fff;font:600 13px var(--f-ui);white-space:nowrap}
+.camauto{height:34px;border-radius:17px;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff;font:600 12.5px var(--f-ui);padding:0 12px;cursor:pointer}
+.camauto[aria-pressed="true"]{border-color:#3dff6e;color:#3dff6e;background:rgba(61,255,110,.12)}
+#camQ{display:inline-flex;align-items:center;gap:8px}#camQ[hidden]{display:none}
+.camhint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:12px 18px;border-radius:16px;background:rgba(10,14,21,.8);color:#fff;font:600 15px var(--f-ui);text-align:center;pointer-events:none;max-width:80%}
+.shutter.armed{box-shadow:0 0 0 3px rgba(0,0,0,.35),0 0 0 9px rgba(61,255,110,.55);animation:armP 1s ease-in-out infinite}
+@keyframes armP{50%{box-shadow:0 0 0 3px rgba(0,0,0,.35),0 0 0 14px rgba(61,255,110,.15)}}
 .camtype{height:34px;border-radius:17px;border:1.5px solid var(--pt);background:rgba(245,201,92,.14);color:var(--pt);font:700 13px var(--f-num);padding:0 12px;cursor:pointer}
 .cam.flash::after{content:"";position:absolute;inset:0;background:#fff;opacity:.7;animation:camFlash .35s ease-out forwards;pointer-events:none}
 @keyframes camFlash{to{opacity:0}}
@@ -474,7 +480,8 @@ details p{margin:6px 0;color:var(--muted)}
     <video id="camVideo" playsinline muted autoplay></video>
     <canvas id="camOver"></canvas>
     <div class="camtop glass"><b id="camStatus">Narovnejte telefon</b><span class="camread" id="camRead">—</span></div>
-    <div class="camq" id="camQ" hidden><button class="camtype" id="camType">POTSI ⇄</button><span id="camQn">Do zásoby · 0 fotek</span></div>
+    <div class="camq" id="camRow"><button class="camauto" id="camAuto" aria-pressed="true">Spoušť po vyrovnání</button><span id="camQ" hidden><button class="camtype" id="camType">POTSI ⇄</button><span id="camQn">0 fotek</span></span></div>
+    <div class="camhint" id="camHint" hidden></div>
     <div class="cambar">
       <button class="gbtn glass" id="camClose" aria-label="Zavřít fotoaparát">✕</button>
       <button class="shutter" id="shutter" aria-label="Vyfotit"></button>
@@ -619,7 +626,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.17.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.18.</p>
     </div>
     </div>
   </div>
@@ -1005,13 +1012,13 @@ function levelFrom(u){ // náklon (roll) = korekce otočení snímku, sklon (pit
 async function openCam(){
   if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){$('fileCam').click();return}
   let permP=null;try{if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==='function')permP=DeviceOrientationEvent.requestPermission()}catch(e){}
-  const camP=navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:3840},height:{ideal:3840}}});
+  const camP=navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1440}}});
   try{camStream=await camP}catch(e){camStream=null;flash('Fotoaparát v aplikaci není dostupný – otevírám systémový fotoaparát (bez vodováhy).',true);$('fileCam').click();return}
   try{if(permP)await permP}catch(e){}
   if(!orientBound){window.addEventListener('deviceorientation',onOrient);orientBound=true}
   upVec=null;sensorOK=false;
   const v=$('camVideo');v.srcObject=camStream;try{await v.play()}catch(e){}
-  $('cam').hidden=false;closeSheet();camLoop();
+  $('cam').hidden=false;closeSheet();watchTrack();if(!quickMode)$('camQ').hidden=true;okSince=0;disarm();camLoop();
   setTimeout(()=>{if(!sensorOK)$('camStatus').textContent='Polohové senzory nejsou dostupné – vodováha nefunguje, fotka se vyrovná podle hran.'},1500);
 }
 function closeCam(){cancelAnimationFrame(camRAF);if(camStream)camStream.getTracks().forEach(t=>t.stop());camStream=null;$('cam').hidden=true}
@@ -1043,13 +1050,12 @@ function camLoop(){
   g.fillStyle=col;g.strokeStyle='rgba(0,0,0,.7)';g.lineWidth=2*d;g.beginPath();g.arc(bx,by,8*d,0,Math.PI*2);g.fill();g.stroke();
   $('camRead').innerHTML=`náklon <b>${fmt(Math.abs(L.roll),1)}°</b> · sklon <b>${fmt(Math.abs(L.pitch),1)}° ${L.pitch>0.05?'dolů':(L.pitch<-0.05?'nahoru':'')}</b>`;
   $('camStatus').textContent=ok?'Rovně – můžete fotit':(Math.abs(L.pitch)>=LEVEL_OK.pitch?(L.pitch>0?'Nakloňte horní hranu telefonu od sebe':'Nakloňte horní hranu telefonu k sobě'):(L.roll>0?'Pootočte telefon doleva':'Pootočte telefon doprava'));
-  sh.className='shutter '+(ok?'ok':(near?'near':'far'));
+  sh.className='shutter '+(ok?'ok':(near?'near':'far'))+(armed?' armed':'');
+  if(ok){if(!okSince)okSince=performance.now()}else okSince=0;
+  if(armed&&ok&&performance.now()-okSince>400)fireShot();
 }
-async function grabFrame(){
-  const v=$('camVideo');
-  try{if(window.ImageCapture&&camStream){const ic=new ImageCapture(camStream.getVideoTracks()[0]);const blob=await ic.takePhoto();const bm=await createImageBitmap(blob);
-    const k=Math.min(1,3000/Math.max(bm.width,bm.height)),c=document.createElement('canvas');c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);c.getContext('2d').drawImage(bm,0,0,c.width,c.height);if(bm.close)bm.close();return c}}catch(e){}
-  const k=Math.min(1,3000/Math.max(v.videoWidth,v.videoHeight)),c=document.createElement('canvas');c.width=Math.round(v.videoWidth*k);c.height=Math.round(v.videoHeight*k);c.getContext('2d').drawImage(v,0,0,c.width,c.height);return c;
+async function grabFrame(){ // snímek přímo z náhledu – okamžitě (ImageCapture.takePhoto zdržuje až sekundu)
+  const v=$('camVideo'),k=Math.min(1,3000/Math.max(v.videoWidth,v.videoHeight)),c=document.createElement('canvas');c.width=Math.round(v.videoWidth*k);c.height=Math.round(v.videoHeight*k);c.getContext('2d').drawImage(v,0,0,c.width,c.height);return c;
 }
 async function shoot(){
   if(!camStream)return;const u=upVec?{...upVec}:null;const frame=await grabFrame();closeCam();
@@ -1070,7 +1076,28 @@ function processShot(frame,u){
   levelInfo={roll:L.roll,pitch:out.pitch||0,sensor:true,raw:L,chk};calibMode='sensor';calibrated=true;levelReview=true;autoLines=[];lastStepKey=null;
   rebuildBase();aim={x:base.width/2,y:base.height*0.3};fit();refresh();
 }
-$('camClose').onclick=()=>{closeCam();if(quickMode)endQuick()};$('shutter').onclick=()=>quickMode?quickShoot():shoot();$('camLib').onclick=()=>{closeCam();if(quickMode){$('fileQ').click()}else $('fileLib').click()};
+$('camClose').onclick=()=>{disarm();closeCam();if(quickMode)endQuick()};
+/* spoušť: okamžitě při dotyku; je-li zapnuto „po vyrovnání“ a telefon není rovně, vyfotí se samo, jakmile rovně bude */
+let armed=0,armT=0,lastShot=0,okSince=0,busyShot=false;
+function levelOkNow(){if(!upVec)return true;const L=levelFrom(upVec);return Math.abs(L.roll)<LEVEL_OK.roll&&Math.abs(L.pitch)<LEVEL_OK.pitch}
+function fireShot(){disarm();lastShot=performance.now();if(quickMode)quickShoot();else shoot()}
+function trigger(){
+  if($('cam').hidden||!camStream)return;
+  if(performance.now()-lastShot<350)return; // dvojí dotek
+  const auto=$('camAuto').getAttribute('aria-pressed')==='true';
+  if(!auto||!upVec||levelOkNow()){fireShot();return}
+  armed=performance.now();$('shutter').classList.add('armed');camHint('Srovnejte telefon – vyfotí se samo');
+  clearTimeout(armT);armT=setTimeout(()=>{if(armed){disarm();camHint('Telefon se nepodařilo srovnat – zkuste znovu',1800)}},6000);
+}
+function disarm(){armed=0;clearTimeout(armT);$('shutter').classList.remove('armed');camHint('')}
+let hintT=0;function camHint(t,ms){const h=$('camHint');clearTimeout(hintT);h.textContent=t;h.hidden=!t;if(t&&ms)hintT=setTimeout(()=>{h.hidden=true},ms)}
+$('shutter').addEventListener('pointerdown',e=>{e.preventDefault();trigger()});
+$('camOver').style.pointerEvents='auto';$('camOver').addEventListener('pointerdown',e=>{e.preventDefault();trigger()}); // ťuknutí kamkoli do náhledu
+document.addEventListener('keydown',e=>{if($('cam').hidden)return;
+  if([' ','Enter','AudioVolumeUp','AudioVolumeDown','VolumeUp','VolumeDown','MediaPlayPause','Camera'].includes(e.key)){e.preventDefault();trigger()}});
+$('camAuto').onclick=()=>{const v=$('camAuto').getAttribute('aria-pressed')!=='true';$('camAuto').setAttribute('aria-pressed',String(v));try{localStorage.setItem('ppAuto',v?'1':'0')}catch(e){}if(!v)disarm()};
+try{if(localStorage.getItem('ppAuto')==='0')$('camAuto').setAttribute('aria-pressed','false')}catch(e){}
+$('camLib').onclick=()=>{closeCam();if(quickMode){$('fileQ').click()}else $('fileLib').click()};
 
 
 
@@ -1206,14 +1233,25 @@ async function resumeItem(id){
 async function pauseMeasure(){clearTimeout(draftT);await saveDraft();clearPhoto();showDraftCard();flash('Měření uloženo v telefonu. Pokračujete z úvodní obrazovky.')}
 /* fotky do zásoby */
 let quickMode=false,quickIds=[];
-function quickLabel(){$('camQn').textContent=`Do zásoby · ${quickIds.length} ${quickIds.length===1?'fotka':(quickIds.length>=2&&quickIds.length<=4?'fotky':'fotek')}`;$('camType').textContent=`${type} ⇄`}
-async function startQuick(){quickMode=true;quickIds=[];await openCam();if(camStream){$('camQ').hidden=false;quickLabel()}else quickMode=false}
-async function quickShoot(){
-  const u=upVec?{...upVec}:null;const frame=await grabFrame();if(!frame.width){flash('Snímek se nepodařilo pořídit.',true);return}
+function quickLabel(){$('camQn').textContent=`${quickIds.length} ${quickIds.length===1?'fotka':(quickIds.length>=2&&quickIds.length<=4?'fotky':'fotek')}`;$('camType').textContent=`${type} ⇄`}
+async function startQuick(){quickMode=true;quickIds=[];$('camQ').hidden=false;quickLabel();await openCam();if(!camStream){quickMode=false;$('camQ').hidden=true}}
+let capC=null,capT=null,pending=0;
+function frameIsDark(c){const t=capT||(capT=document.createElement('canvas'));t.width=16;t.height=16;const g=t.getContext('2d',{willReadFrequently:true});
+  g.drawImage(c,0,0,16,16);const d=g.getImageData(0,0,16,16).data;let s=0;for(let i=0;i<d.length;i+=4)s+=d[i]+d[i+1]+d[i+2];return s/(256*3)<7}
+async function restartCam(){try{if(camStream)camStream.getTracks().forEach(t=>t.stop())}catch(e){}
+  try{camStream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1440}}});const v=$('camVideo');v.srcObject=camStream;await v.play();watchTrack()}catch(e){camHint('Fotoaparát se nepodařilo obnovit – zavřete ho a otevřete znovu',3000)}}
+function watchTrack(){const t=camStream&&camStream.getVideoTracks()[0];if(!t)return;t.onended=()=>{if(!$('cam').hidden)restartCam()};t.onmute=()=>{if(!$('cam').hidden)setTimeout(()=>{if(t.muted&&!$('cam').hidden)restartCam()},800)}}
+function quickShoot(){ // vše synchronně v okamžiku dotyku – snímek je zachycen hned
+  const v=$('camVideo'),vw=v.videoWidth,vh=v.videoHeight;if(!vw||!vh){camHint('Fotoaparát ještě není připravený',1200);return}
+  if(pending>=3){camHint('Ukládám předchozí snímky…',900);return}
+  const u=upVec?{...upVec}:null,k=Math.min(1,3000/Math.max(vw,vh)),W=Math.round(vw*k),H=Math.round(vh*k);
+  if(!capC)capC=document.createElement('canvas');if(capC.width!==W||capC.height!==H){capC.width=W;capC.height=H}
+  const g=capC.getContext('2d');g.drawImage(v,0,0,W,H);
+  if(frameIsDark(capC)){camHint('Obraz fotoaparátu je černý – obnovuji…',1800);restartCam();return}
   const cam=$('cam');cam.classList.remove('flash');void cam.offsetWidth;cam.classList.add('flash');
-  const id=newId(),blob=await new Promise(r=>frame.toBlob(r,'image/jpeg',0.92)),th=thumbOf(frame);freeC(frame);
-  await KV.set('img:'+id,blob);await KV.set('st:'+id,{up:u});await qPut({id,time:Date.now(),type,pname:'',n:0,thumb:th,raw:true});
-  quickIds.push(id);quickLabel();
+  const th=thumbOf(capC),id=newId(),tp=type;pending++;
+  capC.toBlob(async blob=>{try{if(blob){await KV.set('img:'+id,blob);await KV.set('st:'+id,{up:u});await qPut({id,time:Date.now(),type:tp,pname:'',n:0,thumb:th,raw:true});quickIds.push(id);quickLabel()}
+      else camHint('Snímek se nepodařilo uložit',1500)}finally{pending--}},'image/jpeg',0.9);
 }
 async function quickImport(files){
   for(const f of files){try{const c=await blobToCanvas(f),k=Math.min(1,3000/Math.max(c.width,c.height));let cc=c;
@@ -1221,7 +1259,7 @@ async function quickImport(files){
       const id=newId(),blob=await new Promise(r=>cc.toBlob(r,'image/jpeg',0.92)),th=thumbOf(cc);freeC(cc);
       await KV.set('img:'+id,blob);await KV.set('st:'+id,{});await qPut({id,time:Date.now(),type,pname:'',n:0,thumb:th,raw:true});quickIds.push(id)}catch(e){}}
 }
-function endQuick(){quickMode=false;$('camQ').hidden=true;
+async function endQuick(){quickMode=false;$('camQ').hidden=true;for(let i=0;i<40&&pending>0;i++)await new Promise(r=>setTimeout(r,100));
   if(!quickIds.length){showDraftCard();return}
   $('qNameIn').value='';$('qNameT').textContent=`Uloženo do zásoby: ${quickIds.length} ${quickIds.length===1?'fotka':(quickIds.length<=4?'fotky':'fotek')}`;$('qName').hidden=false;setTimeout(()=>$('qNameIn').focus(),50)}
 async function finishQuick(name){$('qName').hidden=true;const ids=quickIds;quickIds=[];

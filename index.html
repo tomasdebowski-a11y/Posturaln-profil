@@ -263,7 +263,8 @@ details.det summary::after{content:" ▾"}details.det[open] summary::after{conte
 .askcard p{margin:0 0 6px;color:var(--on-glass-dim);font-size:.9rem}
 /* fotoaparát */
 .cam{position:absolute;inset:0;background:#000;z-index:30}
-#camVideo,#camOver{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+#camVideo,#camOver{position:absolute;left:0;right:0;width:100%;object-fit:contain;
+  top:calc(env(safe-area-inset-top,0px) + 108px);height:calc(100% - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 276px)} /* náhled jen mezi horní kartou a ovládáním – vodítka nikdy nezakryje lišta */
 #camOver{pointer-events:none}
 .camtop{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);border-radius:16px;padding:8px 14px;text-align:center;display:grid;gap:2px;min-width:240px;max-width:calc(100% - 20px)}
 .camtop b{font-size:.95rem}
@@ -626,7 +627,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.18.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.19.</p>
     </div>
     </div>
   </div>
@@ -1012,7 +1013,7 @@ function levelFrom(u){ // náklon (roll) = korekce otočení snímku, sklon (pit
 async function openCam(){
   if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){$('fileCam').click();return}
   let permP=null;try{if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==='function')permP=DeviceOrientationEvent.requestPermission()}catch(e){}
-  const camP=navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1440}}});
+  const camP=navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1440},aspectRatio:{ideal:4/3}}});
   try{camStream=await camP}catch(e){camStream=null;flash('Fotoaparát v aplikaci není dostupný – otevírám systémový fotoaparát (bez vodováhy).',true);$('fileCam').click();return}
   try{if(permP)await permP}catch(e){}
   if(!orientBound){window.addEventListener('deviceorientation',onOrient);orientBound=true}
@@ -1027,6 +1028,8 @@ function camLoop(){
   const c=$('camOver'),r=c.getBoundingClientRect(),d=DPR(),W=Math.round(r.width*d),H=Math.round(r.height*d);if(c.width!==W||c.height!==H){c.width=W;c.height=H}
   const g=c.getContext('2d');g.clearRect(0,0,W,H);
   const v=$('camVideo'),vw=v.videoWidth||3,vh=v.videoHeight||4,s=Math.min(W/vw,H/vh),fw=vw*s,fh=vh*s,fx=(W-fw)/2,fy=(H-fh)/2;
+  // hranice snímku (co se uloží)
+  g.save();g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=1*d;g.strokeRect(fx+.5,fy+.5,fw-1,fh-1);g.restore();
   // vodítka postavy: střed, hlava, chodidla
   g.save();g.lineWidth=1.5*d;g.setLineDash([8*d,8*d]);g.strokeStyle='rgba(255,255,255,.55)';
   g.beginPath();g.moveTo(fx+fw/2,fy);g.lineTo(fx+fw/2,fy+fh);g.moveTo(fx+fw*0.2,fy+fh*0.06);g.lineTo(fx+fw*0.8,fy+fh*0.06);g.moveTo(fx+fw*0.2,fy+fh*0.95);g.lineTo(fx+fw*0.8,fy+fh*0.95);g.stroke();g.restore();
@@ -1239,7 +1242,7 @@ let capC=null,capT=null,pending=0;
 function frameIsDark(c){const t=capT||(capT=document.createElement('canvas'));t.width=16;t.height=16;const g=t.getContext('2d',{willReadFrequently:true});
   g.drawImage(c,0,0,16,16);const d=g.getImageData(0,0,16,16).data;let s=0;for(let i=0;i<d.length;i+=4)s+=d[i]+d[i+1]+d[i+2];return s/(256*3)<7}
 async function restartCam(){try{if(camStream)camStream.getTracks().forEach(t=>t.stop())}catch(e){}
-  try{camStream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1440}}});const v=$('camVideo');v.srcObject=camStream;await v.play();watchTrack()}catch(e){camHint('Fotoaparát se nepodařilo obnovit – zavřete ho a otevřete znovu',3000)}}
+  try{camStream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1440},aspectRatio:{ideal:4/3}}});const v=$('camVideo');v.srcObject=camStream;await v.play();watchTrack()}catch(e){camHint('Fotoaparát se nepodařilo obnovit – zavřete ho a otevřete znovu',3000)}}
 function watchTrack(){const t=camStream&&camStream.getVideoTracks()[0];if(!t)return;t.onended=()=>{if(!$('cam').hidden)restartCam()};t.onmute=()=>{if(!$('cam').hidden)setTimeout(()=>{if(t.muted&&!$('cam').hidden)restartCam()},800)}}
 function quickShoot(){ // vše synchronně v okamžiku dotyku – snímek je zachycen hned
   const v=$('camVideo'),vw=v.videoWidth,vh=v.videoHeight;if(!vw||!vh){camHint('Fotoaparát ještě není připravený',1200);return}

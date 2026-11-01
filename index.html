@@ -494,7 +494,7 @@ details p{margin:6px 0;color:var(--muted)}
     <video id="camVideo" playsinline muted autoplay></video>
     <canvas id="camOver"></canvas>
     <div class="camtop glass"><b id="camStatus">Narovnejte telefon</b><span class="camread" id="camRead">—</span></div>
-    <div class="camq" id="camRow"><button class="camauto" id="camAuto" aria-pressed="true">Spoušť po vyrovnání</button><span id="camQ" hidden><button class="camtype" id="camType">POTSI ⇄</button><span id="camQn">0 fotek</span></span></div>
+    <div class="camq" id="camRow" hidden><span id="camQ" hidden><button class="camtype" id="camType">POTSI ⇄</button><span id="camQn">0 fotek</span></span></div>
     <div class="camhint" id="camHint" hidden></div>
     <div class="cambar">
       <button class="gbtn glass" id="camClose" aria-label="Zavřít fotoaparát">✕</button>
@@ -641,7 +641,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.24.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.25.</p>
     </div>
     </div>
   </div>
@@ -860,6 +860,7 @@ function showLoupe(){drawLoupe(aim);clearTimeout(loupeT);loupeT=setTimeout(()=>{
 cv.addEventListener('pointerdown',e=>{
   if(!src)return;e.preventDefault();try{cv.focus({preventScroll:true})}catch(_){}
   try{cv.setPointerCapture(e.pointerId)}catch(_){}
+  if(e.isPrimary||e.pointerType==='mouse'){ptrs.clear();gest=null} // iOS občas nepošle konec dotyku – „visící“ prst by jinak z každého tahu udělal zoom
   const sp=cpos(e);ptrs.set(e.pointerId,sp);
   if(ptrs.size===2){const[a,b]=[...ptrs.values()];loupe.hidden=true;
     gest={mode:'pinch',d0:Math.hypot(a.x-b.x,a.y-b.y)||1,m0:{x:(a.x+b.x)/2,y:(a.y+b.y)/2},v0:{...view}};return}
@@ -885,7 +886,8 @@ function up(e){
   if(gest.mode==='tap'&&e.type==='pointerup'){aim=toWorld(sp.x,sp.y);clampAim();if(selected)place(selected,aim);draw();showLoupe()}
   const m=gest.mode;gest=null;if(m==='aim'||m==='tap')refresh();
 }
-cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);cv.addEventListener('lostpointercapture',up);
+window.addEventListener('blur',()=>{ptrs.clear();gest=null});document.addEventListener('visibilitychange',()=>{ptrs.clear();gest=null});
 cv.addEventListener('wheel',e=>{if(!src)return;e.preventDefault();const p=cpos(e);zoomAround(Math.exp(-e.deltaY*0.0015),p.x,p.y)},{passive:false});
 cv.addEventListener('keydown',e=>{const m={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
   if(m){e.preventDefault();const f=(e.shiftKey?6:1)*DPR();moveAim(m[0]*f,m[1]*f,e.shiftKey?1:0.5);refresh()}
@@ -1033,7 +1035,7 @@ async function openCam(){
   if(!orientBound){window.addEventListener('deviceorientation',onOrient);orientBound=true}
   upVec=null;sensorOK=false;
   const v=$('camVideo');v.srcObject=camStream;try{await v.play()}catch(e){}
-  $('cam').hidden=false;closeSheet();watchTrack();if(!quickMode)$('camQ').hidden=true;okSince=0;disarm();camLoop();
+  $('cam').hidden=false;closeSheet();watchTrack();if(!quickMode){$('camQ').hidden=true;$('camRow').hidden=true}okSince=0;disarm();camLoop();
   setTimeout(()=>{if(!sensorOK)$('camStatus').textContent='Polohové senzory nejsou dostupné – vodováha nefunguje, fotka se vyrovná podle hran.'},1500);
 }
 function closeCam(){cancelAnimationFrame(camRAF);if(camStream)camStream.getTracks().forEach(t=>t.stop());camStream=null;$('cam').hidden=true}
@@ -1102,10 +1104,7 @@ function fireShot(){disarm();lastShot=performance.now();if(quickMode)quickShoot(
 function trigger(){
   if($('cam').hidden||!camStream)return;
   if(performance.now()-lastShot<350)return; // dvojí dotek
-  const auto=$('camAuto').getAttribute('aria-pressed')==='true';
-  if(!auto||!upVec||levelOkNow()){fireShot();return}
-  armed=performance.now();$('shutter').classList.add('armed');camHint('Srovnejte telefon – vyfotí se samo');
-  clearTimeout(armT);armT=setTimeout(()=>{if(armed){disarm();camHint('Telefon se nepodařilo srovnat – zkuste znovu',1800)}},6000);
+  fireShot();
 }
 function disarm(){armed=0;clearTimeout(armT);$('shutter').classList.remove('armed');camHint('')}
 let hintT=0;function camHint(t,ms){const h=$('camHint');clearTimeout(hintT);h.textContent=t;h.hidden=!t;if(t&&ms)hintT=setTimeout(()=>{h.hidden=true},ms)}
@@ -1113,8 +1112,6 @@ $('shutter').addEventListener('pointerdown',e=>{e.preventDefault();trigger()});
 $('camOver').style.pointerEvents='auto';$('camOver').addEventListener('pointerdown',e=>{e.preventDefault();trigger()}); // ťuknutí kamkoli do náhledu
 document.addEventListener('keydown',e=>{if($('cam').hidden)return;
   if([' ','Enter','AudioVolumeUp','AudioVolumeDown','VolumeUp','VolumeDown','MediaPlayPause','Camera'].includes(e.key)){e.preventDefault();trigger()}});
-$('camAuto').onclick=()=>{const v=$('camAuto').getAttribute('aria-pressed')!=='true';$('camAuto').setAttribute('aria-pressed',String(v));try{localStorage.setItem('ppAuto',v?'1':'0')}catch(e){}if(!v)disarm()};
-try{if(localStorage.getItem('ppAuto')==='0')$('camAuto').setAttribute('aria-pressed','false')}catch(e){}
 $('camLib').onclick=()=>{closeCam();if(quickMode){$('fileQ').click()}else $('fileLib').click()};
 
 
@@ -1256,7 +1253,7 @@ async function pauseMeasure(){clearTimeout(draftT);await saveDraft();clearPhoto(
 /* fotky do zásoby */
 let quickMode=false,quickIds=[];
 function quickLabel(){$('camQn').textContent=`${quickIds.length} ${quickIds.length===1?'fotka':(quickIds.length>=2&&quickIds.length<=4?'fotky':'fotek')}`;$('camType').textContent=`${type} ⇄`}
-async function startQuick(){quickMode=true;quickIds=[];$('camQ').hidden=false;quickLabel();await openCam();if(!camStream){quickMode=false;$('camQ').hidden=true}}
+async function startQuick(){quickMode=true;quickIds=[];$('camQ').hidden=false;$('camRow').hidden=false;quickLabel();await openCam();if(!camStream){quickMode=false;$('camQ').hidden=true}}
 let capC=null,capT=null,pending=0;
 function frameIsDark(c){const t=capT||(capT=document.createElement('canvas'));t.width=16;t.height=16;const g=t.getContext('2d',{willReadFrequently:true});
   g.drawImage(c,0,0,16,16);const d=g.getImageData(0,0,16,16).data;let s=0;for(let i=0;i<d.length;i+=4)s+=d[i]+d[i+1]+d[i+2];return s/(256*3)<7}
@@ -1295,7 +1292,7 @@ $('fileQ').addEventListener('change',async e=>{const fs=[...(e.target.files||[])
 $('copy').onclick=copyResult;$('expImg').onclick=exportShare;
 
 /* v0.23: Úvod v každé kartě panelu, verze a automatická aktualizace */
-const APP_VER='0.24';
+const APP_VER='0.25';
 $('npVer').textContent='Posturální profil · verze '+APP_VER;
 $('sheet').querySelector('.card').insertAdjacentHTML('beforeend','<div class="tabfoot" id="tabFoot" hidden><button class="btn home" id="tfHome"><svg class="i"><use href="#i-home"/></svg>Úvod</button><button class="btn" id="tfBack">Zpět k měření</button></div>');
 $('tfHome').onclick=()=>$('homeBtn').click();$('tfBack').onclick=closeSheet;
@@ -1420,12 +1417,12 @@ function drawLoupe(w){
   const L=loupe.width,k=L/264,zoom=3,sw=(140/zoom)*d/view.s; // úsek snímku ve skutečných pixelech
   lctx.fillStyle='#000';lctx.fillRect(0,0,L,L);lctx.imageSmoothingEnabled=true;lctx.imageSmoothingQuality='high';
   lctx.drawImage(base,w.x-sw/2,w.y-sw/2,sw,sw,0,0,L,L);
-  sharpenLoupe(L);
+  clearTimeout(shT);shT=setTimeout(()=>{if(!loupe.hidden)sharpenLoupe(L)},90);
   lctx.strokeStyle='#3dff6e';lctx.lineWidth=2*k;lctx.beginPath();lctx.moveTo(L/2,L/2-30*k);lctx.lineTo(L/2,L/2-6*k);lctx.moveTo(L/2,L/2+6*k);lctx.lineTo(L/2,L/2+30*k);
   lctx.moveTo(L/2-30*k,L/2);lctx.lineTo(L/2-6*k,L/2);lctx.moveTo(L/2+6*k,L/2);lctx.lineTo(L/2+30*k,L/2);lctx.stroke();
   lctx.fillStyle='#3dff6e';lctx.fillRect(L/2-k,L/2-k,2*k,2*k);
 }
-let shBuf=null;
+let shBuf=null,shT=0;
 function sharpenLoupe(L){ // doostření (unsharp 3×3) – kontury kůže a značky dermografu jsou zřetelnější
   let im;try{im=lctx.getImageData(0,0,L,L)}catch(e){return}
   const s=im.data,n=s.length;if(!shBuf||shBuf.length!==n)shBuf=new Uint8ClampedArray(n);shBuf.set(s);const o=shBuf,a=0.7,c=1+4*a,W=L*4;

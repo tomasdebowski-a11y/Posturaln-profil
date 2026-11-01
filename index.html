@@ -247,7 +247,9 @@ details.det summary::after{content:" ▾"}details.det[open] summary::after{conte
 .topt .ck{color:var(--pt);stroke-width:2.4;visibility:hidden}
 .topt[aria-checked="true"]{background:rgba(245,201,92,.14)}.topt[aria-checked="true"] i{color:var(--pt)}.topt[aria-checked="true"] .ck{visibility:visible}
 .twarn{padding:8px 10px;border-radius:12px;background:rgba(240,160,106,.14);color:#ffd9c2;font-size:12px;line-height:1.4}
-.stitle{font-size:1rem}
+.stitle{font-size:1rem;flex:1;text-align:center}
+.homebtn{height:40px;border-radius:20px;border:1px solid var(--line);background:var(--surface);color:var(--sapphire);font:600 .9rem var(--f-ui);display:flex;align-items:center;gap:4px;padding:0 14px 0 8px;cursor:pointer}
+.homebtn .i{width:18px;height:18px}
 /* řada bodů s okem */
 .chips{display:flex;gap:5px}
 .csep{width:1px;height:24px;background:rgba(255,255,255,.2);margin:0 3px;flex:none}
@@ -263,6 +265,7 @@ details.det summary::after{content:" ▾"}details.det[open] summary::after{conte
 .askcard p{margin:0 0 6px;color:var(--on-glass-dim);font-size:.9rem}
 /* fotoaparát */
 .cam{position:absolute;inset:0;background:#000;z-index:30}
+#camVideo{opacity:0;pointer-events:none}
 #camVideo,#camOver{position:absolute;left:0;right:0;width:100%;object-fit:contain;
   top:calc(env(safe-area-inset-top,0px) + 108px);height:calc(100% - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 276px)} /* náhled jen mezi horní kartou a ovládáním – vodítka nikdy nezakryje lišta */
 #camOver{pointer-events:none}
@@ -496,6 +499,7 @@ details p{margin:6px 0;color:var(--muted)}
     <div class="card" role="dialog" aria-modal="true" aria-label="Výsledek a nastavení">
       <div class="grab"></div>
       <div class="shead">
+        <button class="homebtn" id="homeBtn" aria-label="Úvod – nové měření"><svg class="i"><use href="#i-l"/></svg>Úvod</button>
         <b class="stitle" id="sheetTitle">POTSI · zezadu</b>
         <button class="xbtn" id="closeSheet" aria-label="Zavřít">✕</button>
       </div>
@@ -627,7 +631,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.21.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.22.</p>
     </div>
     </div>
   </div>
@@ -1026,8 +1030,9 @@ function closeCam(){cancelAnimationFrame(camRAF);if(camStream)camStream.getTrack
 function camLoop(){
   camRAF=requestAnimationFrame(camLoop);
   const c=$('camOver'),r=c.getBoundingClientRect(),d=DPR(),W=Math.round(r.width*d),H=Math.round(r.height*d);if(c.width!==W||c.height!==H){c.width=W;c.height=H}
-  const g=c.getContext('2d');g.clearRect(0,0,W,H);
+  const g=c.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,W,H);
   const v=$('camVideo'),vw=v.videoWidth||3,vh=v.videoHeight||4,s=Math.min(W/vw,H/vh),fw=vw*s,fh=vh*s,fx=(W-fw)/2,fy=(H-fh)/2;
+  if(v.videoWidth&&v.readyState>=2){try{g.drawImage(v,fx,fy,fw,fh)}catch(e){}} // náhled = přesně to, co se uloží
   // hranice snímku (co se uloží)
   g.save();g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=1*d;g.strokeRect(fx+.5,fy+.5,fw-1,fh-1);g.restore();
   // vodítka postavy: střed, hlava, chodidla
@@ -1113,10 +1118,12 @@ $('sec').onclick=()=>{
   if(selected){$('delp_').click();return}
   if(src&&!nextKey())newMeasure();
 };
-function newMeasure(){ // zpět na úvodní obrazovku; série opakovaných měření zůstává
-  askGo=()=>{dropDraft();clearPhoto();flash('Nové měření – vyberte typ a pořiďte snímek.')};
-  $('askT').textContent='Začít nové měření?';$('askP').textContent='Body z této fotky se zahodí. Pokud jste výsledek ještě neuložili do telefonu nebo nezkopírovali, udělejte to nejdřív ve Výsledku.';$('askYes').textContent='Nové měření';$('ask').hidden=false;
+function goHome(msg){ // zpět na úvodní obrazovku bez otázek – rozpracované měření se uloží do Fotky k měření
+  closeSheet();closeMore();
+  if(src&&!isDemo&&!draftOff){clearTimeout(draftT);saveDraft().then(showDraftCard)}
+  clearPhoto();showDraftCard();if(msg)flash(msg);
 }
+function newMeasure(){goHome('Nové měření – vyberte typ a pořiďte snímek.')}
 $('collapse').onclick=()=>{app.classList.add('min');requestAnimationFrame(draw)};
 $('expand').onclick=()=>{app.classList.remove('min');requestAnimationFrame(()=>{keepAimVisible();draw()})};
 $('miniOk').onclick=()=>$('ok').click();
@@ -1172,7 +1179,7 @@ $('moreMenu').querySelectorAll('button').forEach(b=>b.onclick=()=>{closeMore();c
   if(m==='level')$('plumb').click();else if(m==='fit')$('zfit').click();else if(m==='eye')toggleEye();
   else if(m==='min')$('collapse').click();else if(m==='cam')$('camBtn').click();else if(m==='lib')$('libBtn').click();
   else if(m==='pause')pauseMeasure();else if(m==='new')newMeasure();else if(m==='proto')openSheet('proto')});
-$('newM').onclick=()=>{closeSheet();newMeasure()};
+$('newM').onclick=newMeasure;$('homeBtn').onclick=()=>goHome(src&&!isDemo&&!draftOff?'Rozpracované měření je v seznamu Fotky k měření.':'');
 
 /* ---------- v0.15: rozpracované měření v telefonu (IndexedDB) ---------- */
 const KV={db:null,open(){if(this.db)return Promise.resolve(this.db);return new Promise((res,rej)=>{try{const r=indexedDB.open('posturalni-profil',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>{this.db=r.result;res(r.result)};r.onerror=()=>rej(r.error)}catch(e){rej(e)}})},
@@ -1294,7 +1301,7 @@ document.querySelectorAll('.npcard').forEach(b=>b.onclick=()=>{type=b.dataset.ty
 document.addEventListener('pointerdown',e=>{if(!$('typeMenu').hidden&&!e.target.closest('#typeMenu')&&!e.target.closest('#typeBtn'))closeTypeMenu()},true);
 function openSheet(t){$('sheet').hidden=false;stab(t||'result')}
 function closeSheet(){$('sheet').hidden=true}
-function stab(t){document.querySelectorAll('.stab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.t===t)));
+function stab(t){document.querySelectorAll('.stab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.t===t)));$('resFoot').hidden=t!=='result';
   ['result','proto','info'].forEach(x=>$('t-'+x).hidden=x!==t)}
 function show(v){if(v==='measure')closeSheet();else openSheet(v)}
 document.querySelectorAll('.stab').forEach(b=>b.onclick=()=>stab(b.dataset.t));

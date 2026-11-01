@@ -251,7 +251,7 @@ details.det summary::after{content:" ▾"}details.det[open] summary::after{conte
 .homebtn{height:40px;border-radius:20px;border:1px solid var(--line);background:var(--surface);color:var(--sapphire);font:600 .9rem var(--f-ui);display:flex;align-items:center;gap:4px;padding:0 14px 0 8px;cursor:pointer}
 .homebtn .i{width:18px;height:18px}
 .homebtn{background:var(--sapphire);color:#fff;border-color:var(--sapphire)}
-.tabfoot{flex:none;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px max(14px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:var(--surface)}
+.tabfoot{flex:none;display:grid;grid-template-columns:1fr;gap:8px;padding:10px max(14px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:var(--surface)}
 .tabfoot .btn{min-height:52px;justify-content:center;font-weight:700;font-size:1rem}
 .tabfoot .btn .i{width:20px;height:20px}
 .tabfoot .home{background:var(--sapphire);color:#fff;border:0}
@@ -536,13 +536,13 @@ details p{margin:6px 0;color:var(--muted)}
         </div>
       </div>
       <div class="panel">
-        <h2>Měření v této relaci</h2>
+        <h2>Uložená měření</h2>
         <div class="saved" id="saved"></div>
       </div>
     </div>
       <div class="resfoot" id="resFoot">
         <button class="btn primary" id="expImg" disabled><svg class="i"><use href="#i-img"/></svg>Uložit fotku s výsledkem</button>
-        <div class="rfrow"><button class="btn" id="copy" disabled>Kopírovat text</button><button class="btn" id="newM">Nové měření</button></div>
+        <div class="rfrow"><button class="btn" id="copy" disabled>Kopírovat text</button><button class="btn" id="newM"><svg class="i"><use href="#i-home"/></svg>Úvod</button></div>
         <span class="toastline" id="copyToast"></span>
       </div>
       <div class="sbody" id="t-proto" hidden>
@@ -641,7 +641,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.25.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.26.</p>
     </div>
     </div>
   </div>
@@ -792,7 +792,7 @@ function setRotation(nr){
 }
 function freeC(c){try{if(c&&c.getContext&&c!==base&&c!==cv){c.width=0;c.height=0}}catch(e){}}
 function newImage(c,demo){
-  draftOff=false;draftImgOf=null;curId=null;
+  draftOff=false;draftImgOf=null;curId=null;if(!series.length)$('pname').value='';
   if(src&&src!==c)freeC(src);if(origSrc&&origSrc!==c&&origSrc!==src)freeC(origSrc);
   app.classList.remove('nosrc');$('nophoto').hidden=true;
   src=c;isDemo=demo;rot=0;calibrated=false;calibMode=false;levelReview=false;autoLines=[];tiltDeg=null;origSrc=null;levelInfo=null;selected=null;selOrig=null;plumbMode=false;plumbPts=[];
@@ -823,8 +823,8 @@ function startNew(kind){ // Vyfotit / Galerie: současná fotka se uloží do se
 }
 $('askYes').onclick=()=>{$('ask').hidden=true;const g=askGo;askGo=null;if(g)g()};
 $('askNo').onclick=()=>{$('ask').hidden=true;askGo=null};
-$('camBtn').onclick=()=>startNew('cam');$('libBtn').onclick=()=>startNew('lib');
-$('npCam').onclick=()=>openCam();$('npLib').onclick=()=>$('fileLib').click();
+$('camBtn').onclick=()=>{quickMode=false;startNew('cam')};$('libBtn').onclick=()=>startNew('lib');
+$('npCam').onclick=()=>{quickMode=false;openCam()};$('npLib').onclick=()=>$('fileLib').click();
 
 /* ---------- kreslení ---------- */
 function drawAim(g){
@@ -865,7 +865,7 @@ cv.addEventListener('pointerdown',e=>{
   if(ptrs.size===2){const[a,b]=[...ptrs.values()];loupe.hidden=true;
     gest={mode:'pinch',d0:Math.hypot(a.x-b.x,a.y-b.y)||1,m0:{x:(a.x+b.x)/2,y:(a.y+b.y)/2},v0:{...view}};return}
   if(ptrs.size>2)return;
-  gest={mode:'tap',s0:sp,last:sp,t:e.timeStamp,g:0.35};
+  gest={mode:'tap',s0:sp,last:sp,t:e.timeStamp,t0:e.timeStamp,g:0.35};
 });
 cv.addEventListener('pointermove',e=>{
   if(!ptrs.has(e.pointerId)||!gest)return;const sp=cpos(e);ptrs.set(e.pointerId,sp);
@@ -873,6 +873,7 @@ cv.addEventListener('pointermove',e=>{
     const d=Math.hypot(a.x-b.x,a.y-b.y),m={x:(a.x+b.x)/2,y:(a.y+b.y)/2},s=clampS(gest.v0.s*d/gest.d0);
     const wx=(gest.m0.x-gest.v0.tx)/gest.v0.s,wy=(gest.m0.y-gest.v0.ty)/gest.v0.s;
     view={s,tx:m.x-wx*s,ty:m.y-wy*s};draw();updateZoom();return}
+  if(gest.mode==='pan'){view.tx+=sp.x-gest.last.x;view.ty+=sp.y-gest.last.y;gest.last=sp;draw();return}
   if(gest.mode==='tap'&&Math.hypot(sp.x-gest.s0.x,sp.y-gest.s0.y)>6*DPR()){gest.mode='aim';gest.last=gest.s0}
   if(gest.mode==='aim'){ // pomalý pohyb prstu = jemný posun zaměřovače, rychlý = celý posun
     const dx=sp.x-gest.last.x,dy=sp.y-gest.last.y,dt=Math.max(8,e.timeStamp-gest.t),v=Math.hypot(dx,dy)/DPR()/dt;
@@ -883,7 +884,7 @@ function up(e){
   if(!ptrs.has(e.pointerId))return;const sp=ptrs.get(e.pointerId);ptrs.delete(e.pointerId);
   if(!gest)return;
   if(gest.mode==='pinch'){if(ptrs.size===1){const[r]=[...ptrs.values()];gest={mode:'pan',s0:r,last:r}}else if(!ptrs.size)gest=null;return}
-  if(gest.mode==='tap'&&e.type==='pointerup'){aim=toWorld(sp.x,sp.y);clampAim();if(selected)place(selected,aim);draw();showLoupe()}
+  if(gest.mode==='tap'&&e.type==='pointerup'&&e.timeStamp-gest.t0<300){aim=toWorld(sp.x,sp.y);clampAim();if(selected)place(selected,aim);draw();showLoupe()}
   const m=gest.mode;gest=null;if(m==='aim'||m==='tap')refresh();
 }
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);cv.addEventListener('lostpointercapture',up);
@@ -1097,7 +1098,7 @@ function processShot(frame,u){
   rebuildBase();aim={x:base.width/2,y:base.height*0.3};fit();refresh();
 }
 $('camClose').onclick=()=>{disarm();closeCam();if(quickMode)endQuick()};
-/* spoušť: okamžitě při dotyku; je-li zapnuto „po vyrovnání“ a telefon není rovně, vyfotí se samo, jakmile rovně bude */
+/* spoušť: okamžitě při dotyku */
 let armed=0,armT=0,lastShot=0,okSince=0,busyShot=false;
 function levelOkNow(){if(!upVec)return true;const L=levelFrom(upVec);return Math.abs(L.roll)<LEVEL_OK.roll&&Math.abs(L.pitch)<LEVEL_OK.pitch}
 function fireShot(){disarm();lastShot=performance.now();if(quickMode)quickShoot();else shoot()}
@@ -1109,7 +1110,6 @@ function trigger(){
 function disarm(){armed=0;clearTimeout(armT);$('shutter').classList.remove('armed');camHint('')}
 let hintT=0;function camHint(t,ms){const h=$('camHint');clearTimeout(hintT);h.textContent=t;h.hidden=!t;if(t&&ms)hintT=setTimeout(()=>{h.hidden=true},ms)}
 $('shutter').addEventListener('pointerdown',e=>{e.preventDefault();trigger()});
-$('camOver').style.pointerEvents='auto';$('camOver').addEventListener('pointerdown',e=>{e.preventDefault();trigger()}); // ťuknutí kamkoli do náhledu
 document.addEventListener('keydown',e=>{if($('cam').hidden)return;
   if([' ','Enter','AudioVolumeUp','AudioVolumeDown','VolumeUp','VolumeDown','MediaPlayPause','Camera'].includes(e.key)){e.preventDefault();trigger()}});
 $('camLib').onclick=()=>{closeCam();if(quickMode){$('fileQ').click()}else $('fileLib').click()};
@@ -1145,7 +1145,7 @@ function selectPoint(k){
   selected=k;selOrig={...pts[k]};aim={...pts[k]};keepAimVisible();lastStepKey=null;refresh();showLoupe();
 }
 $('ok').onclick=()=>{
-  if(!src){openCam();return}
+  if(!src){quickMode=false;openCam();return}
   if(levelReview){endReview();refresh();return}
   if(plumbMode){plumbPts.push({...aim});
     if(plumbPts.length===2){let[a,b]=plumbPts;if(a.y>b.y)[a,b]=[b,a];const dx=b.x-a.x,dy=b.y-a.y;
@@ -1251,9 +1251,9 @@ async function resumeItem(id){
 }
 async function pauseMeasure(){clearTimeout(draftT);await saveDraft();clearPhoto();showDraftCard();flash('Měření uloženo v telefonu. Pokračujete z úvodní obrazovky.')}
 /* fotky do zásoby */
-let quickMode=false,quickIds=[];
-function quickLabel(){$('camQn').textContent=`${quickIds.length} ${quickIds.length===1?'fotka':(quickIds.length>=2&&quickIds.length<=4?'fotky':'fotek')}`;$('camType').textContent=`${type} ⇄`}
-async function startQuick(){quickMode=true;quickIds=[];$('camQ').hidden=false;$('camRow').hidden=false;quickLabel();await openCam();if(!camStream){quickMode=false;$('camQ').hidden=true}}
+let quickMode=false,quickIds=[],quickCount=0;
+function quickLabel(){const n=quickCount;$('camQn').textContent=`${n} ${n===1?'fotka':(n>=2&&n<=4?'fotky':'fotek')}`;$('camType').textContent=`${type} ⇄`}
+async function startQuick(){quickMode=true;quickIds=[];quickCount=0;$('camQ').hidden=false;$('camRow').hidden=false;quickLabel();await openCam();if(!camStream){quickMode=false;$('camQ').hidden=true}}
 let capC=null,capT=null,pending=0;
 function frameIsDark(c){const t=capT||(capT=document.createElement('canvas'));t.width=16;t.height=16;const g=t.getContext('2d',{willReadFrequently:true});
   g.drawImage(c,0,0,16,16);const d=g.getImageData(0,0,16,16).data;let s=0;for(let i=0;i<d.length;i+=4)s+=d[i]+d[i+1]+d[i+2];return s/(256*3)<7}
@@ -1262,15 +1262,15 @@ async function restartCam(){try{if(camStream)camStream.getTracks().forEach(t=>t.
 function watchTrack(){const t=camStream&&camStream.getVideoTracks()[0];if(!t)return;t.onended=()=>{if(!$('cam').hidden)restartCam()};t.onmute=()=>{if(!$('cam').hidden)setTimeout(()=>{if(t.muted&&!$('cam').hidden)restartCam()},800)}}
 function quickShoot(){ // vše synchronně v okamžiku dotyku – snímek je zachycen hned
   const v=$('camVideo'),vw=v.videoWidth,vh=v.videoHeight;if(!vw||!vh){camHint('Fotoaparát ještě není připravený',1200);return}
-  if(pending>=3){camHint('Ukládám předchozí snímky…',900);return}
+  if(pending>=6){camHint('Ukládám předchozí snímky…',900);return}
   const u=upVec?{...upVec}:null,k=Math.min(1,3000/Math.max(vw,vh)),W=Math.round(vw*k),H=Math.round(vh*k);
   if(!capC)capC=document.createElement('canvas');if(capC.width!==W||capC.height!==H){capC.width=W;capC.height=H}
   const g=capC.getContext('2d');g.drawImage(v,0,0,W,H);
   if(frameIsDark(capC)){camHint('Obraz fotoaparátu je černý – obnovuji…',1800);restartCam();return}
   const cam=$('cam');cam.classList.remove('flash');void cam.offsetWidth;cam.classList.add('flash');
-  const th=thumbOf(capC),id=newId(),tp=type;pending++;
+  const th=thumbOf(capC),id=newId(),tp=type;pending++;quickCount++;quickLabel();
   capC.toBlob(async blob=>{try{if(blob){await KV.set('img:'+id,blob);await KV.set('st:'+id,{up:u});await qPut({id,time:Date.now(),type:tp,pname:'',n:0,thumb:th,raw:true});quickIds.push(id);quickLabel()}
-      else camHint('Snímek se nepodařilo uložit',1500)}finally{pending--}},'image/jpeg',0.9);
+      else{quickCount--;quickLabel();camHint('Snímek se nepodařilo uložit',1500)}}catch(e){quickCount--;quickLabel();camHint('Snímek se nepodařilo uložit',1500)}finally{pending--}},'image/jpeg',0.9);
 }
 async function quickImport(files){
   for(const f of files){try{const c=await blobToCanvas(f),k=Math.min(1,3000/Math.max(c.width,c.height));let cc=c;
@@ -1288,19 +1288,22 @@ $('qNameOk').onclick=()=>finishQuick($('qNameIn').value.trim());$('qNameSkip').o
 $('qNameIn').onkeydown=e=>{if(e.key==='Enter')finishQuick($('qNameIn').value.trim())};
 $('npQuick').onclick=startQuick;
 $('camType').onclick=()=>{type=type==='POTSI'?'ATSI':'POTSI';syncType();quickLabel()};
-$('fileQ').addEventListener('change',async e=>{const fs=[...(e.target.files||[])];e.target.value='';if(!fs.length){endQuick();return}flash('Ukládám fotky…');await quickImport(fs);endQuick()});
+let fileQBusy=false;$('fileQ').addEventListener('cancel',()=>{if(quickMode)endQuick()});
+window.addEventListener('focus',()=>setTimeout(()=>{if(quickMode&&$('cam').hidden&&!fileQBusy)endQuick()},1200)); // starší iOS neposílá „cancel“
+$('fileQ').addEventListener('change',async e=>{const fs=[...(e.target.files||[])];e.target.value='';if(!fs.length){endQuick();return}fileQBusy=true;flash('Ukládám fotky…');try{await quickImport(fs)}finally{fileQBusy=false}endQuick()});
 $('copy').onclick=copyResult;$('expImg').onclick=exportShare;
 
 /* v0.23: Úvod v každé kartě panelu, verze a automatická aktualizace */
-const APP_VER='0.25';
+const APP_VER='0.26';
 $('npVer').textContent='Posturální profil · verze '+APP_VER;
-$('sheet').querySelector('.card').insertAdjacentHTML('beforeend','<div class="tabfoot" id="tabFoot" hidden><button class="btn home" id="tfHome"><svg class="i"><use href="#i-home"/></svg>Úvod</button><button class="btn" id="tfBack">Zpět k měření</button></div>');
-$('tfHome').onclick=()=>$('homeBtn').click();$('tfBack').onclick=closeSheet;
+$('sheet').querySelector('.card').insertAdjacentHTML('beforeend','<div class="tabfoot" id="tabFoot" hidden><button class="btn home" id="tfHome"><svg class="i"><use href="#i-home"/></svg>Úvod</button></div>');
+$('tfHome').onclick=()=>$('homeBtn').click();
 let pendingUpdate=false;
 const verNum=v=>v.split('.').map(Number).reduce((a,x)=>a*1000+x,0);
 async function checkUpdate(){try{const r=await fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const t=await r.text();
   const m=t.match(/const APP_VER='([0-9.]+)'/);if(!m||verNum(m[1])<=verNum(APP_VER))return;
-  if(!src){flash('Načítám novou verzi '+m[1]+'…');setTimeout(()=>location.replace(location.pathname+'?v='+m[1]),600)}
+  const idle=!src&&$('cam').hidden&&$('qName').hidden&&$('ask').hidden&&$('sheet').hidden&&!quickMode;
+  if(idle){flash('Načítám novou verzi '+m[1]+'…');setTimeout(()=>location.replace(location.pathname+'?v='+m[1]),600)}
   else if(!pendingUpdate){pendingUpdate=true;flash('Je k dispozici verze '+m[1]+' – načte se po návratu na úvod.')}}catch(e){}}
 setTimeout(checkUpdate,1500);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkUpdate()});
@@ -1323,7 +1326,7 @@ document.querySelectorAll('.npcard').forEach(b=>b.onclick=()=>{type=b.dataset.ty
 document.addEventListener('pointerdown',e=>{if(!$('typeMenu').hidden&&!e.target.closest('#typeMenu')&&!e.target.closest('#typeBtn'))closeTypeMenu()},true);
 function openSheet(t){$('sheet').hidden=false;stab(t||'result')}
 function closeSheet(){$('sheet').hidden=true}
-function stab(t){document.querySelectorAll('.stab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.t===t)));$('resFoot').hidden=t!=='result';if($('tabFoot')){$('tabFoot').hidden=t==='result';$('tfBack').textContent=src?'Zpět k měření':'Zavřít'}
+function stab(t){document.querySelectorAll('.stab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.t===t)));$('resFoot').hidden=t!=='result';if($('tabFoot'))$('tabFoot').hidden=t==='result';
   ['result','proto','info'].forEach(x=>$('t-'+x).hidden=x!==t)}
 function show(v){if(v==='measure')closeSheet();else openSheet(v)}
 document.querySelectorAll('.stab').forEach(b=>b.onclick=()=>stab(b.dataset.t));
@@ -1350,7 +1353,7 @@ function hint(){
   const sec=$('sec');sec.hidden=true;sec.classList.remove('danger');
   if(!src){n.textContent='📷';$('stepName').textContent='Pořiďte snímek';txt.textContent='Vyfotit';key='nosrc';desc='Začněte fotkou: Vyfotit, nebo vyberte z Galerie.'}
   else if(levelReview){const I=levelInfo||{roll:rot,pitch:0};n.textContent='⊥';n.classList.add('done');txt.textContent='Pokračovat';key='review';sec.hidden=false;
-    if(I.sensor){const C=I.chk,bad=C&&(Math.abs(C.roll)>1||Math.abs(C.pitch)>2);
+    if(I.sensor&&I.raw){const C=I.chk,bad=C&&(Math.abs(C.roll)>1||Math.abs(C.pitch)>2);
       $('stepName').textContent=`Vyrovnáno senzory · ${fmt(Math.abs(I.raw.roll),1)}° · sklon ${fmt(Math.abs(I.raw.pitch),1)}°`;sec.textContent='Podle hran';
       desc=`Fotka je srovnaná podle polohových senzorů telefonu (náklon ${fmt(Math.abs(I.raw.roll),1)}°, sklon ${fmt(Math.abs(I.raw.pitch),1)}°). `+(C?`Kontrola podle ${C.n} hran v místnosti: zbývá ${fmt(Math.abs(C.roll),1)}° náklonu a ${fmt(Math.abs(C.pitch),1)}° sklonu.`+(bad?' Hrany a senzory se rozcházejí – zkontrolujte fotku, případně dejte Podle hran.':' Sedí to.'):'Hrany pro kontrolu nebyly v záběru nalezeny.');warn=!!bad}
     else{$('stepName').textContent=`Vyrovnáno ${fmt(Math.abs(I.roll),1)}°${I.pitch?` · sklon ${fmt(Math.abs(I.pitch),1)}°`:''}`;sec.textContent='Olovnicí ručně';
@@ -1481,9 +1484,12 @@ function qualityWarnings(r){
   return w;
 }
 
+function loadPrefs(){try{const p=JSON.parse(localStorage.getItem('ppPrefs')||'{}');if(p.proto)proto=p.proto;['dist','camh','examiner'].forEach(k=>{if(p[k]!=null)$(k).value=p[k]})}catch(e){}}
+function savePrefs(){try{localStorage.setItem('ppPrefs',JSON.stringify({proto,dist:$('dist').value,camh:$('camh').value,examiner:$('examiner').value}))}catch(e){}}
+['dist','camh','examiner'].forEach(k=>$(k).addEventListener('change',savePrefs));
 function renderProto(){
   $('proto').innerHTML=PROTO.map(p=>`<li><label><input type="checkbox" id="pr_${p.k}" ${proto[p.k]?'checked':''}><span>${p.t}${p.s?`<small>${p.s}</small>`:''}</span></label></li>`).join('');
-  PROTO.forEach(p=>$('pr_'+p.k).addEventListener('change',e=>{proto[p.k]=e.target.checked;updateProtoCnt();renderResult()}));
+  PROTO.forEach(p=>$('pr_'+p.k).addEventListener('change',e=>{proto[p.k]=e.target.checked;updateProtoCnt();renderResult();savePrefs()}));
   updateProtoCnt();
 }
 function updateProtoCnt(){const n=PROTO.filter(p=>proto[p.k]).length;$('protoCnt').textContent=`${n}/${PROTO.length}`;$('tabProto').textContent=`${n}/${PROTO.length}`}
@@ -1570,7 +1576,7 @@ function resultText(){
   const s=summary();if(!s)return'';const dt=$('pdate').value?new Date($('pdate').value).toLocaleDateString('cs-CZ'):new Date().toLocaleDateString('cs-CZ');
   const head=s.st.n>1?`${def().name} ${fmt(s.st.m)} (průměr ze ${s.st.n} měření, SD ${fmt(s.st.sd)}, rozpětí ${fmt(s.st.min)}–${fmt(s.st.max)})`:`${def().name} ${fmt(s.st.m)} (1 měření)`;
   const parts=`Poslední měření: ${s.parts.map(p=>`${p.c.replace('‑','-')} ${fmt(p.v)}`).join('; ')}; ${s.parts.slice(3).map(p=>p.dir).join(', ')}.`;
-  const cond=[ $('dist').value?`vzdálenost ${String($('dist').value).replace('.',',')} m`:'', $('camh').value?`výška objektivu ${$('camh').value} cm`:'', calibMode==='sensor'?`snímek pořízen s vodováhou a vyrovnán podle polohových senzorů (náklon ${fmt(Math.abs(levelInfo.raw.roll),1)}°, sklon ${fmt(Math.abs(levelInfo.raw.pitch),1)}°)`:calibMode==='auto'?`snímek automaticky vyrovnán podle svislých hran${levelInfo&&levelInfo.pitch?` vč. korekce perspektivy (sklon telefonu ${fmt(Math.abs(levelInfo.pitch),1)}°)`:''}`:(calibrated?'snímek vyrovnán podle olovnice':'') ].filter(Boolean).join(', ');
+  const cond=[ $('dist').value?`vzdálenost ${String($('dist').value).replace('.',',')} m`:'', $('camh').value?`výška objektivu ${$('camh').value} cm`:'', calibMode==='sensor'&&levelInfo&&levelInfo.raw?`snímek pořízen s vodováhou a vyrovnán podle polohových senzorů (náklon ${fmt(Math.abs(levelInfo.raw.roll),1)}°, sklon ${fmt(Math.abs(levelInfo.raw.pitch),1)}°)`:calibMode==='sensor'?'snímek pořízen s vodováhou a vyrovnán podle polohových senzorů':calibMode==='auto'?`snímek automaticky vyrovnán podle svislých hran${levelInfo&&levelInfo.pitch?` vč. korekce perspektivy (sklon telefonu ${fmt(Math.abs(levelInfo.pitch),1)}°)`:''}`:(calibrated?'snímek vyrovnán podle olovnice':'') ].filter(Boolean).join(', ');
   return `${head}. ${parts} Fotogrammetrie ${def().view}, ${dt}${protoOk()?', standardizovaný protokol (Stoliński 2017)':', protokol focení nedodržen v plném rozsahu'}${cond?`; ${cond}`:''}.${$('examiner').value?` Měřil(a): ${$('examiner').value}.`:''}`;
 }
 
@@ -1606,7 +1612,7 @@ function exportCanvas(){
   g.textAlign='right';g.fillText('Posturální profil',W-pad,y0+band-26*u);
   return c;
 }
-function expName(){const d=def(),who=$('pname').value.trim().replace(/[^\p{L}\p{N}]+/gu,'_');const dt=($('pdate').value||new Date().toISOString().slice(0,10));
+function expName(){const d=def(),who=$('pname').value.trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'');const dt=($('pdate').value||new Date().toISOString().slice(0,10));
   return `${d.name}_${who?who+'_':''}${dt}.jpg`}
 function exportShare(){ // vše synchronně v rámci ťuknutí – iOS jinak sdílení odmítne
   const t=$('copyToast'),say=m=>{if(t)t.textContent=m};
@@ -1621,7 +1627,7 @@ function exportShare(){ // vše synchronně v rámci ťuknutí – iOS jinak sd�
       .catch(e=>say(e.name==='AbortError'?'':'Uložení se nepodařilo, zkuste to znovu.'));
     say('V nabídce zvolte „Uložit obrázek“.');return}
   const a=document.createElement('a');a.href=url;a.download=f.name;document.body.appendChild(a);a.click();a.remove();
-  say('Fotka stažena. Popis hodnot je ve schránce.');
+  say('Fotka stažena. Popis hodnot je ve schránce.');draftOff=true;dropDraft();
 }
 function copyResult(){
   const txt=resultText();if(!txt)return;const t=$('copyToast');
@@ -1634,7 +1640,7 @@ $('save').onclick=()=>{
   saved.push({type,name:$('pname').value.trim()||(isDemo?'Ukázka':'Bez jména'),date:$('pdate').value,total:s.st.m,n:s.st.n,sd:s.st.sd,
     proto:protoOk(),calibrated:calibMode||calibrated,dist:$('dist').value,camh:$('camh').value,examiner:$('examiner').value.trim(),thumb:th.toDataURL('image/jpeg',.7),demo:isDemo});
   series=[];pts={};hist=[];
-  draftOff=true;dropDraft();$('saveToast').textContent='Uloženo do přehledu níže';setTimeout(()=>$('saveToast').textContent='',2500);refresh();renderSaved();
+  saveSaved();draftOff=true;dropDraft();$('saveToast').textContent='Uloženo do přehledu níže';setTimeout(()=>$('saveToast').textContent='',2500);refresh();renderSaved();
 };
 function renderSaved(){
   const box=$('saved');
@@ -1652,8 +1658,14 @@ function renderSaved(){
     const cond=[m.n>1?`průměr z ${m.n}`:'1 měření',m.proto?'protokol ✓':'protokol neúplný',m.calibrated==='sensor'?'vodováha ✓':(m.calibrated==='auto'?'vyrovnáno ✓':(m.calibrated?'olovnice ✓':'')),m.dist?`${String(m.dist).replace('.',',')} m`:'',m.camh?`${m.camh} cm`:'',m.examiner].filter(Boolean).join(' · ');
     return `<div class="sv"><img src="${m.thumb}" alt=""><div><div class="t">${esc(m.name)}</div><div class="m">${m.type} · ${m.date?new Date(m.date).toLocaleDateString('cs-CZ'):'bez data'}${m.demo?' · ukázka':''}</div><div class="m">${esc(cond)}</div></div><div class="n">${fmt(m.total)}${delta}</div></div>`}).join('');
 }
+$('pname').addEventListener('input',()=>{clearTimeout(pnT);pnT=setTimeout(()=>{renderResult();scheduleDraft()},250)});let pnT=0;
+function saveSaved(){if(saved.length>300)saved=saved.slice(-300);KV.set('saved',saved)}
+async function loadSaved(){const v=await KV.get('saved');if(Array.isArray(v)){saved=v;renderSaved();renderResult()}}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-renderProto();refresh();renderSaved();migrateOld().then(showDraftCard);
+let errT=0;function onAppError(msg){try{console.error(msg)}catch(e){}if(Date.now()-errT<5000)return;errT=Date.now();try{flash('Nastala neočekávaná chyba – rozpracované měření je uložené. Pokud něco nefunguje, vraťte se na Úvod.',true)}catch(e){}}
+window.addEventListener('error',e=>onAppError(e.message||'chyba'));window.addEventListener('unhandledrejection',e=>onAppError(String(e.reason||'chyba')));
+loadPrefs();renderProto();refresh();renderSaved();loadSaved();migrateOld().then(showDraftCard);
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 requestAnimationFrame(()=>{fit();keepAimVisible();refresh()});
 })();</script>
 

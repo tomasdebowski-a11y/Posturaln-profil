@@ -189,7 +189,7 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 /* výsledek na celou obrazovku */
 .sheet .card{width:100%;height:100%;max-width:680px;border-radius:0}
 .sheet .grab{display:none}
-.shead{padding-top:calc(8px + env(safe-area-inset-top,0px))}
+.sheet .card .shead{padding-top:calc(10px + env(safe-area-inset-top,0px))} /* záhlaví pod stavovým řádkem iPhonu */
 .pfield{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px 6px 4px 14px;margin-bottom:12px}
 .pfield span{font-size:.85rem;color:var(--muted);flex:none}
 .pfield input{flex:1;min-width:0;border:0;background:transparent;font:600 1rem var(--f-ui);color:var(--ink);padding:10px 4px;outline:none}
@@ -251,7 +251,11 @@ details.det summary::after{content:" ▾"}details.det[open] summary::after{conte
 .homebtn{height:40px;border-radius:20px;border:1px solid var(--line);background:var(--surface);color:var(--sapphire);font:600 .9rem var(--f-ui);display:flex;align-items:center;gap:4px;padding:0 14px 0 8px;cursor:pointer}
 .homebtn .i{width:18px;height:18px}
 .homebtn{background:var(--sapphire);color:#fff;border-color:var(--sapphire)}
-.backhome{width:100%;min-height:50px;margin-top:14px;justify-content:center;font-weight:700;color:var(--sapphire)}
+.tabfoot{flex:none;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px max(14px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:var(--surface)}
+.tabfoot .btn{min-height:52px;justify-content:center;font-weight:700;font-size:1rem}
+.tabfoot .btn .i{width:20px;height:20px}
+.tabfoot .home{background:var(--sapphire);color:#fff;border:0}
+.tabfoot[hidden]{display:none}
 .backhome .i{width:20px;height:20px}
 .npver{margin:0;text-align:center;font:500 11px var(--f-num);color:rgba(255,255,255,.35)}
 /* řada bodů s okem */
@@ -637,7 +641,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.23.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.24.</p>
     </div>
     </div>
   </div>
@@ -1291,10 +1295,10 @@ $('fileQ').addEventListener('change',async e=>{const fs=[...(e.target.files||[])
 $('copy').onclick=copyResult;$('expImg').onclick=exportShare;
 
 /* v0.23: Úvod v každé kartě panelu, verze a automatická aktualizace */
-const APP_VER='0.23';
+const APP_VER='0.24';
 $('npVer').textContent='Posturální profil · verze '+APP_VER;
-document.querySelectorAll('.sbody').forEach(sb=>{if(sb.id==='t-result')return;sb.insertAdjacentHTML('beforeend','<button class="btn backhome"><svg class="i"><use href="#i-home"/></svg>Zpět na úvod</button>')});
-document.querySelectorAll('.backhome').forEach(b=>b.onclick=()=>$('homeBtn').click());
+$('sheet').querySelector('.card').insertAdjacentHTML('beforeend','<div class="tabfoot" id="tabFoot" hidden><button class="btn home" id="tfHome"><svg class="i"><use href="#i-home"/></svg>Úvod</button><button class="btn" id="tfBack">Zpět k měření</button></div>');
+$('tfHome').onclick=()=>$('homeBtn').click();$('tfBack').onclick=closeSheet;
 let pendingUpdate=false;
 const verNum=v=>v.split('.').map(Number).reduce((a,x)=>a*1000+x,0);
 async function checkUpdate(){try{const r=await fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const t=await r.text();
@@ -1322,7 +1326,7 @@ document.querySelectorAll('.npcard').forEach(b=>b.onclick=()=>{type=b.dataset.ty
 document.addEventListener('pointerdown',e=>{if(!$('typeMenu').hidden&&!e.target.closest('#typeMenu')&&!e.target.closest('#typeBtn'))closeTypeMenu()},true);
 function openSheet(t){$('sheet').hidden=false;stab(t||'result')}
 function closeSheet(){$('sheet').hidden=true}
-function stab(t){document.querySelectorAll('.stab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.t===t)));$('resFoot').hidden=t!=='result';
+function stab(t){document.querySelectorAll('.stab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.t===t)));$('resFoot').hidden=t!=='result';if($('tabFoot')){$('tabFoot').hidden=t==='result';$('tfBack').textContent=src?'Zpět k měření':'Zavřít'}
   ['result','proto','info'].forEach(x=>$('t-'+x).hidden=x!==t)}
 function show(v){if(v==='measure')closeSheet();else openSheet(v)}
 document.querySelectorAll('.stab').forEach(b=>b.onclick=()=>stab(b.dataset.t));

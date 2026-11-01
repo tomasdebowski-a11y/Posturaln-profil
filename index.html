@@ -358,6 +358,115 @@ details p{margin:6px 0;color:var(--muted)}
 .help b{color:var(--ink)}
 #copyArea{position:absolute;left:-9999px;top:0}
 @media (prefers-reduced-motion:reduce){.toast{transition:none}}
+
+/* v0.27 kartotéka pacientů */
+.npbk{margin-left:auto;width:44px;height:44px;border-radius:50%;border:1px solid var(--glass-line);background:rgba(255,255,255,.06);color:var(--on-glass);display:grid;place-items:center;cursor:pointer;padding:0;flex:none}
+.npmain{display:grid;grid-template-columns:1.2fr 1fr;gap:10px}
+.npmain .npbtn{min-height:58px;font-size:1rem}
+.npmain .npbtn.gold{background:transparent;border:1.5px solid rgba(245,201,92,.55)}
+.npbkwarn{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;border:1px solid rgba(232,181,58,.5);background:rgba(232,181,58,.12);color:var(--pt);font:600 13.5px var(--f-ui);text-align:left;cursor:pointer}
+.npsec{display:grid;gap:8px}
+.nplh{display:flex;justify-content:space-between;padding:0 4px}
+.nplh small{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--on-glass-dim)}
+.nplh span{font:600 12px var(--f-num);color:var(--on-glass-dim)}
+.npsearch{display:flex;align-items:center;gap:8px;height:48px;padding:0 14px;border-radius:14px;border:1px solid var(--glass-line);background:rgba(255,255,255,.06);color:var(--on-glass-dim);flex:none}
+.npsearch input{flex:1;min-width:0;border:0;background:transparent;color:var(--on-glass);font:500 16px var(--f-ui);outline:none;-webkit-appearance:none;appearance:none}
+.npsearch .i{width:18px;height:18px}
+.nplist{display:grid}
+.prow{display:flex;align-items:center;gap:12px;padding:10px 4px;border:0;border-bottom:1px solid rgba(255,255,255,.08);background:none;color:var(--on-glass);text-align:left;cursor:pointer;width:100%;font:inherit}
+.pcav{width:42px;height:42px;border-radius:50%;background:#1f4fa3;color:#fff;display:grid;place-items:center;font:700 14px var(--f-ui);flex:none}
+.pcav.none{background:#5b6782}
+.prow .pt,.pkrow .pt,.mrow .pt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.prow .pt b,.pkrow .pt b{font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prow .pt span,.pkrow .pt span{font:500 12px var(--f-num);color:var(--on-glass-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plast{font:600 14px var(--f-num);display:flex;align-items:center;gap:6px;white-space:nowrap;flex:none}
+.zd{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+.prow .chev{opacity:.4;width:18px;height:18px}
+.npadd{display:flex;align-items:center;gap:8px;min-height:46px;border:0;background:none;color:#8dbbff;font:600 15px var(--f-ui);cursor:pointer;padding:0 4px;justify-self:start}
+.npempty{color:var(--on-glass-dim);font-size:13.5px;padding:6px 4px;margin:0;line-height:1.45}
+.pick{position:absolute;inset:0;z-index:23;background:var(--stage);color:var(--on-glass);display:flex;flex-direction:column;max-width:560px;margin:0 auto}
+.pkin{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior:contain;padding:calc(12px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px}
+.pkhead{display:flex;align-items:flex-start;gap:10px}
+.pkhead>div{flex:1;min-width:0}
+.pkhead h2{margin:6px 0 2px;font:700 24px/1.2 var(--f-ui);text-transform:none;letter-spacing:0;color:var(--on-glass)}
+.pkhead p{margin:0;color:var(--on-glass-dim);font-size:14px}
+.pkx{width:44px;height:44px;border-radius:50%;border:1px solid var(--glass-line);background:rgba(255,255,255,.06);color:var(--on-glass);display:grid;place-items:center;flex:none;cursor:pointer;padding:0}
+.pick .npcards{margin-top:36px}
+.pklist{display:grid;gap:6px}
+.pksec{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--on-glass-dim);margin:6px 4px 0}
+.pkrow{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:14px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--on-glass);text-align:left;width:100%;font:inherit;cursor:pointer;min-height:58px}
+.pkrow .i{color:var(--pt)}
+.pkrow.sel,.pknew.sel{border-color:var(--pt);background:rgba(245,201,92,.12)}
+.pknew{display:grid;gap:8px;padding:10px;border-radius:14px;border:1.5px solid rgba(255,255,255,.1)}
+.pknew small{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--on-glass-dim)}
+.pknew input{height:46px;border-radius:11px;border:1px solid var(--glass-line);background:rgba(255,255,255,.06);color:var(--on-glass);font:500 16px var(--f-ui);padding:0 12px;outline:none;min-width:0}
+.pknew input:focus{border-color:var(--pt)}
+.pkerr{margin:0;color:#ffb4a0;font-size:13.5px}
+.pkerr:empty{display:none}
+.pkbtns{flex:none;display:grid;grid-template-columns:1.4fr 1fr;gap:10px;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));border-top:1px solid rgba(255,255,255,.08)}
+.pkbtns.one{grid-template-columns:1fr}
+.pkbtns .npbtn.glass{border:1px solid rgba(255,255,255,.18)}
+.pv{position:absolute;inset:0;z-index:22;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;-webkit-user-select:text;user-select:text}
+.pvhead{flex:none;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) 8px max(14px,env(safe-area-inset-left,0px));max-width:680px;width:100%;margin:0 auto}
+.pvhead .xbtn{display:grid;place-items:center;padding:0}
+.pvhead .xbtn[hidden]{display:block!important;visibility:hidden}
+.pvbody{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior:contain;padding:6px max(14px,env(safe-area-inset-right,0px)) 24px max(14px,env(safe-area-inset-left,0px));max-width:680px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.pvfoot{flex:none;display:grid;gap:8px;padding:10px max(14px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:var(--surface)}
+.pvfoot:empty{display:none}
+.pvfoot .toastline:empty{display:none}
+.pvp{display:flex;align-items:center;gap:14px}
+.pvp .pcav{width:58px;height:58px;font-size:19px}
+.pvp h1{margin:0;font-size:24px;line-height:1.15}
+.pvp p{margin:3px 0 0;font:500 12.5px var(--f-num);color:var(--muted)}
+.pvact{display:grid;grid-template-columns:1.3fr 1fr;gap:10px}
+.lbtn{min-height:50px;border-radius:25px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 15px var(--f-ui);display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;padding:0 12px}
+.lbtn.primary{background:var(--pt);border-color:var(--pt);color:#14213d}
+.lbtn.blue{background:var(--sapphire);border-color:var(--sapphire);color:#fff}
+.lbtn.danger{color:#c0392b}
+.lbtn:disabled{opacity:.45}
+.lbtn .i{width:20px;height:20px}
+.tpanel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 12px 8px}
+.tph{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.tph b{font-size:15px}
+.tph span{font-size:12.5px;font-weight:600;text-align:right}
+.up{color:#c0392b}.down{color:var(--ok)}.same{color:var(--muted)}
+.mlh{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted);margin:6px 4px -4px}
+.mrow{display:flex;align-items:center;gap:12px;padding:8px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-align:left;width:100%;font:inherit;cursor:pointer}
+.mrow img{width:44px;height:58px;object-fit:cover;border-radius:8px;background:var(--surface-2);flex:none}
+.mrow .pt b{font-size:15px}
+.mrow .pt span{font:500 12px var(--f-num);color:var(--muted)}
+.mrow .mv{font:600 17px var(--f-num);display:flex;align-items:center;gap:7px;flex:none}
+.rimg{border-radius:14px;overflow:hidden;background:#0d1017;display:grid;place-items:center;min-height:180px}
+.rimg img{display:block;width:100%;max-height:56vh;object-fit:contain}
+.rbig{display:flex;align-items:baseline;gap:10px}
+.rbig b{font:600 44px/1 var(--f-num);color:var(--sapphire)}
+.rbig span{font-weight:600}
+.rz{display:flex;align-items:center;gap:8px;font-weight:600;margin-top:6px}
+.rtab{width:100%;border-collapse:collapse;font:500 13.5px var(--f-num);margin-top:8px}
+.rtab td{padding:5px 2px;border-bottom:1px solid var(--line)}
+.rtab td:last-child{text-align:right}
+.rnote{font-size:12.5px;color:var(--muted);margin:0;line-height:1.45}
+.cmpimgs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cmpimgs figure{margin:0;display:grid;gap:6px;text-align:center;align-content:start}
+.cmpimgs .rimg{min-height:150px}
+.cmpimgs .rimg img{max-height:42vh}
+.cmpimgs b{font:600 24px var(--f-num)}
+.lsel{width:100%;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 14px var(--f-ui);padding:0 8px}
+.pvedit{display:grid;gap:8px;padding:12px;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+.pvedit input{height:46px;border-radius:11px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:500 16px var(--f-ui);padding:0 12px;min-width:0}
+.bkrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:15px}
+.bkrow b{font-family:var(--f-num)}
+.ntoast{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:40;width:min(92%,460px);padding:11px 14px;border-radius:14px;background:rgba(20,24,34,.95);border:1px solid rgba(255,255,255,.14);color:#fff;font-size:14px;line-height:1.4;text-align:center;transition:opacity .25s;pointer-events:none}
+.ntoast.hide{opacity:0}
+.pchip{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 12px;margin-bottom:10px;display:grid;gap:8px}
+.pchip .pcr{display:flex;align-items:center;gap:12px}
+.pchip .pct{flex:1;min-width:0;display:flex;flex-direction:column}
+.pchip .pct b{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pchip .pct span{font:500 12px var(--f-num);color:var(--muted)}
+.pclink{border:0;background:none;color:var(--sapphire);font:600 15px var(--f-ui);cursor:pointer;padding:8px;flex:none}
+.pcst{justify-self:start;font-size:13px;font-weight:600;padding:5px 10px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+.pcst.ok{background:var(--ok-soft);color:var(--ok)}
+.pcst.bad{background:var(--warn-soft);color:var(--warn)}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -385,6 +494,9 @@ details p{margin:6px 0;color:var(--muted)}
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
   <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18h10.5a4 4 0 0 0 .4-8A6 6 0 0 0 6.3 9.6 4.3 4.3 0 0 0 7 18z"/><path d="M12 15v-5M9.5 12l2.5-2.5 2.5 2.5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
 </svg>
 
@@ -448,12 +560,27 @@ details p{margin:6px 0;color:var(--muted)}
   </div>
 
   <div class="nophoto" id="nophoto" hidden>
-    <div class="npbrand"><div class="npmark" aria-hidden="true"><svg width="16" height="20" viewBox="0 0 22 26" fill="none"><path d="M11 1v24" stroke="#fff" stroke-width="1.8" stroke-dasharray="2 2.4"/><path d="M3 6h16M4 12h14M5 18h12" stroke="#f5d488" stroke-width="2.4" stroke-linecap="round"/></svg></div><b>Posturální profil</b></div>
+    <div class="npbrand"><div class="npmark" aria-hidden="true"><svg width="16" height="20" viewBox="0 0 22 26" fill="none"><path d="M11 1v24" stroke="#fff" stroke-width="1.8" stroke-dasharray="2 2.4"/><path d="M3 6h16M4 12h14M5 18h12" stroke="#f5d488" stroke-width="2.4" stroke-linecap="round"/></svg></div><b>Posturální profil</b><button class="npbk" id="npBk" aria-label="Záloha dat"><svg class="i"><use href="#i-cloud"/></svg></button></div>
+    <div class="npmain"><button class="npbtn primary" id="npNew"><svg class="i"><use href="#i-cam"/></svg>Nové měření</button><button class="npbtn glass gold" id="npQuick">Fotit do zásoby</button></div>
+    <button class="npbkwarn" id="npBkWarn" hidden></button>
     <div class="npqueue" id="npQueue" hidden>
       <div class="qhead"><small>FOTKY K MĚŘENÍ</small><span id="qCount"></span></div>
       <div class="qlist" id="qList"></div>
     </div>
-    <div class="nphead"><h1>Nové měření</h1><p>Co budete měřit?</p></div>
+    <div class="npsec">
+      <div class="nplh"><small>PACIENTI</small><span id="npPN"></span></div>
+      <label class="npsearch"><svg class="i"><use href="#i-search"/></svg><input id="npQ" type="search" placeholder="Hledat jméno nebo číslo karty" autocomplete="off" enterkeyhint="search"></label>
+      <div class="nplist" id="npList"></div>
+      <button class="npadd" id="npAdd"><svg class="i"><use href="#i-plus"/></svg>Nový pacient</button>
+    </div>
+    <div class="npgrow"></div>
+    <p class="nphint" id="npBkInfo"></p>
+    <p class="npver" id="npVer"></p>
+  </div>
+  <div class="pick" id="pick" hidden>
+    <div class="pkin">
+      <div class="pkhead"><div><h2 id="pkT">Pro koho je měření?</h2><p id="pkP"></p></div><button class="pkx" id="pkClose" aria-label="Zavřít"><svg class="i"><use href="#i-x"/></svg></button></div>
+      <div id="pkTypeBox">
     <div class="npcards" role="radiogroup" aria-label="Typ měření">
       <button class="npcard" role="radio" data-type="POTSI" aria-checked="true">
         <span class="npck" aria-hidden="true"><svg class="i"><use href="#i-check"/></svg></span>
@@ -466,14 +593,21 @@ details p{margin:6px 0;color:var(--muted)}
         <b>Hrudník</b><i>ATSI</i><small>snímek zepředu<br>jugulum · pupek</small>
       </button>
     </div>
-    <div class="npgrow"></div>
-    <div class="npbtns">
-      <button class="npbtn primary" id="npCam"><svg class="i"><use href="#i-cam"/></svg>Vyfotit s vodováhou</button>
-      <div class="nprow2"><button class="npbtn glass" id="npLib"><svg class="i"><use href="#i-img"/></svg>Z galerie</button><button class="npbtn glass gold" id="npQuick"><svg class="i"><use href="#i-pause"/></svg>Fotit do zásoby</button></div>
-      <p class="npver" id="npVer"></p>
-      <p class="nphint"><b>Fotit do zásoby</b> = jen vyfotíte (i víc snímků), body zadáte později v klidu. Fotky i rozpracovaná měření zůstávají v telefonu, smažou se po uložení výsledku.</p>
+      </div>
+      <label class="npsearch" id="pkSearch"><svg class="i"><use href="#i-search"/></svg><input id="pkQ" type="search" placeholder="Hledat jméno nebo číslo karty" autocomplete="off"></label>
+      <div class="pklist" id="pkList"></div>
+      <div class="pknew" id="pkNew"><small>NOVÝ PACIENT</small><input id="pkName" type="text" placeholder="Příjmení a jméno" autocomplete="off"><input id="pkCard" type="text" placeholder="Číslo karty (nepovinné)" autocomplete="off"></div>
+      <p class="pkerr" id="pkErr"></p>
     </div>
+    <div class="pkbtns" id="pkBtns"></div>
   </div>
+  <div class="pv" id="pv" hidden>
+    <div class="pvhead"><button class="homebtn" id="pvL"></button><b class="stitle" id="pvT"></b><button class="xbtn" id="pvR" aria-label="Upravit pacienta" hidden></button></div>
+    <div class="pvbody" id="pvB"></div>
+    <div class="pvfoot" id="pvF"></div>
+  </div>
+  <input type="file" id="fileBk" accept=".json,application/json,text/plain" hidden>
+  <div class="ntoast hide" id="ntoast" role="status"></div>
   <div class="ask" id="ask" hidden>
     <div class="askcard glass" role="alertdialog" aria-labelledby="askT">
       <b id="askT">Zahodit rozpracované měření?</b>
@@ -519,26 +653,12 @@ details p{margin:6px 0;color:var(--muted)}
         <button class="stab" role="tab" data-t="info" aria-selected="false">Návod</button>
       </div>
       <div class="sbody" id="t-result">
-      <label class="pfield"><span>Pacient</span><input id="pname" type="text" autocomplete="off" placeholder="jméno nebo číslo karty"></label>
+      <input type="hidden" id="pname"><div class="pchip" id="pchip"></div>
       <div class="panel">
         <div id="result"></div>
         <div id="seriesBox"></div>
       </div>
       <div class="warns" id="warns"></div>
-      <div class="panel">
-        <h2>Přehled pacientů v aplikaci</h2>
-        <div class="fields">
-          <label class="f">Datum<input id="pdate" type="date"></label>
-        </div>
-        <div class="row" style="margin-top:10px">
-          <button class="btn gold" id="save" disabled>Přidat do přehledu</button>
-          <span class="toastline" id="saveToast"></span>
-        </div>
-      </div>
-      <div class="panel">
-        <h2>Uložená měření</h2>
-        <div class="saved" id="saved"></div>
-      </div>
     </div>
       <div class="resfoot" id="resFoot">
         <button class="btn primary" id="expImg" disabled><svg class="i"><use href="#i-img"/></svg>Uložit fotku s výsledkem</button>
@@ -553,6 +673,7 @@ details p{margin:6px 0;color:var(--muted)}
       <div class="panel">
         <h2>Podmínky</h2>
         <div class="fields">
+          <label class="f">Datum měření<input id="pdate" type="date"></label>
           <label class="f">Vzdálenost fotoaparátu (m)<input id="dist" type="number" step="0.1" min="0" inputmode="decimal" placeholder="3,0"></label>
           <label class="f">Výška objektivu (cm)<input id="camh" type="number" step="1" min="0" inputmode="numeric" placeholder="např. 90"></label>
           <label class="f">Měřil(a)<input id="examiner" type="text" autocomplete="off" placeholder="iniciály"></label>
@@ -566,6 +687,7 @@ details p{margin:6px 0;color:var(--muted)}
         <ul class="help">
           <li><b>1. Fotka</b> – <b>Vyfotit</b> otevře fotoaparát s vodováhou: vodorovná čára a bublina ukazují náklon a sklon telefonu, spoušť zezelená, až je telefon rovně (náklon pod 0,5°, sklon pod 1°). Pacient má temenem a chodidly sedět na čárkovaných vodítkách. Fotku lze vybrat i z Galerie.</li>
           <li><b>2. Vyrovnání</b> – u fotky z aplikace podle senzorů telefonu (a pro kontrolu podle hran), u fotky z galerie automaticky: aplikace najde svislé linie v záběru (olovnici, zárubeň dveří, roh místnosti) a fotku podle nich srovná. Žluté čáry ukazují, podle čeho; když sedí, dejte Pokračovat. Jinak <b>Olovnicí ručně</b>: zaměřovač na horní konec olovnice, potvrdit, na dolní konec, potvrdit.</li>
+          <li><b>Pacienti</b> – Nové měření se vždy ptá, pro koho je (nebo „Bez pacienta“, přiřadíte později). Jakmile je všech 8 bodů, výsledek i fotka s vyznačením se samy uloží do karty pacienta; „Změřit znovu“ přidá další měření do průměru. Karta (ťukněte na pacienta na úvodu) ukazuje vývoj POTSI a ATSI, všechna měření a porovnání dvou měření. Data jsou jen v telefonu – zálohujte je ikonou mráčku na úvodu.</li>
           <li><b>Fotit do zásoby</b> – na úvodní obrazovce. Otevře fotoaparát s vodováhou, ale po vyfocení zůstane otevřený, takže pořídíte víc snímků za sebou (POTSI/ATSI přepnete štítkem dole). Na konci zadáte jméno pacienta. Fotky čekají v seznamu <b>Fotky k měření</b> a body do nich zadáte později v klidu – vyrovnání podle senzorů se použije až při otevření. Do zásoby jde i víc fotek najednou z galerie (ikona galerie ve fotoaparátu). Rozpracované měření se do seznamu vrací i přes ⋯ → Přerušit.</li>
           <li><b>3. Body P1–P8</b> – zaměřovač posuňte na bod a potvrďte velkým tlačítkem. Po podpažní řase skočí zaměřovač nad ni a u ramene se posouvá jen nahoru a dolů – rameno leží podle metody na svislici z podpažní řasy.</li>
           <li><b>Zaměřovač</b> posouváte jedním prstem kdekoli na fotce; neskočí pod prst, takže ho nezakryjete. Pomalý pohyb prstu = jemné doladění. Ťuknutím ho přesunete na dané místo.</li>
@@ -641,7 +763,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.26.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají. Pacienti, měření a fotky zůstávají jen v tomto telefonu – pravidelně je zálohujte (ikona mráčku na úvodu). Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.27.</p>
     </div>
     </div>
   </div>
@@ -695,7 +817,7 @@ const def=()=>DEFS[type];
 const nextKey=()=>{const p=def().pts.find(p=>!pts[p.k]);return p?p.k:null};
 const complete=()=>def().pts.every(p=>pts[p.k]);
 const partner={rs:'ra',ls:'la'};
-try{$('pdate').value=new Date().toISOString().slice(0,10)}catch(e){}
+
 
 /* ---------- ukázková silueta ---------- */
 function makeDemo(t){
@@ -792,7 +914,7 @@ function setRotation(nr){
 }
 function freeC(c){try{if(c&&c.getContext&&c!==base&&c!==cv){c.width=0;c.height=0}}catch(e){}}
 function newImage(c,demo){
-  draftOff=false;draftImgOf=null;curId=null;if(!series.length)$('pname').value='';
+  draftOff=false;draftImgOf=null;curId=null;curMid=null;recSig='';recState='';curPid=demo?null:(P(nextPid)?nextPid:null);$('pname').value=curPid?P(curPid).name:'';try{$('pdate').value=nextDate||isoDay()}catch(e){}nextDate=null;
   if(src&&src!==c)freeC(src);if(origSrc&&origSrc!==c&&origSrc!==src)freeC(origSrc);
   app.classList.remove('nosrc');$('nophoto').hidden=true;
   src=c;isDemo=demo;rot=0;calibrated=false;calibMode=false;levelReview=false;autoLines=[];tiltDeg=null;origSrc=null;levelInfo=null;selected=null;selOrig=null;plumbMode=false;plumbPts=[];
@@ -818,13 +940,12 @@ function clearPhoto(){src=null;origSrc=null;isDemo=false;pts={};hist=[];selected
   levelReview=false;autoLines=[];levelInfo=null;calibMode=false;calibrated=false;rot=0;lastStepKey=null;closeSheet();refresh()}
 let askGo=null;
 function startNew(kind){ // Vyfotit / Galerie: současná fotka se uloží do seznamu Fotky k měření, nic se neztratí
-  if(src&&!isDemo){clearTimeout(draftT);saveDraft().then(showDraftCard)}
-  clearPhoto();if(kind==='cam')openCam();else $('fileLib').click();
+  if(src&&!isDemo){clearTimeout(draftT);saveRec();saveDraft().then(showDraftCard)}
+  nextPid=curPid;clearPhoto();if(kind==='cam')openCam();else $('fileLib').click();
 }
 $('askYes').onclick=()=>{$('ask').hidden=true;const g=askGo;askGo=null;if(g)g()};
 $('askNo').onclick=()=>{$('ask').hidden=true;askGo=null};
 $('camBtn').onclick=()=>{quickMode=false;startNew('cam')};$('libBtn').onclick=()=>startNew('lib');
-$('npCam').onclick=()=>{quickMode=false;openCam()};$('npLib').onclick=()=>$('fileLib').click();
 
 /* ---------- kreslení ---------- */
 function drawAim(g){
@@ -1127,11 +1248,14 @@ $('sec').onclick=()=>{
 };
 function goHome(msg){ // zpět na úvodní obrazovku bez otázek – rozpracované měření se uloží do Fotky k měření
   closeSheet();closeMore();
-  const pr=(src&&!isDemo&&!draftOff)?(clearTimeout(draftT),saveDraft()):Promise.resolve();
-  clearPhoto();showDraftCard();if(msg)flash(msg);
+  let pr=Promise.resolve();
+  if(src&&!isDemo&&!draftOff){clearTimeout(draftT);saveRec();
+    if(recState==='ok'&&curPid&&(lastRes||!hist.length)){draftOff=true;pr=dropDraft();msg='Měření je uložené v kartě pacienta '+P(curPid).name+'.'}
+    else pr=saveDraft()}
+  nextPid=null;clearPhoto();showDraftCard();if(msg)note(msg);
   pr.then(showDraftCard).finally(()=>{if(pendingUpdate)setTimeout(()=>location.replace(location.pathname+'?v='+Date.now()),700)});
 }
-function newMeasure(){goHome('Nové měření – vyberte typ a pořiďte snímek.')}
+function newMeasure(){goHome('')}
 $('collapse').onclick=()=>{app.classList.add('min');requestAnimationFrame(draw)};
 $('expand').onclick=()=>{app.classList.remove('min');requestAnimationFrame(()=>{keepAimVisible();draw()})};
 $('miniOk').onclick=()=>$('ok').click();
@@ -1197,8 +1321,10 @@ const KV={db:null,open(){if(this.db)return Promise.resolve(this.db);return new P
 let draftT=null,draftImgOf=null,draftOff=false,draftThumb='',curId=null;
 const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 async function qList(){return (await KV.get('queue'))||[]}
-async function qPut(meta){const q=(await qList()).filter(x=>x.id!==meta.id);q.unshift(meta);await KV.set('queue',q)}
-async function qDel(id){if(!id)return;const q=(await qList()).filter(x=>x.id!==id);await KV.set('queue',q);await KV.del('img:'+id);await KV.del('st:'+id)}
+let qLock=Promise.resolve();function qTx(fn){const r=qLock.then(fn,fn);qLock=r.catch(()=>{});return r} // zápisy do seznamu jeden po druhém – žádná fotka se neztratí
+function qPut(meta){return qTx(async()=>{const q=(await qList()).filter(x=>x.id!==meta.id);q.unshift(meta);await KV.set('queue',q)})}
+function qEdit(f){return qTx(async()=>{const q=await qList();f(q);await KV.set('queue',q)})}
+async function qDel(id){if(!id)return;await qTx(async()=>{const q=(await qList()).filter(x=>x.id!==id);await KV.set('queue',q)});await KV.del('img:'+id);await KV.del('st:'+id)}
 function thumbOf(c){const t=document.createElement('canvas'),k=128/Math.max(c.width,c.height);t.width=Math.round(c.width*k);t.height=Math.round(c.height*k);t.getContext('2d').drawImage(c,0,0,t.width,t.height);const u=t.toDataURL('image/jpeg',.7);freeC(t);return u}
 function scheduleDraft(){if(!src||isDemo||draftOff)return;clearTimeout(draftT);draftT=setTimeout(saveDraft,700)}
 async function saveDraft(){
@@ -1206,8 +1332,8 @@ async function saveDraft(){
   if(!curId)curId=newId();
   let li=null;try{li=levelInfo?JSON.parse(JSON.stringify(levelInfo)):null}catch(e){}
   // stav se zachytí hned (synchronně), aby ho nepřepsala další akce
-  const id=curId,s0=src,needImg=draftImgOf!==s0,st={ord:2,rot,pts:JSON.parse(JSON.stringify(pts)),hist:[...hist],series:JSON.parse(JSON.stringify(series)),calibMode,calibrated,levelInfo:li},
-    meta={id,time:Date.now(),type,pname:$('pname').value,n:hist.length,thumb:needImg?thumbOf(s0):draftThumb,raw:false};
+  const id=curId,s0=src,needImg=draftImgOf!==s0,st={ord:2,rot,pts:JSON.parse(JSON.stringify(pts)),hist:[...hist],series:JSON.parse(JSON.stringify(series)),calibMode,calibrated,levelInfo:li,mid:curMid},
+    meta={id,time:Date.now(),type,pid:curPid,pname:$('pname').value,n:hist.length,thumb:needImg?thumbOf(s0):draftThumb,raw:false};
   if(needImg){draftImgOf=s0;draftThumb=meta.thumb}
   await KV.set('st:'+id,st);
   if(needImg){const blob=await new Promise(r=>s0.toBlob(r,'image/jpeg',0.92));if(blob)await KV.set('img:'+id,blob)}
@@ -1219,13 +1345,13 @@ async function migrateOld(){const d=await KV.get('draft');if(!d)return;const img
     await qPut({id,time:d.time,type:d.type,pname:d.pname,n:d.n||0,thumb:d.thumb,raw:false})}
   await KV.del('draft');await KV.del('draftImg')}
 async function showDraftCard(){
-  const q=await qList(),box=$('npQueue');if(!q.length){box.hidden=true;return}
+  renderHome();const q=await qList(),box=$('npQueue');if(!q.length){box.hidden=true;return}
   const now=new Date();
   $('qCount').textContent=q.length===1?'1':String(q.length);
   $('qList').innerHTML=q.map(m=>{const t=new Date(m.time),today=now.toDateString()===t.toDateString();
     const when=`${today?'dnes':t.toLocaleDateString('cs-CZ',{day:'numeric',month:'numeric'})} ${t.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'})}`;
     const st=m.raw?'jen fotka':(m.n?`${m.n} z 8 bodů`:'jen fotka');
-    return `<div class="qrow"><img src="${m.thumb||''}" alt=""><div class="qt"><b>${esc(m.pname||'Bez jména')} · ${m.type}</b><span class="qs">${when} · ${st}</span><span class="dseg">${Array.from({length:8},(_,i)=>`<i class="${i<(m.n||0)?'d':''}"></i>`).join('')}</span></div>
+    return `<div class="qrow"><img src="${m.thumb||''}" alt=""><div class="qt"><b>${esc((P(m.pid)||{}).name||m.pname||'Bez pacienta')} · ${m.type}</b><span class="qs">${when} · ${st}</span><span class="dseg">${Array.from({length:8},(_,i)=>`<i class="${i<(m.n||0)?'d':''}"></i>`).join('')}</span></div>
       <button class="dgo" data-go="${m.id}">${m.n?'Pokračovat':'Změřit'}</button><button class="dx" data-del="${m.id}" aria-label="Smazat"><svg class="i"><use href="#i-x"/></svg></button></div>`}).join('');
   $('qList').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>resumeItem(b.dataset.go));
   $('qList').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const id=b.dataset.del;askGo=async()=>{await qDel(id);showDraftCard()};
@@ -1237,19 +1363,20 @@ async function blobToCanvas(blob){let bm;try{bm=await createImageBitmap(blob)}ca
 async function resumeItem(id){
   const m=(await qList()).find(x=>x.id===id),blob=await KV.get('img:'+id),st=(await KV.get('st:'+id))||{};
   if(!m||!blob){flash('Fotku se nepodařilo načíst.',true);await qDel(id);showDraftCard();return}
-  const c=await blobToCanvas(blob);type=m.type;syncType();draftOff=false;$('pname').value=m.pname||'';series=[];
+  const c=await blobToCanvas(blob);type=m.type;syncType();draftOff=false;series=[];
+  nextPid=P(m.pid)?m.pid:((findByName(m.pname)||{}).id||null);nextDate=isoDay(new Date(m.time));
   if(m.raw){ // fotka ze zásoby – teprve teď se vyrovná
     c._origMpx=c.width*c.height/1e6;c._f35=26;
     if(st.up)processShot(c,st.up);else{pts={};hist=[];newImage(c,false);autoLevel()}
-    curId=id;draftThumb=m.thumb||'';return}
-  newImage(c,false);curId=id;draftImgOf=c;draftThumb=m.thumb||'';
+    if(!curPid)$('pname').value=m.pname||'';curId=id;draftThumb=m.thumb||'';return}
+  newImage(c,false);curId=id;curMid=st.mid||null;if(!curPid)$('pname').value=m.pname||'';draftImgOf=c;draftThumb=m.thumb||'';
   rot=st.rot||0;rebuildBase();pts=st.pts||{};hist=st.hist||[];series=st.series||[];
   if(m.type==='POTSI'&&st.ord!==2){const sw={ra:'la',la:'ra',rs:'ls',ls:'rs',rw:'lw',lw:'rw'},np={};for(const k in pts)np[sw[k]||k]=pts[k];pts=np;hist=hist.map(k=>sw[k]||k)}
   calibMode=st.calibMode||false;calibrated=!!st.calibrated;levelInfo=st.levelInfo||null;levelReview=false;
   const nk=nextKey();if(nk&&hist.length){const last=pts[hist[hist.length-1]];if(last)aim={...last}}
   fit();keepAimVisible();lastStepKey=null;refresh();flash(nk?'Pokračujete tam, kde jste skončil.':'Měření je kompletní – ťukněte na Výsledek.');
 }
-async function pauseMeasure(){clearTimeout(draftT);await saveDraft();clearPhoto();showDraftCard();flash('Měření uloženo v telefonu. Pokračujete z úvodní obrazovky.')}
+async function pauseMeasure(){clearTimeout(draftT);saveRec();await saveDraft();clearPhoto();showDraftCard();flash('Měření uloženo v telefonu. Pokračujete z úvodní obrazovky.')}
 /* fotky do zásoby */
 let quickMode=false,quickIds=[],quickCount=0;
 function quickLabel(){const n=quickCount;$('camQn').textContent=`${n} ${n===1?'fotka':(n>=2&&n<=4?'fotky':'fotek')}`;$('camType').textContent=`${type} ⇄`}
@@ -1280,9 +1407,10 @@ async function quickImport(files){
 }
 async function endQuick(){quickMode=false;$('camQ').hidden=true;for(let i=0;i<40&&pending>0;i++)await new Promise(r=>setTimeout(r,100));
   if(!quickIds.length){showDraftCard();return}
-  $('qNameIn').value='';$('qNameT').textContent=`Uloženo do zásoby: ${quickIds.length} ${quickIds.length===1?'fotka':(quickIds.length<=4?'fotky':'fotek')}`;$('qName').hidden=false;setTimeout(()=>$('qNameIn').focus(),50)}
-async function finishQuick(name){$('qName').hidden=true;const ids=quickIds;quickIds=[];
-  if(name){const q=await qList();q.forEach(m=>{if(ids.includes(m.id))m.pname=name});await KV.set('queue',q)}
+  openPick('quick',{ids:[...quickIds]})}
+async function finishQuick(pid){$('qName').hidden=true;const ids=quickIds;quickIds=[];
+  if(typeof pid==='string'&&!P(pid)){const f=findByName(pid);pid=f?f.id:createPatient(pid,'')}
+  if(pid){const nm=P(pid).name;await qEdit(q=>q.forEach(m=>{if(ids.includes(m.id)){m.pid=pid;m.pname=nm}}))}
   showDraftCard();flash('Fotky jsou na úvodní obrazovce v seznamu Fotky k měření.')}
 $('qNameOk').onclick=()=>finishQuick($('qNameIn').value.trim());$('qNameSkip').onclick=()=>finishQuick('');
 $('qNameIn').onkeydown=e=>{if(e.key==='Enter')finishQuick($('qNameIn').value.trim())};
@@ -1294,7 +1422,7 @@ $('fileQ').addEventListener('change',async e=>{const fs=[...(e.target.files||[])
 $('copy').onclick=copyResult;$('expImg').onclick=exportShare;
 
 /* v0.23: Úvod v každé kartě panelu, verze a automatická aktualizace */
-const APP_VER='0.26';
+const APP_VER='0.27';
 $('npVer').textContent='Posturální profil · verze '+APP_VER;
 $('sheet').querySelector('.card').insertAdjacentHTML('beforeend','<div class="tabfoot" id="tabFoot" hidden><button class="btn home" id="tfHome"><svg class="i"><use href="#i-home"/></svg>Úvod</button></div>');
 $('tfHome').onclick=()=>$('homeBtn').click();
@@ -1302,7 +1430,7 @@ let pendingUpdate=false;
 const verNum=v=>v.split('.').map(Number).reduce((a,x)=>a*1000+x,0);
 async function checkUpdate(){try{const r=await fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const t=await r.text();
   const m=t.match(/const APP_VER='([0-9.]+)'/);if(!m||verNum(m[1])<=verNum(APP_VER))return;
-  const idle=!src&&$('cam').hidden&&$('qName').hidden&&$('ask').hidden&&$('sheet').hidden&&!quickMode;
+  const idle=!src&&$('cam').hidden&&$('qName').hidden&&$('ask').hidden&&$('sheet').hidden&&$('pick').hidden&&$('pv').hidden&&!quickMode;
   if(idle){flash('Načítám novou verzi '+m[1]+'…');setTimeout(()=>location.replace(location.pathname+'?v='+m[1]),600)}
   else if(!pendingUpdate){pendingUpdate=true;flash('Je k dispozici verze '+m[1]+' – načte se po návratu na úvod.')}}catch(e){}}
 setTimeout(checkUpdate,1500);
@@ -1508,13 +1636,12 @@ function evalHTML(v){
   const R=REF[type];if(!R)return'';const z1=R.z1,z2=R.z2,max=Math.max(z2*1.45,v*1.12),P=x=>Math.max(0,Math.min(100,x/max*100));
   const z=zoneOf(v),names=['','V normě','Nad hranicí normy','Výrazně zvýšená asymetrie'];
   const err=MEAS_ERR[type]?MEAS_ERR[type].intra:null;
-  const who=$('pname').value.trim();
-  const hist2=who?[...saved].filter(m=>m.type===type&&m.name===who&&!m.demo).sort((a,b)=>(a.date||'').localeCompare(b.date||'')):[];
+  const hist2=curPid&&!isDemo?patMeas(curPid,type).filter(m=>m.id!==curMid):[];
   const prev=hist2.length?hist2[hist2.length-1]:null;
   const txt=[`${def().name} ${fmt(v)} – ${z===1?`v normě podle literatury (do ${fmt(z1)}).`:z===2?`nad hranicí normy (${fmt(z1)}). Vhodné sledovat a měření zopakovat.`:`výrazně nad hranicí normy (nad ${fmt(z2)}). Doporučeno další vyšetření.`}`];
-  if(prev){const dv=v-prev.total,lim=err;txt.push(`Oproti ${prev.date?new Date(prev.date).toLocaleDateString('cs-CZ'):'minulému měření'} (${fmt(prev.total)}) ${dv>=0?'+':''}${fmt(dv)} – ${lim==null?'chyba měření u ATSI není publikována, posuzujte opatrně':Math.abs(dv)<lim?'v rámci chyby měření, tedy beze změny':dv>0?'zhoršení větší než chyba měření':'zlepšení větší než chyba měření'}.`)}
+  if(prev){const dv=v-prev.total,lim=err;txt.push(`Oproti ${prev.date?dFull(prev.date):'minulému měření'} (${fmt(prev.total)}) ${dv>=0?'+':''}${fmt(dv)} – ${lim==null?'chyba měření u ATSI není publikována, posuzujte opatrně':Math.abs(dv)<lim?'v rámci chyby měření, tedy beze změny':dv>0?'zhoršení větší než chyba měření':'zlepšení větší než chyba měření'}.`)}
   let trend='';
-  const T=[...hist2.map(m=>({v:m.total,l:m.date?new Date(m.date).toLocaleDateString('cs-CZ',{day:'numeric',month:'numeric',year:'2-digit'}):'–'})),{v,l:'dnes',cur:1}];
+  const T=[...hist2.map(m=>({v:m.total,l:dShort(m.date)})),{v,l:'dnes',cur:1}];
   if(T.length>=2){const W=300,H=120,pl=26,pr=10,pt=10,pb=22,ym=Math.max(z2*1.3,...T.map(t=>t.v*1.1)),Y=x=>pt+(H-pt-pb)*(1-Math.min(x,ym)/ym),X=i=>pl+(W-pl-pr)*(T.length===1?0.5:i/(T.length-1));
     const band=(a,b,c)=>`<rect x="${pl}" y="${Y(b)}" width="${W-pl-pr}" height="${Y(a)-Y(b)}" fill="${c}"/>`;
     trend=`<div class="evtrend"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Vývoj ${def().name}">${band(0,z1,'#e3f3e9')}${band(z1,z2,'#fbf0d4')}${band(z2,ym,'#f8e0da')}
@@ -1551,7 +1678,7 @@ function renderResult(){
   const w=qualityWarnings(lastRes),sn=sanity();
   if(sn.length&&lastRes)$('result').insertAdjacentHTML('afterbegin',`<div class="warn" style="margin-bottom:10px"><b>Body jsou pravděpodobně umístěné špatně – výsledek neplatí.</b><br>${sn.join('<br>')}<br>Opravte bod ťuknutím na jeho číslo na obrazovce Měření.</div>`);
   $('warns').innerHTML=w.map(x=>`<div class="warn">${x}</div>`).join('')+(lastRes&&!w.length?'<div class="okmsg">Snímek vyrovnaný, protokol dodržen, měření opakované – výsledek je dobře srovnatelný.</div>':'');
-  $('save').disabled=!(lastRes||series.length);
+  renderPChip();scheduleRec();
 }
 function currentSet(){const a=series.map(s=>s.total);if(lastRes)a.push(lastRes.total);return a}
 function renderSeries(){
@@ -1581,90 +1708,372 @@ function resultText(){
 }
 
 // ---- Export: fotka s osami, body a výsledkem v jednom obrázku (do galerie / kartotéky)
-function exportCanvas(){
-  const s=summary();if(!s||!base)return null;
-  const keepH=hideOverlay,keepS=selected;hideOverlay=false;selected=null;
-  const full=renderFull();hideOverlay=keepH;selected=keepS;
+function drawBand(full,d){ // fotka + tmavý pruh s výsledkem; d={t,m,n,sd,parts,date,who,calib,proto}
   const sc=Math.min(1,2400/Math.max(full.width,full.height)),W=Math.round(full.width*sc),PH=Math.round(full.height*sc);
   const u=W/1000,band=Math.round(250*u),c=document.createElement('canvas');c.width=W;c.height=PH+band;
   const g=c.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(full,0,0,W,PH);freeC(full);
   const y0=PH;g.fillStyle='#0d1017';g.fillRect(0,y0,W,band);
   g.fillStyle='#f5c95c';g.fillRect(0,y0,W,Math.max(2,4*u));
-  const d=def(),pad=40*u,mono='"IBM Plex Mono",ui-monospace,Menlo,monospace',sans='"IBM Plex Sans",system-ui,-apple-system,sans-serif';
+  const pad=40*u,mono='"IBM Plex Mono",ui-monospace,Menlo,monospace',sans='"IBM Plex Sans",system-ui,-apple-system,sans-serif';
   g.textBaseline='alphabetic';g.textAlign='left';
-  g.fillStyle='#f5c95c';g.font=`600 ${34*u}px ${mono}`;g.fillText(d.name,pad,y0+64*u);
-  g.fillStyle='#ffffff';g.font=`600 ${112*u}px ${mono}`;g.fillText(fmt(s.st.m),pad,y0+180*u);
-  const vw=g.measureText(fmt(s.st.m)).width;
+  g.fillStyle='#f5c95c';g.font=`600 ${34*u}px ${mono}`;g.fillText(DEFS[d.t].name,pad,y0+64*u);
+  g.fillStyle='#ffffff';g.font=`600 ${112*u}px ${mono}`;g.fillText(fmt(d.m),pad,y0+180*u);
+  const vw=g.measureText(fmt(d.m)).width;
   g.fillStyle='rgba(255,255,255,.65)';g.font=`500 ${26*u}px ${sans}`;
-  g.fillText(s.st.n>1?`průměr ${s.st.n} měření · SD ${fmt(s.st.sd)}`:'1 měření',pad+vw+22*u,y0+176*u);
-  if(REF[type]){const z=zoneOf(s.st.m),zc=['','#3fbf7a','#e8b53a','#e2624b'][z],zt=['','v normě','nad hranicí normy','výrazně zvýšené'][z];
-    g.fillStyle=zc;g.beginPath();g.arc(pad+vw+34*u,y0+126*u,11*u,0,Math.PI*2);g.fill();
-    g.font=`600 ${26*u}px ${sans}`;g.fillText(zt,pad+vw+54*u,y0+136*u)}
-  // dílčí indexy vpravo
+  g.fillText(d.n>1?`průměr ${d.n} měření · SD ${fmt(d.sd)}`:'1 měření',pad+vw+22*u,y0+176*u);
+  if(REF[d.t]){const z=zoneT(d.t,d.m);
+    g.fillStyle=ZC[z];g.beginPath();g.arc(pad+vw+34*u,y0+126*u,11*u,0,Math.PI*2);g.fill();
+    g.font=`600 ${26*u}px ${sans}`;g.fillText(ZN[z],pad+vw+54*u,y0+136*u)}
   const px=W*0.6,cols=2;g.font=`500 ${23*u}px ${mono}`;
-  s.parts.forEach((p,i)=>{const cx=px+(i%cols)*(W*0.2),cy=y0+70*u+Math.floor(i/cols)*44*u;
+  (d.parts||[]).forEach((p,i)=>{const cx=px+(i%cols)*(W*0.2),cy=y0+70*u+Math.floor(i/cols)*44*u;
     g.fillStyle='rgba(255,255,255,.55)';g.fillText(p.c.replace('‑','-'),cx,cy);
     g.fillStyle='#ffffff';g.textAlign='right';g.fillText(fmt(p.v),cx+W*0.17,cy);g.textAlign='left'});
-  const dt=$('pdate').value?new Date($('pdate').value).toLocaleDateString('cs-CZ'):new Date().toLocaleDateString('cs-CZ');
-  const who=$('pname').value.trim();
   g.fillStyle='rgba(255,255,255,.55)';g.font=`500 ${22*u}px ${sans}`;
-  g.fillText([who,dt,d.view,calibMode?'vyrovnáno':'',protoOk()?'protokol 8/8':''].filter(Boolean).join(' · '),pad,y0+band-26*u);
+  g.fillText([d.who,d.date,DEFS[d.t].view,d.calib?'vyrovnáno':'',d.proto?'protokol 8/8':''].filter(Boolean).join(' · '),pad,y0+band-26*u);
   g.textAlign='right';g.fillText('Posturální profil',W-pad,y0+band-26*u);
   return c;
 }
-function expName(){const d=def(),who=$('pname').value.trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'');const dt=($('pdate').value||new Date().toISOString().slice(0,10));
-  return `${d.name}_${who?who+'_':''}${dt}.jpg`}
-function exportShare(){ // vše synchronně v rámci ťuknutí – iOS jinak sdílení odmítne
-  const t=$('copyToast'),say=m=>{if(t)t.textContent=m};
-  const txt=resultText();if(!txt){say('Nejdřív dokončete měření.');return}
-  try{navigator.clipboard.writeText(txt).catch(()=>{})}catch(e){}
-  const c=exportCanvas();if(!c)return;
+function exportCanvas(){
+  const s=summary();if(!s||!base)return null;
+  const keepH=hideOverlay,keepS=selected;hideOverlay=false;selected=null;
+  const full=renderFull();hideOverlay=keepH;selected=keepS;
+  const p=P(curPid),who=p?p.name+(p.card?' ('+p.card+')':''):$('pname').value.trim();
+  return drawBand(full,{t:type,m:s.st.m,n:s.st.n,sd:s.st.sd,parts:s.parts,date:dFull($('pdate').value||isoDay()),who,calib:!!calibMode,proto:protoOk()});
+}
+function fileName(kind,who,date){who=String(who||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'');
+  return `${kind}_${who?who+'_':''}${date||isoDay()}.jpg`}
+function expName(){return fileName(def().name,$('pname').value.trim(),$('pdate').value||isoDay())}
+function shareCanvas(c,name,txt,say){ // vše synchronně v rámci ťuknutí – iOS jinak sdílení odmítne
+  if(txt)try{navigator.clipboard.writeText(txt).catch(()=>{})}catch(e){}
   const url=c.toDataURL('image/jpeg',0.9);freeC(c);
   const bin=atob(url.split(',')[1]),arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
-  const f=new File([arr],expName(),{type:'image/jpeg'}),data={files:[f]};
+  const f=new File([arr],name,{type:'image/jpeg'}),data={files:[f]};
   if(navigator.canShare&&navigator.canShare(data)){
-    navigator.share(data).then(()=>{say('Hotovo. Popis hodnot je ve schránce – v kartotéce ho stačí vložit.');draftOff=true;dropDraft()})
+    navigator.share(data).then(()=>say(txt?'Hotovo. Popis hodnot je ve schránce – v kartotéce ho stačí vložit.':'Hotovo.'))
       .catch(e=>say(e.name==='AbortError'?'':'Uložení se nepodařilo, zkuste to znovu.'));
     say('V nabídce zvolte „Uložit obrázek“.');return}
   const a=document.createElement('a');a.href=url;a.download=f.name;document.body.appendChild(a);a.click();a.remove();
-  say('Fotka stažena. Popis hodnot je ve schránce.');draftOff=true;dropDraft();
+  say(txt?'Fotka stažena. Popis hodnot je ve schránce.':'Fotka stažena.');
 }
-function copyResult(){
-  const txt=resultText();if(!txt)return;const t=$('copyToast');
-  const fallback=()=>{const a=$('copyArea');a.value=txt;a.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}if(t)t.textContent=ok?'Zkopírováno':'Kopírování nebylo povoleno – text: '+txt};
-  try{navigator.clipboard.writeText(txt).then(()=>{if(t)t.textContent='Zkopírováno'},fallback)}catch(e){fallback()}
+function exportShare(){
+  const t=$('copyToast'),say=m=>{if(t)t.textContent=m};
+  const txt=resultText();if(!txt){say('Nejdřív dokončete měření.');return}
+  const c=exportCanvas();if(!c)return;
+  shareCanvas(c,expName(),txt,say);
 }
-$('save').onclick=()=>{
-  const s=summary();if(!s)return;
-  const full=renderFull(),th=document.createElement('canvas'),k=120/full.height;th.width=Math.round(full.width*k);th.height=120;th.getContext('2d').drawImage(full,0,0,th.width,th.height);freeC(full);
-  saved.push({type,name:$('pname').value.trim()||(isDemo?'Ukázka':'Bez jména'),date:$('pdate').value,total:s.st.m,n:s.st.n,sd:s.st.sd,
-    proto:protoOk(),calibrated:calibMode||calibrated,dist:$('dist').value,camh:$('camh').value,examiner:$('examiner').value.trim(),thumb:th.toDataURL('image/jpeg',.7),demo:isDemo});
-  series=[];pts={};hist=[];
-  saveSaved();draftOff=true;dropDraft();$('saveToast').textContent='Uloženo do přehledu níže';setTimeout(()=>$('saveToast').textContent='',2500);refresh();renderSaved();
-};
-function renderSaved(){
-  const box=$('saved');
-  if(!saved.length){box.innerHTML='<p class="empty">Zatím nic. U dalšího měření téhož pacienta se ukáže změna oproti prvnímu a zda je větší než chyba měření.</p>';return}
-  const sorted=[...saved].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-  box.innerHTML=sorted.map(m=>{
-    const first=sorted.find(x=>x.type===m.type&&x.name===m.name);
-    let delta='';
-    if(first!==m){const dv=m.total-first.total,err=MEAS_ERR[m.type];
-      const sameEx=m.examiner&&m.examiner===first.examiner;const lim=err?(sameEx?err.intra:err.inter):null;
-      const within=lim!==null&&Math.abs(dv)<lim;
-      const cls=within?'same':(dv>0?'up':'down');
-      const lbl=lim===null?'chyba měření u ATSI není číselně publikována – posuzujte opatrně':(within?`v rámci chyby měření (±${fmt(lim)})`:(dv>0?'zhoršení nad chybu měření':'zlepšení nad chybu měření'));
-      delta=`<span class="delta ${cls}">${dv>0?'+':''}${fmt(dv)} od ${first.date?new Date(first.date).toLocaleDateString('cs-CZ'):'1. měření'} · ${lbl}</span>`}
-    const cond=[m.n>1?`průměr z ${m.n}`:'1 měření',m.proto?'protokol ✓':'protokol neúplný',m.calibrated==='sensor'?'vodováha ✓':(m.calibrated==='auto'?'vyrovnáno ✓':(m.calibrated?'olovnice ✓':'')),m.dist?`${String(m.dist).replace('.',',')} m`:'',m.camh?`${m.camh} cm`:'',m.examiner].filter(Boolean).join(' · ');
-    return `<div class="sv"><img src="${m.thumb}" alt=""><div><div class="t">${esc(m.name)}</div><div class="m">${m.type} · ${m.date?new Date(m.date).toLocaleDateString('cs-CZ'):'bez data'}${m.demo?' · ukázka':''}</div><div class="m">${esc(cond)}</div></div><div class="n">${fmt(m.total)}${delta}</div></div>`}).join('');
+function copyText(txt,say){if(!txt)return;
+  const fallback=()=>{const a=$('copyArea');a.value=txt;a.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}say(ok?'Zkopírováno':'Kopírování nebylo povoleno – text: '+txt)};
+  try{navigator.clipboard.writeText(txt).then(()=>say('Zkopírováno'),fallback)}catch(e){fallback()}
 }
+function copyResult(){const t=$('copyToast');copyText(resultText(),m=>{if(t)t.textContent=m})}
 $('pname').addEventListener('input',()=>{clearTimeout(pnT);pnT=setTimeout(()=>{renderResult();scheduleDraft()},250)});let pnT=0;
-function saveSaved(){if(saved.length>300)saved=saved.slice(-300);KV.set('saved',saved)}
-async function loadSaved(){const v=await KV.get('saved');if(Array.isArray(v)){saved=v;renderSaved();renderResult()}}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let errT=0;function onAppError(msg){try{console.error(msg)}catch(e){}if(Date.now()-errT<5000)return;errT=Date.now();try{flash('Nastala neočekávaná chyba – rozpracované měření je uložené. Pokud něco nefunguje, vraťte se na Úvod.',true)}catch(e){}}
 window.addEventListener('error',e=>onAppError(e.message||'chyba'));window.addEventListener('unhandledrejection',e=>onAppError(String(e.reason||'chyba')));
-loadPrefs();renderProto();refresh();renderSaved();loadSaved();migrateOld().then(showDraftCard);
+
+/* ===== v0.27: kartotéka pacientů – pacienti, karta, automatické ukládání měření, porovnání, záloha ===== */
+let PATS=[],MEAS=[],BK={last:0,every:7,changed:0},curPid=null,nextPid=null,nextDate=null,curMid=null,recSig='',recState='',recT=0;
+const isoDay=d=>{d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const P=id=>id?PATS.find(p=>p.id===id)||null:null;
+const fold=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+const initials=n=>{const w=String(n||'?').trim().split(/\s+/);return ((w[0]||'?')[0]+(w[1]?w[1][0]:'')).toUpperCase()};
+const dLabel=s=>{if(!s)return'bez data';const t=isoDay();if(s===t)return'dnes';const[y,m,d]=s.split('-');return `${+d}. ${+m}.${y!==t.slice(0,4)?' '+y:''}`};
+const dFull=s=>{if(!s)return'';const[y,m,d]=s.split('-');return `${+d}. ${+m}. ${y}`};
+const dShort=s=>{if(!s)return'–';const[y,m,d]=s.split('-');return `${+d}.${+m}.${y.slice(2)}`};
+const zoneT=(t,v)=>{const R=REF[t];return !R?0:v<=R.z1?1:(v<=R.z2?2:3)};
+const ZC=['#8a94a8','#3fbf7a','#e8b53a','#e2624b'],ZN=['','v normě','nad hranicí normy','výrazně zvýšené'];
+const cnt=(n,a,b,c)=>`${n} ${n===1?a:(n>=2&&n<=4?b:c)}`;
+const byTime=(a,b)=>(a.date||'').localeCompare(b.date||'')||(a.time||0)-(b.time||0);
+function savePats(){BK.changed=Date.now();KV.set('patients',PATS);KV.set('bk',BK)}
+function saveMeas(){BK.changed=Date.now();KV.set('meas',MEAS);KV.set('bk',BK)}
+function patMeas(pid,t){return MEAS.filter(m=>m.pid===pid&&(!t||m.type===t)).sort(byTime)}
+function findByName(name){const f=fold(name);return f?PATS.find(p=>fold(p.name)===f)||null:null}
+function createPatient(name,card){const p={id:newId(),name:String(name).trim(),card:String(card||'').trim(),created:Date.now(),updated:Date.now()};PATS.push(p);savePats();return p.id}
+let noteT=0;function note(t){const el=$('ntoast');if(!el||!t)return;el.textContent=t;el.classList.remove('hide');clearTimeout(noteT);noteT=setTimeout(()=>el.classList.add('hide'),3400)}
+
+async function loadKart(){
+  try{PATS=(await KV.get('patients'))||[];MEAS=(await KV.get('meas'))||[];BK={...BK,...((await KV.get('bk'))||{})}}catch(e){}
+  if(!BK.migSaved){ // dřívější „Přehled pacientů v aplikaci“ → karty pacientů
+    try{const s=await KV.get('saved');if(Array.isArray(s))for(const m of s){if(m.demo||!m.name||m.name==='Bez jména'||m.name==='Ukázka')continue;
+      const p=findByName(m.name),pid=p?p.id:createPatient(m.name,'');
+      MEAS.push({id:newId(),pid,type:m.type,date:m.date||'',time:Date.now(),total:m.total,n:m.n||1,sd:m.sd||0,parts:null,proto:!!m.proto,calib:m.calibrated||'',dist:m.dist||'',camh:m.camh||'',examiner:m.examiner||'',thumb:m.thumb||'',noimg:true})}}catch(e){}
+    BK.migSaved=1;KV.set('meas',MEAS);KV.set('patients',PATS);KV.set('bk',BK)}
+  renderHome();renderResult();
+}
+
+/* ---------- automatické uložení měření do karty pacienta ---------- */
+function recStatus(){
+  if(isDemo||!src)return'demo';if(!curPid||!P(curPid))return'nopat';
+  if(!summary())return'wait';if(lastRes&&sanity().length)return'bad';return'ready';
+}
+function scheduleRec(){clearTimeout(recT);if(src&&!isDemo)recT=setTimeout(saveRec,500)}
+function saveRec(){ // vše podstatné proběhne synchronně (lze volat těsně před odchodem z měření)
+  clearTimeout(recT);
+  const st=recStatus();if(st!=='ready'){if(st!=='demo'||!src){recState=st}renderPChip();return Promise.resolve()}
+  const s=summary(),pid=curPid,date=$('pdate').value||isoDay();
+  const sig=JSON.stringify([pid,type,s.st.m,s.st.n,date,lastRes?pts:null,rot,calibMode,protoOk(),$('examiner').value]);
+  if(sig===recSig&&recState==='ok'){renderPChip();return Promise.resolve()}
+  if(!curMid)curMid=newId();
+  const id=curMid,old=MEAS.find(m=>m.id===id);let img=null,thumb='';
+  if(lastRes){
+    const keepH=hideOverlay,keepS=selected;hideOverlay=false;selected=null;
+    let full=null;try{full=renderFull()}finally{hideOverlay=keepH;selected=keepS}
+    const k=Math.min(1,1400/Math.max(full.width,full.height));img=full;
+    if(k<1){img=document.createElement('canvas');img.width=Math.round(full.width*k);img.height=Math.round(full.height*k);const g=img.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(full,0,0,img.width,img.height);freeC(full)}
+    thumb=thumbOf(img)}
+  const li=levelInfo&&levelInfo.raw?{roll:levelInfo.raw.roll,pitch:levelInfo.raw.pitch}:null;
+  const rec={...(old||{}),id,pid,type,date,time:old?old.time:Date.now(),upd:Date.now(),total:s.st.m,n:s.st.n,sd:s.st.sd,min:s.st.min,max:s.st.max,
+    parts:s.parts.map(p=>({c:p.c,v:p.v,dir:p.dir})),proto:protoOk(),calib:calibMode||(calibrated?'manual':''),lvl:li,
+    dist:$('dist').value,camh:$('camh').value,examiner:$('examiner').value.trim()};
+  if(thumb){rec.thumb=thumb;delete rec.noimg}
+  MEAS=MEAS.filter(m=>m.id!==id);MEAS.push(rec);
+  const p=P(pid);if(p)p.updated=Date.now();
+  recSig=sig;recState='ok';renderPChip();saveMeas();savePats();
+  if(!img)return Promise.resolve();
+  return new Promise(res=>img.toBlob(async b=>{try{if(b)await KV.set('mimg:'+id,b)}catch(e){}freeC(img);res()},'image/jpeg',0.82));
+}
+function renderPChip(){
+  const b=$('pchip');if(!b)return;
+  if(isDemo||!src){b.innerHTML=`<div class="pcr"><span class="pcav none">–</span><div class="pct"><b>Ukázka</b><span>do karty pacienta se neukládá</span></div></div>`;return}
+  const p=P(curPid),st=recStatus();
+  const head=p?`<span class="pcav">${esc(initials(p.name))}</span><div class="pct"><b>${esc(p.name)}</b><span>${p.card?'karta '+esc(p.card):'bez čísla karty'}</span></div><button class="pclink" id="pcChange">Změnit</button>`
+    :`<span class="pcav none">?</span><div class="pct"><b>Bez pacienta</b><span>${$('pname').value?'zapsáno: '+esc($('pname').value):'měření se zatím do žádné karty neukládá'}</span></div><button class="btn gold" id="pcChange">Přiřadit</button>`;
+  let s='';
+  if(p){s=st==='wait'?'<span class="pcst">Uloží se do karty po umístění všech 8 bodů</span>':st==='bad'?'<span class="pcst bad">Neuloženo – body jsou pravděpodobně umístěné špatně</span>':(recState==='ok'?'<span class="pcst ok">✓ Uloženo do karty pacienta</span>':'<span class="pcst">Ukládám…</span>')}
+  b.innerHTML=`<div class="pcr">${head}</div>${s}`;
+  $('pcChange').onclick=()=>openPick('assign',{name:p?'':$('pname').value});
+}
+function assignPid(pid){curPid=pid;nextPid=pid;const p=P(pid);$('pname').value=p?p.name:'';recSig='';recState='';saveRec();renderResult();scheduleDraft()}
+
+/* ---------- úvod: seznam pacientů ---------- */
+function lastOf(pid){const a=patMeas(pid);return a.length?a[a.length-1]:null}
+function renderHome(){
+  const box=$('npList');if(!box)return;
+  const q=fold($('npQ').value);
+  const list=PATS.filter(p=>!q||fold(p.name).includes(q)||fold(p.card).includes(q)).sort((a,b)=>(b.updated||0)-(a.updated||0));
+  $('npPN').textContent=PATS.length?String(PATS.length):'';
+  box.innerHTML=list.length?list.slice(0,200).map(p=>{const l=lastOf(p.id);
+    return `<button class="prow" data-p="${p.id}"><span class="pcav">${esc(initials(p.name))}</span><span class="pt"><b>${esc(p.name)}</b><span>${[p.card?'karta '+esc(p.card):'',l?dLabel(l.date):'bez měření'].filter(Boolean).join(' · ')}</span></span>${l?`<span class="plast"><i class="zd" style="background:${ZC[zoneT(l.type,l.total)]}"></i>${l.type} ${fmt(l.total)}</span>`:''}<svg class="i chev"><use href="#i-r"/></svg></button>`}).join('')
+    :`<p class="npempty">${PATS.length?'Nikdo takový tu není.':'Zatím žádní pacienti. Pacienta vyberete nebo založíte při Novém měření – měření se mu pak samo ukládá do karty.'}</p>`;
+  box.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>openCard(b.dataset.p));
+  const due=MEAS.length&&BK.every>0&&(BK.changed||0)>(BK.last||0)&&Date.now()-(BK.last||Math.min(...MEAS.map(m=>m.time||Date.now())))>BK.every*864e5;
+  const w=$('npBkWarn');w.hidden=!due;if(due)w.innerHTML=`<svg class="i"><use href="#i-cloud"/></svg><span>${BK.last?'Poslední záloha '+dLabel(isoDay(new Date(BK.last))):'Data ještě nejsou zálohovaná'} – <u>zálohovat</u></span>`;
+  $('npBkInfo').textContent=MEAS.length||PATS.length?(BK.last?'Poslední záloha: '+dFull(isoDay(new Date(BK.last))):'Data zatím nejsou zálohovaná (ikona mráčku nahoře).'):'';
+}
+
+/* ---------- výběr pacienta ---------- */
+let pk={mode:'new',sel:undefined,ids:null};
+function openPick(mode,opt){opt=opt||{};pk={mode,sel:undefined,ids:opt.ids||null};
+  $('pkQ').value='';$('pkName').value='';$('pkCard').value='';$('pkErr').textContent='';
+  if(opt.pid&&P(opt.pid))pk.sel=opt.pid;
+  else if(opt.name){const f=findByName(opt.name);if(f)pk.sel=f.id;else{$('pkName').value=opt.name;pk.sel='new'}}
+  if(mode==='create')pk.sel='new';
+  $('pkT').textContent=mode==='create'?'Nový pacient':mode==='quick'?'Čí jsou fotky?':mode==='assign'?'Přiřadit pacienta':'Pro koho je měření?';
+  $('pkP').textContent=mode==='create'?'Jméno a číslo karty z kartotéky (nepovinné)':mode==='quick'?(opt.ids?cnt(opt.ids.length,'fotka uložena','fotky uloženy','fotek uloženo')+' do zásoby. ':'')+'Vyberte pacienta, nebo přiřaďte později.':mode==='assign'?'Měření se uloží do jeho karty.':'Vyberte typ, pacienta a pořiďte snímek.';
+  $('pkTypeBox').hidden=mode!=='new';$('pkSearch').hidden=mode==='create';$('pkList').hidden=mode==='create';
+  const B=$('pkBtns');
+  B.className='pkbtns'+(mode==='new'||mode==='quick'?'':' one');
+  B.innerHTML=mode==='new'?'<button class="npbtn primary" id="pkCam"><svg class="i"><use href="#i-cam"/></svg>Vyfotit</button><button class="npbtn glass" id="pkLib"><svg class="i"><use href="#i-img"/></svg>Z galerie</button>'
+    :mode==='quick'?'<button class="npbtn primary" id="pkGo">Přiřadit fotky</button><button class="npbtn glass" id="pkLater">Později</button>'
+    :mode==='assign'?'<button class="npbtn primary" id="pkGo">Přiřadit</button>':'<button class="npbtn primary" id="pkGo"><svg class="i"><use href="#i-plus"/></svg>Založit pacienta</button>';
+  const go=$('pkGo');if(go)go.onclick=()=>{const r=resolvePick();if(!r.ok)return;closePick();
+    if(mode==='quick')finishQuick(r.pid);else if(mode==='assign'){assignPid(r.pid);note('Měření patří pacientovi '+(P(r.pid)||{}).name+'.')}else openCard(r.pid)};
+  if($('pkLater'))$('pkLater').onclick=()=>{closePick();finishQuick(null)};
+  if($('pkCam'))$('pkCam').onclick=()=>{const r=resolvePick();if(!r.ok)return;nextPid=r.pid;closePick();$('pv').hidden=true;quickMode=false;openCam()};
+  if($('pkLib'))$('pkLib').onclick=()=>{const r=resolvePick();if(!r.ok)return;nextPid=r.pid;closePick();$('pv').hidden=true;$('fileLib').click()};
+  renderPick();$('pick').hidden=false;$('pick').querySelector('.pkin').scrollTop=0;
+  if(mode==='create')setTimeout(()=>$('pkName').focus(),60);
+}
+function closePick(){$('pick').hidden=true}
+function renderPick(){
+  const q=fold($('pkQ').value),m=pk.mode;
+  const list=PATS.filter(p=>!q||fold(p.name).includes(q)||fold(p.card).includes(q)).sort((a,b)=>(b.updated||0)-(a.updated||0)).slice(0,q?60:30);
+  let h='';
+  if(m==='new'||m==='quick')h+=`<button class="pkrow${pk.sel===null?' sel':''}" data-s=""><span class="pcav none">–</span><span class="pt"><b>Bez pacienta</b><span>přiřadím později</span></span></button>`;
+  if(PATS.length)h+=`<div class="pksec">${q?'NALEZENO':'PACIENTI'}</div>`;
+  h+=list.map(p=>{const n=MEAS.filter(x=>x.pid===p.id).length,l=lastOf(p.id);
+    return `<button class="pkrow${pk.sel===p.id?' sel':''}" data-s="${p.id}"><span class="pcav">${esc(initials(p.name))}</span><span class="pt"><b>${esc(p.name)}</b><span>${[p.card?'karta '+esc(p.card):'',cnt(n,'měření','měření','měření'),l?'naposledy '+dLabel(l.date):''].filter(Boolean).join(' · ')}</span></span>${pk.sel===p.id?'<svg class="i"><use href="#i-check"/></svg>':''}</button>`}).join('');
+  if(q&&!list.length)h+=`<button class="pkrow" data-newq="1"><span class="pcav none">+</span><span class="pt"><b>Založit „${esc($('pkQ').value.trim())}“</b><span>nový pacient</span></span></button>`;
+  $('pkList').innerHTML=h;
+  $('pkList').querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{pk.sel=b.dataset.s||null;$('pkErr').textContent='';renderPick()});
+  const nq=$('pkList').querySelector('[data-newq]');if(nq)nq.onclick=()=>{$('pkName').value=$('pkQ').value.trim();pk.sel='new';renderPick();$('pkCard').focus()};
+  $('pkNew').classList.toggle('sel',pk.sel==='new');
+}
+function resolvePick(){
+  const err=t=>{$('pkErr').textContent=t;return{ok:false}};
+  if(pk.sel===undefined)return err('Vyberte pacienta ze seznamu, založte nového, nebo zvolte „Bez pacienta“.');
+  if(pk.sel===null)return{ok:true,pid:null};
+  if(pk.sel==='new'){const n=$('pkName').value.trim(),c=$('pkCard').value.trim();if(!n){$('pkName').focus();return err('Zadejte jméno nového pacienta.')}
+    const ex=PATS.find(p=>fold(p.name)===fold(n)&&(!c||!p.card||p.card===c));
+    if(ex){if(c&&!ex.card){ex.card=c;savePats()}return{ok:true,pid:ex.id}}
+    return{ok:true,pid:createPatient(n,c)}}
+  return P(pk.sel)?{ok:true,pid:pk.sel}:err('Pacient nebyl nalezen.');
+}
+$('pkQ').addEventListener('input',renderPick);
+$('pkName').addEventListener('input',()=>{pk.sel=$('pkName').value.trim()?'new':(pk.sel==='new'?undefined:pk.sel);$('pkErr').textContent='';renderPick()});
+$('pkName').addEventListener('focus',()=>{if(pk.mode!=='create'&&$('pkName').value.trim()){pk.sel='new';renderPick()}});
+$('pkClose').onclick=()=>{const m=pk.mode;closePick();if(m==='quick')finishQuick(null)};
+
+/* ---------- karta pacienta, detail měření, porovnání, záloha ---------- */
+let pvS={v:null},pvURLs=[];
+function pvFree(){pvURLs.forEach(u=>{try{URL.revokeObjectURL(u)}catch(e){}});pvURLs=[]}
+function pvShell(left,title,right){pvFree();
+  const L=$('pvL');L.innerHTML=left==='home'?'<svg class="i"><use href="#i-home"/></svg>Úvod':'<svg class="i"><use href="#i-l"/></svg>Zpět';L.dataset.k=left;
+  $('pvT').textContent=title||'';$('pvR').hidden=!right;$('pvR').innerHTML=right?'<svg class="i"><use href="#i-more"/></svg>':'';
+  $('pvF').innerHTML='';$('pv').hidden=false;$('pvB').scrollTop=0}
+function pvClose(){pvFree();$('pv').hidden=true;pvS={v:null};renderHome()}
+$('pvL').onclick=()=>{if($('pvL').dataset.k==='home'||!pvS.pid)pvClose();else openCard(pvS.pid)};
+$('pvR').onclick=()=>{const e=$('cdEdit');if(e){e.hidden=!e.hidden;if(!e.hidden)$('cdName').focus()}};
+async function loadImg(id,el){const b=await KV.get('mimg:'+id);if(!b||!el)return false;const u=URL.createObjectURL(b);pvURLs.push(u);el.src=u;try{await el.decode()}catch(e){}return true}
+function trendSVG(t,T){
+  const R=REF[t],W=320,H=124,pl=28,pr=12,pt=14,pb=20,ym=Math.max(R?R.z2*1.3:40,...T.map(x=>x.v*1.12));
+  const Y=x=>pt+(H-pt-pb)*(1-Math.min(x,ym)/ym),X=i=>pl+(W-pl-pr)*(T.length===1?0.5:i/(T.length-1));
+  const band=(a,b,c)=>`<rect x="${pl}" y="${Y(b)}" width="${W-pl-pr}" height="${Math.max(0,Y(a)-Y(b))}" fill="${c}"/>`;
+  const step=Math.max(1,Math.ceil(T.length/6)),show=i=>i===0||i===T.length-1||i%step===0&&i<T.length-step/2;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Vývoj ${t}" style="width:100%;height:auto;display:block">${R?band(0,R.z1,'#e3f3e9')+band(R.z1,R.z2,'#fbf0d4')+band(R.z2,ym,'#f8e0da'):''}
+    ${R?[R.z1,R.z2].map(v=>`<text x="${pl-4}" y="${Y(v)+3}" text-anchor="end" font-size="8" fill="#5b6782">${fmt(v,v%1?1:0)}</text>`).join(''):''}
+    <polyline points="${T.map((x,i)=>`${X(i)},${Y(x.v)}`).join(' ')}" fill="none" stroke="#14213d" stroke-width="1.6"/>
+    ${T.map((x,i)=>`<circle cx="${X(i)}" cy="${Y(x.v)}" r="${x.cur?4.5:3.5}" fill="${x.cur?'#14213d':'#fff'}" stroke="#14213d" stroke-width="1.5"/>${show(i)?`<text x="${X(i)}" y="${Y(x.v)-8}" text-anchor="middle" font-size="9" font-weight="600" fill="#14213d">${fmt(x.v)}</text><text x="${X(i)}" y="${H-5}" text-anchor="middle" font-size="8" fill="#5b6782">${x.l}</text>`:''}`).join('')}</svg>`;
+}
+function dailyMeans(recs){const g={};recs.forEach(r=>{(g[r.date||'']=g[r.date||'']||[]).push(r.total)});
+  return Object.keys(g).sort().map(d=>({d,v:g[d].reduce((a,b)=>a+b,0)/g[d].length,l:d===isoDay()?'dnes':dShort(d)}))}
+function changeTxt(t,dv,exA,exB){const e=MEAS_ERR[t];if(!e)return{cls:'same',t:'chyba měření u ATSI není publikována – posuzujte opatrně'};
+  const lim=exA&&exA===exB?e.intra:e.inter;return Math.abs(dv)<lim?{cls:'same',t:`v rámci chyby měření (±${fmt(lim)}), tedy beze změny`,lim}:dv>0?{cls:'up',t:`zhoršení větší než chyba měření (±${fmt(lim)})`,lim}:{cls:'down',t:`zlepšení větší než chyba měření (±${fmt(lim)})`,lim}}
+function openCard(pid){
+  const p=P(pid);if(!p){pvClose();return}
+  pvS={v:'card',pid};pvShell('home','',true);
+  const all=patMeas(pid),first=all[0];
+  let h=`<div class="pvp"><span class="pcav">${esc(initials(p.name))}</span><div><h1>${esc(p.name)}</h1><p>${[p.card?'karta '+esc(p.card):'bez čísla karty',cnt(all.length,'měření','měření','měření')+(first&&first.date?' od '+(+first.date.slice(5,7))+'/'+first.date.slice(0,4):'')].join(' · ')}</p></div></div>
+    <div class="pvedit" id="cdEdit" hidden><input id="cdName" value="${esc(p.name)}" placeholder="Příjmení a jméno" autocomplete="off"><input id="cdCard" value="${esc(p.card||'')}" placeholder="Číslo karty" autocomplete="off">
+      <div class="pvact"><button class="lbtn blue" id="cdSave">Uložit změny</button><button class="lbtn danger" id="cdDel">Smazat pacienta</button></div></div>
+    <div class="pvact"><button class="lbtn primary" id="cdNew"><svg class="i"><use href="#i-cam"/></svg>Nové měření</button><button class="lbtn" id="cdCmp"${all.length<2?' disabled':''}>Porovnat</button></div>`;
+  ['POTSI','ATSI'].forEach(t=>{const r=all.filter(m=>m.type===t);if(!r.length)return;const D=dailyMeans(r);
+    let ch='';if(D.length>1){const dv=D[D.length-1].v-D[0].v,c=changeTxt(t,dv,r[0].examiner,r[r.length-1].examiner);ch=`<span class="${c.cls}">${dv>0?'+':dv<0?'−':''}${fmt(Math.abs(dv))} od ${D[0].l}${c.cls==='up'?' · zhoršení':c.cls==='down'?' · zlepšení':''}</span>`}
+    h+=`<div class="tpanel"><div class="tph"><b>${t} – vývoj</b>${ch}</div>${trendSVG(t,D.map((x,i)=>({v:x.v,l:x.l,cur:i===D.length-1})))}</div>`});
+  h+=`<div class="mlh">MĚŘENÍ</div>`;
+  h+=all.length?[...all].reverse().map(m=>`<button class="mrow" data-m="${m.id}"><img src="${m.thumb||''}" alt=""><span class="pt"><b>${dLabel(m.date)} · ${m.type}</b><span>${m.n>1?`průměr ${m.n} měření · SD ${fmt(m.sd)}`:'1 měření'}${m.noimg?' · bez fotky':''}</span></span><span class="mv"><i class="zd" style="background:${ZC[zoneT(m.type,m.total)]}"></i>${fmt(m.total)}</span></button>`).join('')
+    :'<p class="rnote">Zatím žádné měření. Ťukněte na Nové měření – výsledek se sem uloží sám.</p>';
+  $('pvB').innerHTML=h;
+  $('pvB').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>openRec(b.dataset.m));
+  $('cdNew').onclick=()=>openPick('new',{pid});
+  $('cdCmp').onclick=()=>openCmp(pid);
+  $('cdSave').onclick=()=>{const n=$('cdName').value.trim();if(!n){note('Jméno nesmí být prázdné.');return}p.name=n;p.card=$('cdCard').value.trim();p.updated=Date.now();savePats();
+    qEdit(q=>q.forEach(m=>{if(m.pid===pid)m.pname=n}));openCard(pid);note('Uloženo.')};
+  $('cdDel').onclick=()=>{askGo=async()=>{const ids=MEAS.filter(m=>m.pid===pid).map(m=>m.id);MEAS=MEAS.filter(m=>m.pid!==pid);PATS=PATS.filter(x=>x.id!==pid);
+      for(const id of ids)await KV.del('mimg:'+id);saveMeas();savePats();await qEdit(q=>q.forEach(m=>{if(m.pid===pid)m.pid=null}));
+      if(curPid===pid)curPid=null;pvClose();showDraftCard();note('Pacient smazán.')};
+    $('askT').textContent=`Smazat pacienta ${p.name}?`;$('askP').textContent=`Smaže se i ${cnt(all.length,'měření','měření','měření')} a fotky v jeho kartě. Nelze vrátit.`;$('askYes').textContent='Smazat';$('ask').hidden=false};
+}
+function recCond(r){return[r.proto?'protokol dodržen':'protokol neúplný',r.calib==='sensor'?'vyrovnáno vodováhou':r.calib==='auto'?'vyrovnáno automaticky':r.calib?'vyrovnáno olovnicí':'',r.dist?`${String(r.dist).replace('.',',')} m`:'',r.camh?`objektiv ${r.camh} cm`:'',r.examiner?'měřil(a) '+r.examiner:''].filter(Boolean).join(' · ')}
+function recText(r){const p=P(r.pid),d=DEFS[r.type];
+  const head=r.n>1?`${d.name} ${fmt(r.total)} (průměr ze ${r.n} měření, SD ${fmt(r.sd)}${r.min!=null?`, rozpětí ${fmt(r.min)}–${fmt(r.max)}`:''})`:`${d.name} ${fmt(r.total)} (1 měření)`;
+  const parts=r.parts?` Poslední měření: ${r.parts.map(x=>`${x.c.replace('‑','-')} ${fmt(x.v)}`).join('; ')}; ${r.parts.slice(3).map(x=>x.dir).join(', ')}.`:'';
+  const cond=[r.dist?`vzdálenost ${String(r.dist).replace('.',',')} m`:'',r.camh?`výška objektivu ${r.camh} cm`:'',r.calib==='sensor'&&r.lvl?`snímek pořízen s vodováhou a vyrovnán podle polohových senzorů (náklon ${fmt(Math.abs(r.lvl.roll),1)}°, sklon ${fmt(Math.abs(r.lvl.pitch),1)}°)`:r.calib?'snímek vyrovnán':''].filter(Boolean).join(', ');
+  return `${head}.${parts} Fotogrammetrie ${d.view}, ${dFull(r.date)}${r.proto?', standardizovaný protokol (Stoliński 2017)':', protokol focení nedodržen v plném rozsahu'}${cond?`; ${cond}`:''}.${r.examiner?` Měřil(a): ${r.examiner}.`:''}${p?'':''}`}
+function recBand(r){const p=P(r.pid);return{t:r.type,m:r.total,n:r.n,sd:r.sd,parts:r.parts||[],date:dFull(r.date),who:p?p.name+(p.card?' ('+p.card+')':''):'',calib:!!r.calib,proto:r.proto}}
+function openRec(mid){
+  const r=MEAS.find(m=>m.id===mid);if(!r){openCard(pvS.pid);return}
+  pvS={v:'rec',pid:r.pid,mid};pvShell('back',`${r.type} · ${dLabel(r.date)}`,false);
+  const z=zoneT(r.type,r.total),prev=patMeas(r.pid,r.type).filter(m=>byTime(m,r)<0).pop();
+  let cmp='';if(prev){const dv=r.total-prev.total,c=changeTxt(r.type,dv,prev.examiner,r.examiner);cmp=`<p class="rnote">Oproti ${dLabel(prev.date)} (${fmt(prev.total)}): <b class="${c.cls}">${dv>=0?'+':'−'}${fmt(Math.abs(dv))}</b> – ${c.t}.</p>`}
+  $('pvB').innerHTML=`<div class="rimg">${r.noimg?`<p class="rnote" style="color:#9ba7c0;padding:30px">Měření převzaté ze starší verze – bez fotky.</p>`:'<img id="rImg" alt="Snímek s vyznačením">'}</div>
+    <div class="tpanel"><div class="rbig"><b>${fmt(r.total)}</b><span>${r.type}</span></div><div class="rz"><i class="zd" style="background:${ZC[z]}"></i>${ZN[z]}</div>
+    <p class="rnote" style="margin-top:6px">${r.n>1?`průměr ${r.n} měření · SD ${fmt(r.sd)}${r.min!=null?` · rozpětí ${fmt(r.min)}–${fmt(r.max)}`:''}`:'1 měření'} · ${dFull(r.date)}</p>${cmp}
+    ${r.parts?`<table class="rtab">${r.parts.map(x=>`<tr><td>${x.c}</td><td>${esc(x.dir||'')}</td><td>${fmt(x.v)}</td></tr>`).join('')}</table>`:''}
+    <p class="rnote" style="margin:8px 0 6px">${esc(recCond(r))}</p></div>`;
+  $('pvF').innerHTML=`<button class="lbtn primary" id="rExp" disabled><svg class="i"><use href="#i-img"/></svg>Uložit fotku s výsledkem</button><div class="pvact" style="grid-template-columns:1fr 1fr"><button class="lbtn" id="rCopy">Kopírovat text</button><button class="lbtn danger" id="rDel"><svg class="i"><use href="#i-del"/></svg>Smazat</button></div><span class="toastline" id="rToast"></span>`;
+  const say=t=>{$('rToast').textContent=t};
+  if(!r.noimg)loadImg(r.id,$('rImg')).then(ok=>{if(ok&&$('rExp'))$('rExp').disabled=false});
+  $('rExp').onclick=()=>{const im=$('rImg');if(!im||!im.naturalWidth)return;const c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;c.getContext('2d').drawImage(im,0,0);
+    const out=drawBand(c,recBand(r));const p=P(r.pid);shareCanvas(out,fileName(r.type,p?p.name:'',r.date),recText(r),say)};
+  $('rCopy').onclick=()=>copyText(recText(r),say);
+  $('rDel').onclick=()=>{askGo=async()=>{MEAS=MEAS.filter(m=>m.id!==mid);await KV.del('mimg:'+mid);saveMeas();if(curMid===mid){curMid=null;recSig='';recState=''}openCard(r.pid);note('Měření smazáno.')};
+    $('askT').textContent='Smazat toto měření?';$('askP').textContent='Zmizí z karty pacienta i s fotkou. Nelze vrátit.';$('askYes').textContent='Smazat';$('ask').hidden=false};
+}
+function openCmp(pid,t,ia,ib){
+  const all=patMeas(pid),types=['POTSI','ATSI'].filter(x=>all.filter(m=>m.type===x).length>=2);
+  if(!types.length){note('K porovnání jsou potřeba aspoň 2 měření stejného typu.');return}
+  if(!types.includes(t))t=types.includes((all[all.length-1]||{}).type)?all[all.length-1].type:types[0];
+  const R=patMeas(pid,t);const A=R.find(m=>m.id===ia)||R[0],B=R.find(m=>m.id===ib)||R[R.length-1];
+  const p=P(pid);pvS={v:'cmp',pid};pvShell('back','Porovnání · '+(p?p.name:''),false);
+  const opt=sel=>R.map(m=>`<option value="${m.id}"${m.id===sel.id?' selected':''}>${dLabel(m.date)} · ${fmt(m.total)}</option>`).join('');
+  const dv=B.total-A.total,c=changeTxt(t,dv,A.examiner,B.examiner);
+  const pa={},rows=[];(A.parts||[]).forEach(x=>pa[x.c]=x.v);(B.parts||[]).forEach(x=>{if(pa[x.c]!=null)rows.push({c:x.c,a:pa[x.c],b:x.v})});
+  const fig=(m,k)=>`<figure><select class="lsel" id="cs${k}">${opt(m)}</select><div class="rimg">${m.noimg?'<p class="rnote" style="color:#9ba7c0">bez fotky</p>':`<img id="ci${k}" alt="">`}</div><b>${fmt(m.total)}</b><span class="rz" style="justify-content:center;margin:0"><i class="zd" style="background:${ZC[zoneT(t,m.total)]}"></i>${ZN[zoneT(t,m.total)]}</span></figure>`;
+  $('pvB').innerHTML=`${types.length>1?`<div class="pvact" style="grid-template-columns:1fr 1fr">${types.map(x=>`<button class="lbtn${x===t?' blue':''}" data-ct="${x}">${x}</button>`).join('')}</div>`:''}
+    <div class="cmpimgs">${fig(A,'A')}${fig(B,'B')}</div>
+    <div class="tpanel"><div class="tph"><b>Změna ${t}</b><span class="${c.cls}" style="font:600 20px var(--f-num)">${dv>=0?'+':'−'}${fmt(Math.abs(dv))}</span></div><p class="rnote ${c.cls}" style="margin:2px 0 8px;font-weight:600">${c.t.charAt(0).toUpperCase()+c.t.slice(1)}</p>
+    ${rows.length?`<table class="rtab">${rows.map(x=>{const d=x.b-x.a;return `<tr><td>${x.c}</td><td>${fmt(x.a)} → ${fmt(x.b)}</td><td class="${Math.abs(d)<0.05?'same':d>0?'up':'down'}">${d>=0?'+':'−'}${fmt(Math.abs(d))}</td></tr>`}).join('')}</table>`:''}</div>`;
+  $('pvF').innerHTML=`<button class="lbtn blue" id="cExp"><svg class="i"><use href="#i-img"/></svg>Uložit porovnání jako obrázek</button><span class="toastline" id="cToast"></span>`;
+  $('pvB').querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>openCmp(pid,b.dataset.ct));
+  $('csA').onchange=e=>openCmp(pid,t,e.target.value,B.id);$('csB').onchange=e=>openCmp(pid,t,A.id,e.target.value);
+  if(!A.noimg)loadImg(A.id,$('ciA'));if(!B.noimg)loadImg(B.id,$('ciB'));
+  $('cExp').onclick=()=>{const ims=[$('ciA'),$('ciB')],H=1400,u=H/1400;
+    const ws=ims.map(im=>im&&im.naturalWidth?Math.round(im.naturalWidth*H/im.naturalHeight):Math.round(H*0.75)),gap=20,W=ws[0]+ws[1]+gap,band=Math.round(300*u);
+    const cv2=document.createElement('canvas');cv2.width=W;cv2.height=H+band;const g=cv2.getContext('2d');g.fillStyle='#0d1017';g.fillRect(0,0,W,H+band);
+    ims.forEach((im,i)=>{const x=i?ws[0]+gap:0;if(im&&im.naturalWidth)g.drawImage(im,x,0,ws[i],H)});
+    const mono='"IBM Plex Mono",ui-monospace,Menlo,monospace',sans='"IBM Plex Sans",system-ui,-apple-system,sans-serif',s=W/1000;
+    g.fillStyle='#f5c95c';g.fillRect(0,H,W,4);
+    [A,B].forEach((m,i)=>{const x=(i?ws[0]+gap:0)+30;g.fillStyle='#ffffff';g.font=`600 ${70*u}px ${mono}`;g.fillText(fmt(m.total),x,H+100*u);
+      g.fillStyle=ZC[zoneT(t,m.total)];g.font=`600 ${30*u}px ${sans}`;g.fillText(dFull(m.date)+' · '+ZN[zoneT(t,m.total)],x,H+150*u)});
+    g.fillStyle=c.cls==='up'?'#ff8a75':c.cls==='down'?'#6cd39a':'#ffffff';g.font=`600 ${40*u}px ${sans}`;g.fillText(`Změna ${t} ${dv>=0?'+':'−'}${fmt(Math.abs(dv))} – ${c.t}`,30,H+225*u);
+    g.fillStyle='rgba(255,255,255,.55)';g.font=`500 ${26*u}px ${sans}`;g.fillText([p?p.name:'',p&&p.card?'karta '+p.card:''].filter(Boolean).join(' · '),30,H+275*u);
+    g.textAlign='right';g.fillText('Posturální profil',W-30,H+275*u);
+    shareCanvas(cv2,fileName(t+'_porovnani',p?p.name:'',B.date),`Porovnání ${t}: ${dFull(A.date)} ${fmt(A.total)} → ${dFull(B.date)} ${fmt(B.total)}, změna ${dv>=0?'+':'−'}${fmt(Math.abs(dv))} – ${c.t}.`,x=>{$('cToast').textContent=x})};
+}
+let bkFile=null;
+async function openBk(){
+  pvS={v:'bk'};pvShell('home','Záloha dat',false);bkFile=null;
+  const q=await qList(),withImg=MEAS.filter(m=>!m.noimg).length;let est='';
+  try{if(navigator.storage&&navigator.storage.estimate){const e=await navigator.storage.estimate();est=(e.usage/1048576).toLocaleString('cs-CZ',{maximumFractionDigits:1})+' MB'}}catch(e){}
+  const ev=[[0,'nepřipomínat'],[1,'každý den'],[7,'každý týden'],[14,'každé 2 týdny'],[30,'každý měsíc']];
+  $('pvB').innerHTML=`<div class="tpanel"><b style="font-size:16px">Data jsou jen v tomto telefonu</b><p class="rnote" style="margin:4px 0 8px">Při ztrátě telefonu nebo smazání aplikace by se ztratila. Záloha je jeden soubor se všemi pacienty, měřeními a fotkami – uložte ho do iCloud Drive („Uložit do Souborů“) nebo pošlete AirDropem na Mac.</p></div>
+    <div class="tpanel" style="padding-bottom:10px"><div class="bkrow"><span>Pacientů</span><b>${PATS.length}</b></div><div class="bkrow"><span>Měření</span><b>${MEAS.length}</b></div><div class="bkrow"><span>Fotky k měření (nezálohují se)</span><b>${q.length}</b></div>${est?`<div class="bkrow"><span>Využité místo</span><b>${est}</b></div>`:''}<div class="bkrow" style="border:0"><span>Poslední záloha</span><b>${BK.last?dFull(isoDay(new Date(BK.last))):'zatím žádná'}</b></div></div>
+    <button class="lbtn blue" id="bkGo" disabled><svg class="i"><use href="#i-cloud"/></svg>Připravuji zálohu…</button>
+    <button class="lbtn" id="bkRe">Obnovit ze zálohy</button>
+    <label class="tpanel bkrow" style="align-items:center;padding:10px 14px"><span>Připomenout zálohu</span><select class="lsel" id="bkEv" style="width:auto">${ev.map(([v,t])=>`<option value="${v}"${(BK.every||0)===v?' selected':''}>${t}</option>`).join('')}</select></label>
+    <p class="rnote" id="bkMsg"></p>
+    <p class="rnote">Obnova ze zálohy nic nemaže – doplní pacienty a měření, která v telefonu chybí. Stejný soubor půjde později načíst do kartotéky v PC; pacienti se spárují podle čísla karty.</p>`;
+  $('bkEv').onchange=e=>{BK.every=+e.target.value;KV.set('bk',BK)};
+  $('bkRe').onclick=()=>$('fileBk').click();
+  $('bkGo').onclick=()=>{if(!bkFile)return;const say=t=>{$('bkMsg').textContent=t},done=()=>{BK.last=Date.now();KV.set('bk',BK);say('Záloha hotová ('+(bkFile.size/1048576).toLocaleString('cs-CZ',{maximumFractionDigits:1})+' MB).')};
+    const data={files:[bkFile]};
+    if(navigator.canShare&&navigator.canShare(data)){navigator.share(data).then(done).catch(e=>say(e.name==='AbortError'?'':'Sdílení se nepodařilo – zkuste to znovu.'));return}
+    const u=URL.createObjectURL(bkFile),a=document.createElement('a');a.href=u;a.download=bkFile.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);done()};
+  try{bkFile=await buildBackup();if(pvS.v==='bk'&&$('bkGo')){$('bkGo').disabled=false;$('bkGo').innerHTML=`<svg class="i"><use href="#i-cloud"/></svg>Zálohovat (iCloud, AirDrop, e-mail)`}}
+  catch(e){if($('bkGo'))$('bkGo').textContent='Zálohu se nepodařilo připravit'}
+}
+const blobToDataURL=b=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(b)});
+async function buildBackup(){
+  const parts=[`{"app":"posturalni-profil","format":1,"ver":"${APP_VER}","exported":${Date.now()},"patients":${JSON.stringify(PATS)},"meas":${JSON.stringify(MEAS)},"images":{`];let first=true;
+  for(const m of MEAS){if(m.noimg)continue;const b=await KV.get('mimg:'+m.id);if(!b)continue;parts.push((first?'':',')+JSON.stringify(m.id)+':'+JSON.stringify(await blobToDataURL(b)));first=false}
+  parts.push('}}');
+  return new File(parts,`posturalni-profil-zaloha-${isoDay()}.json`,{type:'application/json'});
+}
+function dataURLToBlob(u){const i=u.indexOf(','),mime=(u.slice(5,i).split(';')[0])||'image/jpeg',bin=atob(u.slice(i+1)),a=new Uint8Array(bin.length);for(let k=0;k<bin.length;k++)a[k]=bin.charCodeAt(k);return new Blob([a],{type:mime})}
+async function restoreBackup(f){
+  let d;try{d=JSON.parse(await f.text())}catch(e){note('Soubor není záloha Posturálního profilu.');return}
+  if(!d||d.app!=='posturalni-profil'||!Array.isArray(d.patients)||!Array.isArray(d.meas)){note('Soubor není záloha Posturálního profilu.');return}
+  const map={};let np=0,nm=0;
+  for(const p of d.patients){if(!p||!p.id||!p.name)continue;let ex=P(p.id);
+    if(!ex)ex=PATS.find(x=>p.card&&x.card&&x.card===p.card&&fold(x.name)===fold(p.name))||PATS.find(x=>!p.card&&!x.card&&fold(x.name)===fold(p.name))||null;
+    if(ex){map[p.id]=ex.id;if(ex.id===p.id&&(p.updated||0)>(ex.updated||0)){ex.name=p.name;ex.card=p.card;ex.updated=p.updated}}
+    else{PATS.push({...p});map[p.id]=p.id;np++}}
+  const have=new Set(MEAS.map(m=>m.id)),imgs=d.images||{};
+  for(const m of d.meas){if(!m||!m.id||have.has(m.id)||!map[m.pid])continue;const r={...m,pid:map[m.pid]};
+    if(imgs[m.id]){try{await KV.set('mimg:'+m.id,dataURLToBlob(imgs[m.id]))}catch(e){r.noimg=true}}else r.noimg=true;
+    MEAS.push(r);nm++}
+  savePats();saveMeas();renderHome();if(pvS.v==='bk')openBk();
+  note(np||nm?`Obnoveno: ${cnt(np,'nový pacient','noví pacienti','nových pacientů')}, ${cnt(nm,'měření','měření','měření')}.`:'Vše ze zálohy už v telefonu je.');
+}
+$('fileBk').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(f)restoreBackup(f)});
+$('npBk').onclick=openBk;$('npBkWarn').onclick=openBk;
+$('npNew').onclick=()=>openPick('new');
+$('npAdd').onclick=()=>openPick('create');
+$('npQ').addEventListener('input',renderHome);
+$('pdate').addEventListener('change',()=>{renderResult();scheduleDraft()});
+
+loadPrefs();renderProto();refresh();loadKart().then(()=>migrateOld()).then(showDraftCard);
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 requestAnimationFrame(()=>{fit();keepAimVisible();refresh()});
 })();</script>

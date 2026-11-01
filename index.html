@@ -380,7 +380,7 @@ details p{margin:6px 0;color:var(--muted)}
 <body>
 <div class="app" id="app">
   <canvas id="cv" tabindex="0" aria-label="Snímek pacienta se zaměřovačem a anatomickými body"></canvas>
-  <canvas id="loupe" width="264" height="264" hidden></canvas>
+  <canvas id="loupe" width="396" height="396" hidden></canvas>
 
   <div class="topbar">
     <div class="stepcard glass" id="stepcard" role="button" tabindex="0" title="Zobrazit popis bodu">
@@ -627,7 +627,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.19.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.20.</p>
     </div>
     </div>
   </div>
@@ -642,13 +642,13 @@ const DEFS={
   POTSI:{name:'POTSI',view:'zezadu',top:'c7',mid:'nc',patientRightIsImageRight:true,topCode:'FAI‑C7',topName:'C7',
     pts:[
       {k:'c7',n:'C7',t:'Trn obratle C7 – ideálně předem označený dermografem.'},
-      {k:'ra',n:'Pravá podpažní řasa',t:'Místo, kde se pravá paže odděluje od trupu. Zezadu je pravá strana pacienta na snímku vpravo.'},
-      {k:'rs',n:'Pravé rameno',t:'Zaměřovač je na svislici nad podpažní řasou a jde jen nahoru a dolů – dejte ho na horní konturu ramene.'},
-      {k:'rw',n:'Pravá tajle',t:'Nejhlubší bod zářezu tajle.'},
-      {k:'nc',n:'Intergluteální rýha',t:'Horní začátek intergluteální rýhy. Určuje střední čáru.'},
-      {k:'lw',n:'Levá tajle',t:'Nejhlubší bod zářezu tajle vlevo.'},
-      {k:'la',n:'Levá podpažní řasa',t:'Místo, kde se levá paže odděluje od trupu.'},
-      {k:'ls',n:'Levé rameno',t:'Zaměřovač je na svislici nad podpažní řasou a jde jen nahoru a dolů – dejte ho na horní konturu ramene.'}
+      {k:'la',n:'Levá podpažní řasa',t:'Místo, kde se levá paže odděluje od trupu. Zezadu je levá strana pacienta na snímku vlevo – začínáte vlevo.'},
+      {k:'ls',n:'Levé rameno',t:'Zaměřovač je na svislici nad podpažní řasou a jde jen nahoru a dolů – dejte ho na horní konturu ramene.'},
+      {k:'lw',n:'Levá tajle',t:'Nejhlubší bod zářezu tajle vlevo na snímku.'},
+      {k:'nc',n:'Intergluteální rýha',t:'Horní začátek intergluteální rýhy – musí být odkrytý. Určuje střední čáru.'},
+      {k:'rw',n:'Pravá tajle',t:'Nejhlubší bod zářezu tajle vpravo na snímku.'},
+      {k:'ra',n:'Pravá podpažní řasa',t:'Místo, kde se pravá paže odděluje od trupu (vpravo na snímku).'},
+      {k:'rs',n:'Pravé rameno',t:'Zaměřovač je na svislici nad podpažní řasou a jde jen nahoru a dolů – dejte ho na horní konturu ramene.'}
     ]},
   ATSI:{name:'ATSI',view:'zepředu',top:'sn',mid:'um',patientRightIsImageRight:false,topCode:'FAI‑SN',topName:'jugulum',
     pts:[
@@ -673,7 +673,7 @@ const PROTO=[
   {k:'cons',t:'Souhlas s fotodokumentací',s:'u dětí od zákonného zástupce'}
 ];
 const $=id=>document.getElementById(id);
-const cv=$('cv'),ctx=cv.getContext('2d'),loupe=$('loupe'),lctx=loupe.getContext('2d');
+const cv=$('cv'),ctx=cv.getContext('2d'),loupe=$('loupe'),lctx=loupe.getContext('2d',{willReadFrequently:true});
 let type='POTSI',src=null,base=document.createElement('canvas'),rot=0,showGrid=false,isDemo=true,calibrated=false;
 let pts={},hist=[],drag=null,saved=[],series=[],plumbMode=false,plumbPts=[],proto={};
 const fmt=(v,d=1)=>Number(Math.abs(v)<Math.pow(10,-d)/2?0:v).toLocaleString('cs-CZ',{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -1191,7 +1191,7 @@ async function saveDraft(){
   if(!curId)curId=newId();
   let li=null;try{li=levelInfo?JSON.parse(JSON.stringify(levelInfo)):null}catch(e){}
   // stav se zachytí hned (synchronně), aby ho nepřepsala další akce
-  const id=curId,s0=src,needImg=draftImgOf!==s0,st={rot,pts:JSON.parse(JSON.stringify(pts)),hist:[...hist],series:JSON.parse(JSON.stringify(series)),calibMode,calibrated,levelInfo:li},
+  const id=curId,s0=src,needImg=draftImgOf!==s0,st={ord:2,rot,pts:JSON.parse(JSON.stringify(pts)),hist:[...hist],series:JSON.parse(JSON.stringify(series)),calibMode,calibrated,levelInfo:li},
     meta={id,time:Date.now(),type,pname:$('pname').value,n:hist.length,thumb:needImg?thumbOf(s0):draftThumb,raw:false};
   if(needImg){draftImgOf=s0;draftThumb=meta.thumb}
   await KV.set('st:'+id,st);
@@ -1229,6 +1229,7 @@ async function resumeItem(id){
     curId=id;draftThumb=m.thumb||'';return}
   newImage(c,false);curId=id;draftImgOf=c;draftThumb=m.thumb||'';
   rot=st.rot||0;rebuildBase();pts=st.pts||{};hist=st.hist||[];series=st.series||[];
+  if(m.type==='POTSI'&&st.ord!==2){const sw={ra:'la',la:'ra',rs:'ls',ls:'rs',rw:'lw',lw:'rw'},np={};for(const k in pts)np[sw[k]||k]=pts[k];pts=np;hist=hist.map(k=>sw[k]||k)}
   calibMode=st.calibMode||false;calibrated=!!st.calibrated;levelInfo=st.levelInfo||null;levelReview=false;
   const nk=nextKey();if(nk&&hist.length){const last=pts[hist[hist.length-1]];if(last)aim={...last}}
   fit();keepAimVisible();lastStepKey=null;refresh();flash(nk?'Pokračujete tam, kde jste skončil.':'Měření je kompletní – ťukněte na Výsledek.');
@@ -1343,8 +1344,8 @@ function hint(){
 }
 function refresh(){
   $('demoBadge').hidden=!isDemo||!src;$('nophoto').hidden=!!src;app.classList.toggle('nosrc',!src);syncType();
-  draw();renderResult();renderSteps();hint();updateZoom();sideBtns();scheduleDraft();
-  $('undo').disabled=!(hist.length||selected||plumbMode||levelReview);$('plumb').disabled=!src;$('zfit').disabled=!src;
+  draw();renderResult();renderSteps();hint();updateZoom();
+  $('undo').disabled=!(hist.length||selected||plumbMode||levelReview);$('plumb').disabled=!src;$('zfit').disabled=!src;sideBtns();scheduleDraft();
   $('tabVal').textContent=lastRes?fmt(lastRes.total):(series.length?`${series.length}×`:'');
 }
 
@@ -1379,13 +1380,23 @@ function renderFull(){ // celý snímek s vyznačením pro náhled a export
 }
 function drawLoupe(w){
   const sp=toScreen(w),r=cv.getBoundingClientRect(),d=cv.width/r.width;
+  const want=Math.round(132*DPR());if(loupe.width!==want){loupe.width=want;loupe.height=want}
   loupe.hidden=false;loupe.classList.toggle('right',sp.x/d<r.width/2);
-  const L=loupe.width,zoom=3,sw=(140/zoom)*d/view.s; // úsek snímku ve skutečných pixelech
-  lctx.fillStyle='#000';lctx.fillRect(0,0,L,L);lctx.imageSmoothingQuality='high';
+  const L=loupe.width,k=L/264,zoom=3,sw=(140/zoom)*d/view.s; // úsek snímku ve skutečných pixelech
+  lctx.fillStyle='#000';lctx.fillRect(0,0,L,L);lctx.imageSmoothingEnabled=true;lctx.imageSmoothingQuality='high';
   lctx.drawImage(base,w.x-sw/2,w.y-sw/2,sw,sw,0,0,L,L);
-  lctx.strokeStyle='#3dff6e';lctx.lineWidth=2;lctx.beginPath();lctx.moveTo(L/2,L/2-30);lctx.lineTo(L/2,L/2-6);lctx.moveTo(L/2,L/2+6);lctx.lineTo(L/2,L/2+30);
-  lctx.moveTo(L/2-30,L/2);lctx.lineTo(L/2-6,L/2);lctx.moveTo(L/2+6,L/2);lctx.lineTo(L/2+30,L/2);lctx.stroke();
-  lctx.fillStyle='#3dff6e';lctx.fillRect(L/2-1,L/2-1,2,2);
+  sharpenLoupe(L);
+  lctx.strokeStyle='#3dff6e';lctx.lineWidth=2*k;lctx.beginPath();lctx.moveTo(L/2,L/2-30*k);lctx.lineTo(L/2,L/2-6*k);lctx.moveTo(L/2,L/2+6*k);lctx.lineTo(L/2,L/2+30*k);
+  lctx.moveTo(L/2-30*k,L/2);lctx.lineTo(L/2-6*k,L/2);lctx.moveTo(L/2+6*k,L/2);lctx.lineTo(L/2+30*k,L/2);lctx.stroke();
+  lctx.fillStyle='#3dff6e';lctx.fillRect(L/2-k,L/2-k,2*k,2*k);
+}
+let shBuf=null;
+function sharpenLoupe(L){ // doostření (unsharp 3×3) – kontury kůže a značky dermografu jsou zřetelnější
+  let im;try{im=lctx.getImageData(0,0,L,L)}catch(e){return}
+  const s=im.data,n=s.length;if(!shBuf||shBuf.length!==n)shBuf=new Uint8ClampedArray(n);shBuf.set(s);const o=shBuf,a=0.7,c=1+4*a,W=L*4;
+  for(let y=1;y<L-1;y++){let i=y*W+4;for(let x=1;x<L-1;x++,i+=4){
+    s[i]=c*o[i]-a*(o[i-4]+o[i+4]+o[i-W]+o[i+W]);s[i+1]=c*o[i+1]-a*(o[i-3]+o[i+5]+o[i+1-W]+o[i+1+W]);s[i+2]=c*o[i+2]-a*(o[i-2]+o[i+6]+o[i+2-W]+o[i+2+W])}}
+  lctx.putImageData(im,0,0);
 }
 
 function snapShoulders(){for(const s in partner){const a=partner[s];if(pts[s]&&pts[a])pts[s].x=pts[a].x}}

@@ -250,6 +250,10 @@ details.det summary::after{content:" ▾"}details.det[open] summary::after{conte
 .stitle{font-size:1rem;flex:1;text-align:center}
 .homebtn{height:40px;border-radius:20px;border:1px solid var(--line);background:var(--surface);color:var(--sapphire);font:600 .9rem var(--f-ui);display:flex;align-items:center;gap:4px;padding:0 14px 0 8px;cursor:pointer}
 .homebtn .i{width:18px;height:18px}
+.homebtn{background:var(--sapphire);color:#fff;border-color:var(--sapphire)}
+.backhome{width:100%;min-height:50px;margin-top:14px;justify-content:center;font-weight:700;color:var(--sapphire)}
+.backhome .i{width:20px;height:20px}
+.npver{margin:0;text-align:center;font:500 11px var(--f-num);color:rgba(255,255,255,.35)}
 /* řada bodů s okem */
 .chips{display:flex;gap:5px}
 .csep{width:1px;height:24px;background:rgba(255,255,255,.2);margin:0 3px;flex:none}
@@ -376,6 +380,7 @@ details p{margin:6px 0;color:var(--muted)}
   <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.7" fill="currentColor" stroke="none"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
   <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
 </svg>
 
@@ -461,6 +466,7 @@ details p{margin:6px 0;color:var(--muted)}
     <div class="npbtns">
       <button class="npbtn primary" id="npCam"><svg class="i"><use href="#i-cam"/></svg>Vyfotit s vodováhou</button>
       <div class="nprow2"><button class="npbtn glass" id="npLib"><svg class="i"><use href="#i-img"/></svg>Z galerie</button><button class="npbtn glass gold" id="npQuick"><svg class="i"><use href="#i-pause"/></svg>Fotit do zásoby</button></div>
+      <p class="npver" id="npVer"></p>
       <p class="nphint"><b>Fotit do zásoby</b> = jen vyfotíte (i víc snímků), body zadáte později v klidu. Fotky i rozpracovaná měření zůstávají v telefonu, smažou se po uložení výsledku.</p>
     </div>
   </div>
@@ -499,7 +505,7 @@ details p{margin:6px 0;color:var(--muted)}
     <div class="card" role="dialog" aria-modal="true" aria-label="Výsledek a nastavení">
       <div class="grab"></div>
       <div class="shead">
-        <button class="homebtn" id="homeBtn" aria-label="Úvod – nové měření"><svg class="i"><use href="#i-l"/></svg>Úvod</button>
+        <button class="homebtn" id="homeBtn" aria-label="Úvod – nové měření"><svg class="i"><use href="#i-home"/></svg>Úvod</button>
         <b class="stitle" id="sheetTitle">POTSI · zezadu</b>
         <button class="xbtn" id="closeSheet" aria-label="Zavřít">✕</button>
       </div>
@@ -631,7 +637,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.22.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají a po zavření stránky zmizí. Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.23.</p>
     </div>
     </div>
   </div>
@@ -1120,8 +1126,9 @@ $('sec').onclick=()=>{
 };
 function goHome(msg){ // zpět na úvodní obrazovku bez otázek – rozpracované měření se uloží do Fotky k měření
   closeSheet();closeMore();
-  if(src&&!isDemo&&!draftOff){clearTimeout(draftT);saveDraft().then(showDraftCard)}
+  const pr=(src&&!isDemo&&!draftOff)?(clearTimeout(draftT),saveDraft()):Promise.resolve();
   clearPhoto();showDraftCard();if(msg)flash(msg);
+  pr.then(showDraftCard).finally(()=>{if(pendingUpdate)setTimeout(()=>location.replace(location.pathname+'?v='+Date.now()),700)});
 }
 function newMeasure(){goHome('Nové měření – vyberte typ a pořiďte snímek.')}
 $('collapse').onclick=()=>{app.classList.add('min');requestAnimationFrame(draw)};
@@ -1282,6 +1289,20 @@ $('npQuick').onclick=startQuick;
 $('camType').onclick=()=>{type=type==='POTSI'?'ATSI':'POTSI';syncType();quickLabel()};
 $('fileQ').addEventListener('change',async e=>{const fs=[...(e.target.files||[])];e.target.value='';if(!fs.length){endQuick();return}flash('Ukládám fotky…');await quickImport(fs);endQuick()});
 $('copy').onclick=copyResult;$('expImg').onclick=exportShare;
+
+/* v0.23: Úvod v každé kartě panelu, verze a automatická aktualizace */
+const APP_VER='0.23';
+$('npVer').textContent='Posturální profil · verze '+APP_VER;
+document.querySelectorAll('.sbody').forEach(sb=>{if(sb.id==='t-result')return;sb.insertAdjacentHTML('beforeend','<button class="btn backhome"><svg class="i"><use href="#i-home"/></svg>Zpět na úvod</button>')});
+document.querySelectorAll('.backhome').forEach(b=>b.onclick=()=>$('homeBtn').click());
+let pendingUpdate=false;
+const verNum=v=>v.split('.').map(Number).reduce((a,x)=>a*1000+x,0);
+async function checkUpdate(){try{const r=await fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const t=await r.text();
+  const m=t.match(/const APP_VER='([0-9.]+)'/);if(!m||verNum(m[1])<=verNum(APP_VER))return;
+  if(!src){flash('Načítám novou verzi '+m[1]+'…');setTimeout(()=>location.replace(location.pathname+'?v='+m[1]),600)}
+  else if(!pendingUpdate){pendingUpdate=true;flash('Je k dispozici verze '+m[1]+' – načte se po návratu na úvod.')}}catch(e){}}
+setTimeout(checkUpdate,1500);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkUpdate()});
 /* ---------- typ měření a panel ---------- */
 function syncType(){const d=def();$('typeTxt').textContent=d.name;$('sheetTitle').textContent=`${d.name} · ${d.view}`;
   document.querySelectorAll('[data-type]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.type===type)))}

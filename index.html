@@ -874,7 +874,7 @@ details p{margin:6px 0;color:var(--muted)}
       <div class="panel">
         <h2>Ovládání</h2>
         <ul class="help">
-          <li><b>1. Fotka</b> – <b>Vyfotit</b> otevře fotoaparát s vodováhou: vodorovná čára a bublina ukazují náklon a sklon telefonu, spoušť zezelená, až je telefon rovně (náklon pod 0,5°, sklon pod 1°). Pacient má temenem a chodidly sedět na čárkovaných vodítkách. Fotku lze vybrat i z Galerie.</li>
+          <li><b>1. Fotka</b> – <b>Vyfotit</b> otevře fotoaparát s vodováhou: vodorovná čára a bublina ukazují náklon a sklon telefonu, spoušť zezelená, když je telefon přibližně rovně (náklon i sklon pod 2,5°). Přesné vyrovnání udělá aplikace po vyfocení podle senzorů – zbytkový náklon dorovná otočením a sklon korekcí perspektivy, takže není třeba čekat na úplně přesnou polohu. Pacient má temenem a chodidly sedět na čárkovaných vodítkách. Fotku lze vybrat i z Galerie.</li>
           <li><b>2. Vyrovnání</b> – u fotky z aplikace podle senzorů telefonu (a pro kontrolu podle hran), u fotky z galerie automaticky: aplikace najde svislé linie v záběru (olovnici, zárubeň dveří, roh místnosti) a fotku podle nich srovná. Žluté čáry ukazují, podle čeho; když sedí, dejte Pokračovat. Jinak <b>Olovnicí ručně</b>: zaměřovač na horní konec olovnice, potvrdit, na dolní konec, potvrdit.</li>
           <li><b>Pacienti</b> – Nové měření se vždy ptá, pro koho je (nebo „Bez pacienta“, přiřadíte později). Jakmile je všech 8 bodů, výsledek i fotka s vyznačením se samy uloží do karty pacienta; „Změřit znovu“ přidá další měření do průměru. Karta (ťukněte na pacienta na úvodu) ukazuje vývoj POTSI a ATSI, všechna měření a porovnání dvou měření. Data jsou jen v telefonu – zálohujte je v menu ⋯ na úvodu (Záloha dat).</li>
           <li><b>Fotit do zásoby</b> – na úvodní obrazovce. Otevře fotoaparát s vodováhou, ale po vyfocení zůstane otevřený, takže pořídíte víc snímků za sebou (POTSI/ATSI přepnete štítkem dole). Na konci zadáte jméno pacienta. Fotky čekají v seznamu <b>Fotky k měření</b> a body do nich zadáte později v klidu – vyrovnání podle senzorů se použije až při otevření. Do zásoby jde i víc fotek najednou z galerie (ikona galerie ve fotoaparátu). Rozpracované měření se do seznamu vrací i přes ⋯ → Přerušit.</li>
@@ -952,7 +952,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají. Pacienti, měření a fotky zůstávají jen v tomto telefonu – pravidelně je zálohujte (menu ⋯ na úvodu → Záloha dat). Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.31.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají. Pacienti, měření a fotky zůstávají jen v tomto telefonu – pravidelně je zálohujte (menu ⋯ na úvodu → Záloha dat). Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.32.</p>
     </div>
     </div>
   </div>
@@ -1326,7 +1326,8 @@ function undoLevel(){if(!origSrc)return;src=origSrc;origSrc=null;rot=0;pts={};hi
 function endReview(){levelReview=false;autoLines=[];lastStepKey=null}
 /* ---------- fotoaparát v aplikaci s vodováhou ---------- */
 let camStream=null,camRAF=0,upVec=null,upRaw=null,sensorOK=false,orientBound=false;
-const LEVEL_OK={roll:0.5,pitch:1.0},LEVEL_NEAR={roll:2,pitch:3};
+// v0.32: náklon (roll) aplikace po vyfocení přesně dorovná otočením a sklon (pitch) korekcí perspektivy – stačí držet telefon přibližně
+const LEVEL_OK={roll:2.5,pitch:2.5},LEVEL_NEAR={roll:6,pitch:6};let lvlOkPrev=false;
 function onOrient(e){
   if(e.beta==null||e.gamma==null)return;sensorOK=true;
   const b=e.beta*Math.PI/180,g=e.gamma*Math.PI/180;
@@ -1366,8 +1367,8 @@ function camLoop(){
   g.fillText('temeno',fx+fw/2,fy+fh*0.06-6*d);g.fillText('chodidla',fx+fw/2,fy+fh*0.95+16*d);
   const sh=$('shutter');
   if(!upVec){sh.className='shutter';$('camRead').textContent='—';return}
-  const L=levelFrom(upVec),ok=Math.abs(L.roll)<LEVEL_OK.roll&&Math.abs(L.pitch)<LEVEL_OK.pitch,near=Math.abs(L.roll)<LEVEL_NEAR.roll&&Math.abs(L.pitch)<LEVEL_NEAR.pitch;
-  const col=ok?'#3dff6e':(near?'#ffd23d':'#ff5a4e');
+  const L=levelFrom(upVec),hy=lvlOkPrev?1.3:1,ok=Math.abs(L.roll)<LEVEL_OK.roll*hy&&Math.abs(L.pitch)<LEVEL_OK.pitch*hy,near=Math.abs(L.roll)<LEVEL_NEAR.roll&&Math.abs(L.pitch)<LEVEL_NEAR.pitch;
+  lvlOkPrev=ok;const col=ok?'#3dff6e':(near?'#ffd23d':'#ff5a4e');
   // umělý horizont přes celou šířku
   const cx=W/2,cy=H/2,len=W*0.42,a=L.roll*Math.PI/180;
   g.save();g.translate(cx,cy);g.rotate(-a);g.lineCap='round';
@@ -1376,12 +1377,12 @@ function camLoop(){
   // pevná vodorovná značka
   g.strokeStyle='rgba(255,255,255,.8)';g.lineWidth=1.5*d;g.beginPath();g.moveTo(cx-len,cy);g.lineTo(cx-len+30*d,cy);g.moveTo(cx+len-30*d,cy);g.lineTo(cx+len,cy);g.stroke();
   // bublina: posun = sklon (svisle) a náklon (vodorovně)
-  const R=34*d,bx=cx+Math.max(-1,Math.min(1,L.roll/4))*R*1.6,by=cy+Math.max(-1,Math.min(1,-L.pitch/6))*R*1.6;
+  const R=34*d,bx=cx+Math.max(-1,Math.min(1,L.roll/8))*R*1.6,by=cy+Math.max(-1,Math.min(1,-L.pitch/8))*R*1.6;
   g.strokeStyle='rgba(255,255,255,.85)';g.lineWidth=1.5*d;g.beginPath();g.arc(cx,cy,R,0,Math.PI*2);g.stroke();
-  g.beginPath();g.arc(cx,cy,9*d,0,Math.PI*2);g.stroke();
+  g.beginPath();g.arc(cx,cy,R*LEVEL_OK.roll/8*1.6+8*d,0,Math.PI*2);g.stroke();
   g.fillStyle=col;g.strokeStyle='rgba(0,0,0,.7)';g.lineWidth=2*d;g.beginPath();g.arc(bx,by,8*d,0,Math.PI*2);g.fill();g.stroke();
   $('camRead').innerHTML=`náklon <b>${fmt(Math.abs(L.roll),1)}°</b> · sklon <b>${fmt(Math.abs(L.pitch),1)}° ${L.pitch>0.05?'dolů':(L.pitch<-0.05?'nahoru':'')}</b>`;
-  $('camStatus').textContent=ok?'Rovně – můžete fotit':(Math.abs(L.pitch)>=LEVEL_OK.pitch?(L.pitch>0?'Nakloňte horní hranu telefonu od sebe':'Nakloňte horní hranu telefonu k sobě'):(L.roll>0?'Pootočte telefon doleva':'Pootočte telefon doprava'));
+  $('camStatus').textContent=ok?'Dost rovně – foťte, zbytek aplikace dorovná':(Math.abs(L.pitch)>=LEVEL_OK.pitch?(L.pitch>0?'Nakloňte horní hranu telefonu od sebe':'Nakloňte horní hranu telefonu k sobě'):(L.roll>0?'Pootočte telefon doleva':'Pootočte telefon doprava'));
   sh.className='shutter '+(ok?'ok':(near?'near':'far'))+(armed?' armed':'');
   if(ok){if(!okSince)okSince=performance.now()}else okSince=0;
   if(armed&&ok&&performance.now()-okSince>400)fireShot();
@@ -1411,7 +1412,7 @@ function processShot(frame,u){
 $('camClose').onclick=()=>{disarm();closeCam();if(quickMode)endQuick()};
 /* spoušť: okamžitě při dotyku */
 let armed=0,armT=0,lastShot=0,okSince=0,busyShot=false;
-function levelOkNow(){if(!upVec)return true;const L=levelFrom(upVec);return Math.abs(L.roll)<LEVEL_OK.roll&&Math.abs(L.pitch)<LEVEL_OK.pitch}
+function levelOkNow(){if(!upVec)return true;const L=levelFrom(upVec);return Math.abs(L.roll)<LEVEL_OK.roll*1.3&&Math.abs(L.pitch)<LEVEL_OK.pitch*1.3}
 function fireShot(){disarm();lastShot=performance.now();if(quickMode)quickShoot();else shoot()}
 function trigger(){
   if($('cam').hidden||!camStream)return;
@@ -1616,7 +1617,7 @@ $('fileQ').addEventListener('change',async e=>{const fs=[...(e.target.files||[])
 $('copy').onclick=copyResult;$('expImg').onclick=exportShare;
 
 /* v0.23: Úvod v každé kartě panelu, verze a automatická aktualizace */
-const APP_VER='0.31';
+const APP_VER='0.32';
 $('npVer').textContent='Posturální profil · verze '+APP_VER;
 $('sheet').querySelector('.card').insertAdjacentHTML('beforeend','<div class="tabfoot" id="tabFoot" hidden><button class="btn home" id="tfHome"><svg class="i"><use href="#i-home"/></svg>Úvod</button></div>');
 $('tfHome').onclick=()=>$('homeBtn').click();

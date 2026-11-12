@@ -432,9 +432,12 @@ details p{margin:6px 0;color:var(--muted)}
 .kwait{margin:0 2px;color:var(--pt);font-size:13.5px;font-weight:600}
 .cap em{margin-left:2px}
 .pane{display:flex;flex-direction:column;gap:14px;flex:1;min-height:0}
-#paneHome .nphero{height:300px;--cy:156px;margin-bottom:-56px!important}
-#paneHome .nphero .tz.hb{height:230px;margin-left:-83px;top:36px}
-#paneHome .hdisc{width:250px;height:250px}
+#paneHome .nphero{--k:1;height:calc(300px*var(--k));--cy:calc(156px*var(--k));margin-bottom:calc(-56px*var(--k))!important;flex:none}
+#paneHome .nphero .tz.hb{height:calc(230px*var(--k));margin-left:calc(-83px*var(--k));top:calc(36px*var(--k))}
+#paneHome .hdisc{width:calc(250px*var(--k));height:calc(250px*var(--k))}
+#paneHome .hglow{width:calc(360px*var(--k));height:calc(280px*var(--k))}
+#paneHome{gap:12px}
+#paneHome .npgrow{min-height:12px}
 .npshut small{font-size:12.5px;color:var(--on-glass-dim)}
 .caps{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:8px}
 .cap{display:flex;align-items:center;gap:8px;min-height:50px;padding:0 20px;border-radius:25px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:var(--on-glass);font:600 15.5px var(--f-ui);cursor:pointer}
@@ -967,7 +970,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají. Pacienti, měření a fotky zůstávají jen v tomto telefonu – pravidelně je zálohujte (menu ⋯ na úvodu → Záloha dat). Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.34.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají. Pacienti, měření a fotky zůstávají jen v tomto telefonu – pravidelně je zálohujte (menu ⋯ na úvodu → Záloha dat). Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.35.</p>
     </div>
     </div>
   </div>
@@ -1632,7 +1635,7 @@ $('fileQ').addEventListener('change',async e=>{const fs=[...(e.target.files||[])
 $('copy').onclick=copyResult;$('expImg').onclick=exportShare;
 
 /* v0.23: Úvod v každé kartě panelu, verze a automatická aktualizace */
-const APP_VER='0.34';
+const APP_VER='0.35';
 $('npVer').textContent='Posturální profil · verze '+APP_VER;
 $('sheet').querySelector('.card').insertAdjacentHTML('beforeend','<div class="tabfoot" id="tabFoot" hidden><button class="btn home" id="tfHome"><svg class="i"><use href="#i-home"/></svg>Úvod</button></div>');
 $('tfHome').onclick=()=>$('homeBtn').click();
@@ -1713,7 +1716,7 @@ function hint(){
   if(key!==lastStepKey){lastStepKey=key;if(src)flash(desc,warn);else $('toast').classList.add('hide')}
 }
 function refresh(){
-  $('demoBadge').hidden=!isDemo||!src;$('nophoto').hidden=!!src;app.classList.toggle('nosrc',!src);syncType();
+  $('demoBadge').hidden=!isDemo||!src;$('nophoto').hidden=!!src;app.classList.toggle('nosrc',!src);if(!src)requestAnimationFrame(()=>{try{fitHero()}catch(e){}});syncType();
   draw();renderResult();renderSteps();hint();updateZoom();updMini();
   $('undo').disabled=!(hist.length||selected||plumbMode||levelReview);$('plumb').disabled=!src;$('zfit').disabled=!src;sideBtns();scheduleDraft();
   $('tabVal').textContent=lastRes?fmt(lastRes.total):(series.length?`${series.length}×`:'');
@@ -2282,7 +2285,7 @@ $('fileBk').addEventListener('change',e=>{const f=e.target.files&&e.target.files
   function frame(ts){
     if(!$('nophoto').hidden&&size()){
       const t=(still?0:ts)/1000,gb=B.getContext('2d'),gf=F.getContext('2d');gb.clearRect(0,0,W,Hh);gf.clearRect(0,0,W,Hh);
-      const cy=parseFloat(getComputedStyle(H).getPropertyValue('--cy'))*d||Hh*.53,cx=W/2,base=Math.min(W*.34,Hh*.5),fz=4.2*base;
+      const cy=Hh*0.52,cx=W/2,base=Math.min(W*.34,Hh*.5),fz=4.2*base;
       R.forEach(o=>{const rad=base*o.r,spin=o.ph+t*o.sp,yaw=t*o.yaw+o.ph*.6,ax=o.tx*Math.PI/180+(o===R[1]?0:Math.sin(t*.13+o.ph)*.18);
         const ca=Math.cos(ax),sa=Math.sin(ax),cyw=Math.cos(yaw),syw=Math.sin(yaw);
         const P=a=>{let x=Math.cos(a)*rad,y=Math.sin(a)*rad,z=0;let y2=y*ca-z*sa,z2=y*sa+z*ca;y=y2;z=z2;const x3=x*cyw+z*syw,z3=-x*syw+z*cyw;const k=fz/(fz-z3);return{x:cx+x3*k,y:cy+y*k,z:z3/rad,k}};
@@ -2298,9 +2301,15 @@ $('fileBk').addEventListener('change',e=>{const f=e.target.files&&e.target.files
   if(still)addEventListener('resize',()=>requestAnimationFrame(frame));
 })();
 $('npBkWarn').onclick=openBk;
+/* v0.35: úvod se vejde na každý displej – obraz s torzem se zmenší, aby Kartotéka zůstala dole bez posouvání */
+function fitHero(){const n=$('nophoto'),h=document.querySelector('#paneHome .nphero');if(!h||n.hidden||$('paneHome').hidden)return;
+  let k=Math.min(1.15,1+Math.max(0,(n.clientHeight-860))/600);h.style.setProperty('--k',String(k));
+  for(let i=0;i<4;i++){const over=n.scrollHeight-n.clientHeight;if(over<=0||k<=0.5)break;k=Math.max(0.5,k-(over+2)/300);h.style.setProperty('--k',String(Math.round(k*1000)/1000))}}
+addEventListener('resize',()=>requestAnimationFrame(fitHero));addEventListener('orientationchange',()=>setTimeout(fitHero,300));
+new MutationObserver(()=>requestAnimationFrame(fitHero)).observe($('npBkWarn'),{attributes:true,attributeFilter:['hidden']});
 /* ---------- v0.30: úvod se záložkami, formulář Nové měření / Nový pacient, série 3 snímků ---------- */
 let QC=[]; // poslední známý seznam Fotek k měření
-function setTab(t){const k=t==='kart';$('paneHome').hidden=k;$('paneKart').hidden=!k;$('nophoto').scrollTop=0;if(k)renderHome()}
+function setTab(t){const k=t==='kart';$('paneHome').hidden=k;$('paneKart').hidden=!k;$('nophoto').scrollTop=0;if(k)renderHome();else requestAnimationFrame(fitHero)}
 $('capKart').onclick=()=>setTab('kart');$('kBack').onclick=()=>setTab('home');
 function updQueueCaps(n){n=n||0;const b=$('capKart');b.classList.toggle('wait',!!n);
   b.querySelector('.kn').innerHTML=`<svg class="i"><use href="#i-user"/></svg>Kartotéka${n?`<em>${n}</em>`:''}`;
@@ -2575,7 +2584,7 @@ $('npAdd').onclick=()=>openMF('new');
 $('npQ').addEventListener('input',renderHome);
 $('pdate').addEventListener('change',()=>{renderResult();scheduleDraft()});
 
-loadPrefs();renderProto();refresh();loadKart().then(()=>migrateOld()).then(showDraftCard);
+setTimeout(()=>{try{fitHero()}catch(e){}},50);loadPrefs();renderProto();refresh();loadKart().then(()=>migrateOld()).then(showDraftCard);
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 requestAnimationFrame(()=>{fit();keepAimVisible();refresh()});
 })();</script>

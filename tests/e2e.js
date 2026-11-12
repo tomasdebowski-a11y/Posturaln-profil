@@ -212,7 +212,7 @@ async function closeSheetIfOpen(p){if(!(await p.hid('sheet'))){await p.click('#c
   // T8 import více fotek z galerie do zásoby
   p=await newPage();await p.click('#npQuick');await p.waitForTimeout(1200);
   await p.evaluate(()=>document.getElementById('cam').hidden=true);
-  await p.setInputFiles('#fileQ',[D+'/back.jpg',D+'/tilted.jpg',D+'/back.jpg']);await p.waitForTimeout(2500);
+  await p.setInputFiles('#fileQ',[D+'/back.jpg',D+'/tilted.jpg',D+'/back.jpg']);await p.waitForFunction(()=>!document.getElementById('pick').hidden,null,{timeout:8000}).catch(()=>{});
   ok('T8 dotaz na pacienta po importu',!(await p.hid('pick')));await p.click('#pkLater');await p.waitForTimeout(500);
   ok('T8 3 fotky v seznamu',(await p.evaluate(()=>document.querySelectorAll('#qList .qrow').length))===3);
   await kart(p);await p.click('#qList .qrow:nth-child(1) [data-go]');await p.waitForTimeout(2000);
@@ -329,6 +329,7 @@ async function closeSheetIfOpen(p){if(!(await p.hid('sheet'))){await p.click('#c
     await p.click('#camClose');await p.waitForTimeout(700);await p.click('#pkLater');await p.waitForTimeout(300)}
   await p.evaluate(()=>{if(window.gc)window.gc()});await p.waitForTimeout(500);
   const heap1=await p.evaluate(()=>performance.memory?performance.memory.usedJSHeapSize:0);
+  await p.waitForFunction(()=>document.querySelectorAll('#qList .qrow').length>=30,null,{timeout:6000}).catch(()=>{});
   const qn=await p.evaluate(()=>document.querySelectorAll('#qList .qrow').length);
   ok('T18 zátěž: 12 měření (bez pacienta zůstávají ve Fotkách k měření) + 18 snímků bez chyb',p.errs.length===0&&qn===30,`fronta ${qn}, heap ${(heap0/1e6).toFixed(1)}→${(heap1/1e6).toFixed(1)} MB; ${p.errs.join(' | ')}`);
   await p.context().close();

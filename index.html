@@ -970,7 +970,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají. Pacienti, měření a fotky zůstávají jen v tomto telefonu – pravidelně je zálohujte (menu ⋯ na úvodu → Záloha dat). Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.35.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají. Pacienti, měření a fotky zůstávají jen v tomto telefonu – pravidelně je zálohujte (menu ⋯ na úvodu → Záloha dat). Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.36.</p>
     </div>
     </div>
   </div>
@@ -1635,7 +1635,7 @@ $('fileQ').addEventListener('change',async e=>{const fs=[...(e.target.files||[])
 $('copy').onclick=copyResult;$('expImg').onclick=exportShare;
 
 /* v0.23: Úvod v každé kartě panelu, verze a automatická aktualizace */
-const APP_VER='0.35';
+const APP_VER='0.36';
 $('npVer').textContent='Posturální profil · verze '+APP_VER;
 $('sheet').querySelector('.card').insertAdjacentHTML('beforeend','<div class="tabfoot" id="tabFoot" hidden><button class="btn home" id="tfHome"><svg class="i"><use href="#i-home"/></svg>Úvod</button></div>');
 $('tfHome').onclick=()=>$('homeBtn').click();
@@ -2303,8 +2303,13 @@ $('fileBk').addEventListener('change',e=>{const f=e.target.files&&e.target.files
 $('npBkWarn').onclick=openBk;
 /* v0.35: úvod se vejde na každý displej – obraz s torzem se zmenší, aby Kartotéka zůstala dole bez posouvání */
 function fitHero(){const n=$('nophoto'),h=document.querySelector('#paneHome .nphero');if(!h||n.hidden||$('paneHome').hidden)return;
-  let k=Math.min(1.15,1+Math.max(0,(n.clientHeight-860))/600);h.style.setProperty('--k',String(k));
-  for(let i=0;i<4;i++){const over=n.scrollHeight-n.clientHeight;if(over<=0||k<=0.5)break;k=Math.max(0.5,k-(over+2)/300);h.style.setProperty('--k',String(Math.round(k*1000)/1000))}}
+  let k=1;h.style.setProperty('--k','1');
+  const set=v=>{k=Math.round(v*1000)/1000;h.style.setProperty('--k',String(k))};
+  for(let i=0;i<4;i++){const over=n.scrollHeight-n.clientHeight;if(over<=0||k<=0.5)break;set(Math.max(0.5,k-(over+2)/300))}
+  // volné místo nad Kartotékou využít pro větší obraz (mezera aspoň 28 px zůstane)
+  const g=document.querySelector('#paneHome .npgrow');
+  if(g&&n.scrollHeight<=n.clientHeight){const free=g.getBoundingClientRect().height-28;if(free>4)set(Math.min(1.3,k+free/300*0.95));
+    for(let i=0;i<3;i++){if(n.scrollHeight<=n.clientHeight)break;set(k-(n.scrollHeight-n.clientHeight+2)/300)}}}
 addEventListener('resize',()=>requestAnimationFrame(fitHero));addEventListener('orientationchange',()=>setTimeout(fitHero,300));
 new MutationObserver(()=>requestAnimationFrame(fitHero)).observe($('npBkWarn'),{attributes:true,attributeFilter:['hidden']});
 /* ---------- v0.30: úvod se záložkami, formulář Nové měření / Nový pacient, série 3 snímků ---------- */

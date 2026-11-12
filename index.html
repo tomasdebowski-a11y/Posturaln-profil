@@ -509,6 +509,21 @@ details p{margin:6px 0;color:var(--muted)}
 .vwdet .rtab td{border-color:rgba(255,255,255,.12);color:#fff}
 .vwn{font-size:12.5px;opacity:.85;margin:8px 0 0;line-height:1.45}.vwn em{color:var(--pt);font-style:normal}
 .vw.bare .vwtop,.vw.bare .vwinfo,.vw.bare .vwnav{opacity:0;pointer-events:none}
+
+/* v0.34 úvod pod sebou, kolečko Nové měření v kartě */
+.capnew{align-self:center;display:flex;align-items:center;justify-content:center;gap:10px;min-width:250px;min-height:58px;margin-top:6px;padding:0 28px;border-radius:29px;border:0;background:linear-gradient(180deg,#2d63c8,#1f4fa3);color:#fff;font:700 17.5px var(--f-ui);box-shadow:0 8px 24px rgba(31,79,163,.45),inset 0 1px 0 rgba(255,255,255,.18);cursor:pointer}
+.capnew .i{width:22px;height:22px}.capnew:active{transform:scale(.98)}
+.capkart{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:62px;padding:0 18px;border-radius:20px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--on-glass);font:600 16.5px var(--f-ui);cursor:pointer}
+.capkart .kn{display:flex;align-items:center;gap:10px}.capkart .i{width:20px;height:20px}
+.capkart em{font-style:normal;background:var(--pt);color:#14213d;border-radius:9px;padding:0 7px;font:700 13px var(--f-num)}
+.capkart small{font:500 13px var(--f-num);color:var(--on-glass-dim);white-space:nowrap}
+.capkart.wait{border-color:rgba(245,201,92,.55)}.capkart.wait small{color:var(--pt)}
+.npver{margin:0}
+.pvfab{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:3;display:flex;flex-direction:column;align-items:center;gap:6px;border:0;background:none;padding:0;cursor:pointer}
+.pvfab .c{width:74px;height:74px;border-radius:50%;background:radial-gradient(circle,#f5c95c 60%,#d9a93a);display:grid;place-items:center;color:#14213d;box-shadow:0 0 0 6px var(--bg),0 8px 26px rgba(31,79,163,.35)}
+.pvfab .c .i{width:30px;height:30px}.pvfab:active .c{transform:scale(.96)}
+.pvfab b{font-size:13.5px;color:var(--ink);background:var(--bg);padding:0 6px;border-radius:6px}
+.pv.hasfab .pvbody{padding-bottom:130px}
 /* v0.27 kartotéka pacientů */
 .npbk{margin-left:auto;width:44px;height:44px;border-radius:50%;border:1px solid var(--glass-line);background:rgba(255,255,255,.06);color:var(--on-glass);display:grid;place-items:center;cursor:pointer;padding:0;flex:none}
 .npmain{display:grid;grid-template-columns:1.2fr 1fr;gap:10px}
@@ -718,12 +733,10 @@ details p{margin:6px 0;color:var(--muted)}
     <div class="pane" id="paneHome">
     <div class="nphero" aria-hidden="true"><span class="hglow"></span><svg class="hdisc" viewBox="0 0 220 220"><circle cx="110" cy="110" r="100" fill="rgba(31,79,163,.22)" stroke="rgba(120,170,255,.28)" stroke-width="1.2"/><circle cx="110" cy="110" r="108" fill="none" stroke="rgba(245,201,92,.22)" stroke-width="1"/><line x1="110" y1="0" x2="110" y2="220" stroke="#f5c95c" stroke-width="1.3" stroke-dasharray="4 4" opacity=".6"/></svg><canvas class="hcv" id="hcB"></canvas><span class="tz hb"><img alt="" draggable="false"></span><canvas class="hcv" id="hcF"></canvas></div>
     <div class="npshut"><button class="shut" id="npQuick" aria-label="Rychlé focení bez pacienta"><svg class="i"><use href="#i-cam"/></svg></button><b>Rychlé focení</b><small>bez pacienta – přiřadíte později</small></div>
-    <div class="caps">
-      <button class="cap pri" id="capNew"><svg class="i"><use href="#i-plus"/></svg>Nový pacient</button>
-      <button class="cap" id="capKart"><svg class="i"><use href="#i-user"/></svg>Kartotéka<em id="capKartN" hidden></em></button>
-    </div>
+    <button class="capnew" id="capNew"><svg class="i"><use href="#i-plus"/></svg>Nový pacient</button>
     <button class="npbkwarn" id="npBkWarn" hidden></button>
     <div class="npgrow"></div>
+    <button class="capkart" id="capKart"><span class="kn"><svg class="i"><use href="#i-user"/></svg>Kartotéka</span><small id="capKartS"></small></button>
     <p class="npver" id="npVer"></p>
     </div>
     <div class="pane" id="paneKart" hidden>
@@ -782,6 +795,7 @@ details p{margin:6px 0;color:var(--muted)}
     </div>
   </div>
   <div class="pv" id="pv" hidden>
+    <button class="pvfab" id="pvFab" hidden><span class="c"><svg class="i"><use href="#i-cam"/></svg></span><b>Nové měření</b></button>
     <div class="pvhead"><button class="homebtn" id="pvL"></button><b class="stitle" id="pvT"></b><button class="xbtn" id="pvR" aria-label="Upravit pacienta" hidden></button></div>
     <div class="pvbody" id="pvB"></div>
     <div class="pvfoot" id="pvF"></div>
@@ -953,7 +967,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají. Pacienti, měření a fotky zůstávají jen v tomto telefonu – pravidelně je zálohujte (menu ⋯ na úvodu → Záloha dat). Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.33.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají. Pacienti, měření a fotky zůstávají jen v tomto telefonu – pravidelně je zálohujte (menu ⋯ na úvodu → Záloha dat). Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.34.</p>
     </div>
     </div>
   </div>
@@ -1618,7 +1632,7 @@ $('fileQ').addEventListener('change',async e=>{const fs=[...(e.target.files||[])
 $('copy').onclick=copyResult;$('expImg').onclick=exportShare;
 
 /* v0.23: Úvod v každé kartě panelu, verze a automatická aktualizace */
-const APP_VER='0.33';
+const APP_VER='0.34';
 $('npVer').textContent='Posturální profil · verze '+APP_VER;
 $('sheet').querySelector('.card').insertAdjacentHTML('beforeend','<div class="tabfoot" id="tabFoot" hidden><button class="btn home" id="tfHome"><svg class="i"><use href="#i-home"/></svg>Úvod</button></div>');
 $('tfHome').onclick=()=>$('homeBtn').click();
@@ -2050,6 +2064,7 @@ function assignPid(pid){curPid=pid;nextPid=pid;const p=P(pid);$('pname').value=p
 /* ---------- úvod: seznam pacientů ---------- */
 function lastOf(pid){const a=patMeas(pid);if(!a.length)return null;const l=a[a.length-1],r=a.filter(m=>m.type===l.type&&m.date===l.date);return{type:l.type,date:l.date,total:r.reduce((s,m)=>s+m.total,0)/r.length,n:r.length}}
 function renderHome(){
+  try{updQueueCaps(QC.length)}catch(e){}
   const box=$('npList');if(!box)return;
   const q=fold($('npQ').value);
   const list=PATS.filter(p=>!q||fold(p.name).includes(q)||fold(p.card).includes(q)).sort((a,b)=>(b.updated||0)-(a.updated||0));
@@ -2139,7 +2154,7 @@ $('pkBack').onclick=()=>$('pkClose').click();
 /* ---------- karta pacienta, detail měření, porovnání, záloha ---------- */
 let pvS={v:null},pvURLs=[];
 function pvFree(){pvURLs.forEach(u=>{try{URL.revokeObjectURL(u)}catch(e){}});pvURLs=[]}
-function pvShell(left,title,right){pvFree();
+function pvShell(left,title,right){pvFree();$('pvFab').hidden=true;$('pv').classList.remove('hasfab');
   const L=$('pvL');L.innerHTML=left==='home'?'<svg class="i"><use href="#i-home"/></svg>Úvod':'<svg class="i"><use href="#i-l"/></svg>Zpět';L.dataset.k=left;
   $('pvT').textContent=title||'';$('pvR').hidden=!right;$('pvR').innerHTML=right?'<svg class="i"><use href="#i-more"/></svg>':'';
   $('pvF').innerHTML='';$('pv').hidden=false;$('pvB').scrollTop=0}
@@ -2287,7 +2302,9 @@ $('npBkWarn').onclick=openBk;
 let QC=[]; // poslední známý seznam Fotek k měření
 function setTab(t){const k=t==='kart';$('paneHome').hidden=k;$('paneKart').hidden=!k;$('nophoto').scrollTop=0;if(k)renderHome()}
 $('capKart').onclick=()=>setTab('kart');$('kBack').onclick=()=>setTab('home');
-function updQueueCaps(n){const c=$('capKartN');c.hidden=!n;c.textContent=n;c.title=n?`${n} fotek čeká na změření`:''}
+function updQueueCaps(n){n=n||0;const b=$('capKart');b.classList.toggle('wait',!!n);
+  b.querySelector('.kn').innerHTML=`<svg class="i"><use href="#i-user"/></svg>Kartotéka${n?`<em>${n}</em>`:''}`;
+  $('capKartS').textContent=(n?cnt(n,'fotka čeká','fotky čekají','fotek čeká'):PATS.length?cnt(PATS.length,'pacient','pacienti','pacientů'):'zatím prázdná')+' ›'}
 const dobTxt=d=>d?'nar. '+dFull(d):'';
 let mf={mode:'meas',pid:null,type:'POTSI',shot:'series'};
 function openMF(mode,opt){opt=opt||{};mf={mode,pid:null,type,shot:mf.shot||'series'};
@@ -2431,6 +2448,7 @@ function openMenu(items,dark){menuItems=items;const m=$('pvMenu');m.classList.to
   m.hidden=false;$('pvMBack').hidden=false}
 function closeMenu(){$('pvMenu').hidden=true;$('pvMBack').hidden=true}
 $('pvMBack').onclick=closeMenu;
+$('pvFab').onclick=()=>{if(pvS.pid)openMF('meas',{pid:pvS.pid})};
 $('pvR').onclick=()=>openMenu(pvS.menu||[]);
 function pvRefresh(){if($('pv').hidden)return;const s=pvS;if(s.v==='card')openCard(s.pid);else if(s.v==='sum')openSum(s.pid,s.date);else if(s.v==='trend')openTrend(s.pid);else if(s.v==='cmp')openCmp(s.pid)}
 function askDo(title,text,yes,fn){askGo=fn;$('askT').textContent=title;$('askP').textContent=text;$('askYes').textContent=yes;$('ask').hidden=false}
@@ -2455,18 +2473,18 @@ function openCard(pid){
   let h=`<div class="pvp"><span class="pcav">${esc(initials(p.name))}</span><div><h1>${esc(p.name)}</h1><p>${[p.dob?dobTxt(p.dob):'',p.card?'karta '+esc(p.card):'',cnt(days.length,'vyšetření','vyšetření','vyšetření')].filter(Boolean).join(' · ')}</p></div></div>
     <div class="pvedit" id="cdEdit" hidden><input id="cdName" value="${esc(p.name)}" placeholder="Příjmení a jméno" autocomplete="off"><input id="cdDob" type="date" value="${esc(p.dob||'')}" aria-label="Datum narození"><input id="cdCard" value="${esc(p.card||'')}" placeholder="Číslo karty (nepovinné)" autocomplete="off">
       <div class="pvact" style="grid-template-columns:1fr 1fr"><button class="lbtn blue" id="cdSave">Uložit</button><button class="lbtn" id="cdCancel">Zrušit</button></div></div>
-    <div class="chips"><button class="chipb gold" id="cdNew"><svg class="i"><use href="#i-cam"/></svg>Nové měření</button>${cmpOk?`<button class="chipb" id="cdCmp"><svg class="i"><use href="#i-cmp"/></svg>Porovnat</button>`:''}${all.length?`<button class="chipb" id="cdTrend"><svg class="i"><use href="#i-chart"/></svg>Vývoj</button>`:''}</div>`;
+    <div class="chips">${cmpOk?`<button class="chipb" id="cdCmp"><svg class="i"><use href="#i-cmp"/></svg>Porovnat</button>`:''}${all.length?`<button class="chipb" id="cdTrend"><svg class="i"><use href="#i-chart"/></svg>Vývoj</button>`:''}</div>`;
   h+=days.length?days.map(d=>{const rs=all.filter(m=>m.date===d),mm=dayMeans(rs);
       return `<section class="exam"><div class="exh"><div><b>${d?dFull(d):'bez data'}</b><span>${mm.map(x=>`<i class="zd" style="background:${ZC[zoneT(x.t,x.v)]}"></i>${x.t} ${fmt(x.v)}${x.n>1?` <small>(${x.n}×)</small>`:''}`).join('&nbsp;&nbsp;')}</span></div>${d?`<button data-sum="${d}">Souhrn<svg class="i"><use href="#i-r"/></svg></button>`:''}</div>
         <div class="exgrid">${[...rs].sort((a,b)=>a.type.localeCompare(b.type)||a.time-b.time).map(photoTile).join('')}</div></section>`}).join('')
-    :'<p class="rnote" style="margin-top:8px">Zatím žádné měření. Spustíte ho tlačítkem „Nové měření“ nahoře.</p>';
+    :'<p class="rnote" style="margin-top:8px">Zatím žádné měření. Spustíte ho žlutým tlačítkem Nové měření dole.</p>';
   $('pvB').innerHTML=h;loadTiles();
   const ord=[...$('pvB').querySelectorAll('[data-m]')].map(b=>b.dataset.m);
   $('pvB').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>openViewer(ord,b.dataset.m));
   $('pvB').querySelectorAll('[data-sum]').forEach(b=>b.onclick=()=>openSum(pid,b.dataset.sum));
   if($('cdCmp'))$('cdCmp').onclick=()=>openCmp(pid);
   if($('cdTrend'))$('cdTrend').onclick=()=>openTrend(pid);
-  $('cdNew').onclick=()=>openMF('meas',{pid});
+  $('pvFab').hidden=false;$('pv').classList.add('hasfab');
   $('cdCancel').onclick=()=>{$('cdEdit').hidden=true};
   $('cdSave').onclick=()=>{const n=$('cdName').value.trim();if(!n){note('Jméno nesmí být prázdné.');return}p.name=n;p.card=$('cdCard').value.trim();p.dob=$('cdDob').value||'';p.updated=Date.now();savePats();
     qEdit(q=>q.forEach(m=>{if(m.pid===pid)m.pname=n}));openCard(pid);note('Uloženo.')};

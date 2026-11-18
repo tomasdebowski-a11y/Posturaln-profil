@@ -548,6 +548,11 @@ details p{margin:6px 0;color:var(--muted)}
 #camLib.thumb .ok .i{width:13px;height:13px;stroke-width:3}
 #camLib.pop{animation:thPop .35s ease-out}
 @keyframes thPop{0%{transform:scale(.6);opacity:.3}70%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+
+/* v0.41 rychlé sdílení */
+.vwshare{background:rgba(245,201,92,.92)!important;color:#14213d!important}
+.pvshare{display:grid;place-items:center;padding:0;color:var(--sapphire)}
+.pvhead .pvshare[hidden]{display:none!important}
 /* v0.27 kartotéka pacientů */
 .npbk{margin-left:auto;width:44px;height:44px;border-radius:50%;border:1px solid var(--glass-line);background:rgba(255,255,255,.06);color:var(--on-glass);display:grid;place-items:center;cursor:pointer;padding:0;flex:none}
 .npmain{display:grid;grid-template-columns:1.2fr 1fr;gap:10px}
@@ -687,6 +692,7 @@ details p{margin:6px 0;color:var(--muted)}
   <symbol id="i-cmp" viewBox="0 0 24 24"><rect x="3" y="5" width="7" height="14" rx="1.5"/><rect x="14" y="5" width="7" height="14" rx="1.5"/><path d="M12 3v18"/></symbol>
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19h16"/><path d="M5 15l5-5 4 3 5-6"/></symbol>
   <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V3.5"/><path d="M7.5 8L12 3.5 16.5 8"/><path d="M8 11H6a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-2"/></symbol>
   <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18h10.5a4 4 0 0 0 .4-8A6 6 0 0 0 6.3 9.6 4.3 4.3 0 0 0 7 18z"/><path d="M12 15v-5M9.5 12l2.5-2.5 2.5 2.5"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
@@ -820,13 +826,13 @@ details p{margin:6px 0;color:var(--muted)}
   </div>
   <div class="pv" id="pv" hidden>
     <button class="pvfab" id="pvFab" hidden><span class="c"><svg class="i"><use href="#i-cam"/></svg></span><b>Nové měření</b></button>
-    <div class="pvhead"><button class="homebtn" id="pvL"></button><b class="stitle" id="pvT"></b><button class="xbtn" id="pvR" aria-label="Upravit pacienta" hidden></button></div>
+    <div class="pvhead"><button class="homebtn" id="pvL"></button><b class="stitle" id="pvT"></b><button class="xbtn pvshare" id="pvShare" aria-label="Sdílet souhrn" hidden><svg class="i"><use href="#i-share"/></svg></button><button class="xbtn" id="pvR" aria-label="Upravit pacienta" hidden></button></div>
     <div class="pvbody" id="pvB"></div>
     <div class="pvfoot" id="pvF"></div>
   </div>
   <div class="vw" id="vw" hidden>
     <div class="vwstage" id="vwStage"><img id="vwImg" alt="Snímek s vyznačením" draggable="false"></div>
-    <div class="vwtop"><button class="vwbtn" id="vwBack" aria-label="Zpět"><svg class="i"><use href="#i-l"/></svg></button><div class="vwt"><b id="vwT"></b><span id="vwS"></span></div><button class="vwbtn" id="vwMore" aria-label="Další volby"><svg class="i"><use href="#i-more"/></svg></button></div>
+    <div class="vwtop"><button class="vwbtn" id="vwBack" aria-label="Zpět"><svg class="i"><use href="#i-l"/></svg></button><div class="vwt"><b id="vwT"></b><span id="vwS"></span></div><button class="vwbtn vwshare" id="vwShare" aria-label="Sdílet nebo uložit fotku s výsledkem"><svg class="i"><use href="#i-share"/></svg></button><button class="vwbtn" id="vwMore" aria-label="Další volby"><svg class="i"><use href="#i-more"/></svg></button></div>
     <button class="vwnav l" id="vwPrev" aria-label="Předchozí snímek"><svg class="i"><use href="#i-l"/></svg></button><button class="vwnav r" id="vwNext" aria-label="Další snímek"><svg class="i"><use href="#i-r"/></svg></button>
     <div class="vwinfo" id="vwInfo"></div>
   </div>
@@ -993,7 +999,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají. Pacienti, měření a fotky zůstávají jen v tomto telefonu – pravidelně je zálohujte (menu ⋯ na úvodu → Záloha dat). Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.40.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají. Pacienti, měření a fotky zůstávají jen v tomto telefonu – pravidelně je zálohujte (menu ⋯ na úvodu → Záloha dat). Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.41.</p>
     </div>
     </div>
   </div>
@@ -1668,7 +1674,7 @@ $('fileQ').addEventListener('change',async e=>{const fs=[...(e.target.files||[])
 $('copy').onclick=copyResult;$('expImg').onclick=exportShare;
 
 /* v0.23: Úvod v každé kartě panelu, verze a automatická aktualizace */
-const APP_VER='0.40';
+const APP_VER='0.41';
 $('npVer').textContent='Posturální profil · verze '+APP_VER;
 $('sheet').querySelector('.card').insertAdjacentHTML('beforeend','<div class="tabfoot" id="tabFoot" hidden><button class="btn home" id="tfHome"><svg class="i"><use href="#i-home"/></svg>Úvod</button></div>');
 $('tfHome').onclick=()=>$('homeBtn').click();
@@ -2205,7 +2211,7 @@ $('pkBack').onclick=()=>$('pkClose').click();
 /* ---------- karta pacienta, detail měření, porovnání, záloha ---------- */
 let pvS={v:null},pvURLs=[];
 function pvFree(){pvURLs.forEach(u=>{try{URL.revokeObjectURL(u)}catch(e){}});pvURLs=[]}
-function pvShell(left,title,right){pvFree();$('pvFab').hidden=true;$('pv').classList.remove('hasfab');
+function pvShell(left,title,right){pvFree();$('pvFab').hidden=true;$('pv').classList.remove('hasfab');$('pvShare').hidden=true;
   const L=$('pvL');L.innerHTML=left==='home'?'<svg class="i"><use href="#i-home"/></svg>Úvod':'<svg class="i"><use href="#i-l"/></svg>Zpět';L.dataset.k=left;
   $('pvT').textContent=title||'';$('pvR').hidden=!right;$('pvR').innerHTML=right?'<svg class="i"><use href="#i-more"/></svg>':'';
   $('pvF').innerHTML='';$('pv').hidden=false;$('pvB').scrollTop=0}
@@ -2483,7 +2489,7 @@ function openSum(pid,date){
   pvS={v:'sum',pid,date,menu:[
     {t:'Uložit souhrn do kartotéky',s:'obrázek do Fotek, text do schránky',ic:'i-img',fn:()=>sumExport(pid,date)},
     {t:'Kopírovat text souhrnu',ic:'i-copy',fn:()=>copyText(sumText(pid,date),note)}]};
-  pvShell('back','Vyšetření · '+dFull(date),true);
+  pvShell('back','Vyšetření '+(date.slice(0,4)===isoDay().slice(0,4)?dFull(date).replace(/ \d{4}$/,''):dFull(date)),true);$('pvShare').hidden=false;$('pvShare').onclick=()=>sumExport(pid,date);
   const types=['POTSI','ATSI'].filter(t=>dayStats(pid,t,date));
   let h=`<p class="sumwho">${esc(p.name)}${p.dob?' · '+dobTxt(p.dob):''}</p>`;
   h+=types.map(t=>{const d=dayStats(pid,t,date),z=zoneT(t,d.st.m);
@@ -2585,9 +2591,12 @@ async function showVw(){
 }
 function vwGo(d){const n=vw.i+d;if(n<0||n>=vw.ids.length)return;vw.i=n;showVw()}
 $('vwBack').onclick=closeVw;$('vwPrev').onclick=()=>vwGo(-1);$('vwNext').onclick=()=>vwGo(1);
+function vwExport(){const r=MEAS.find(m=>m.id===vw.ids[vw.i]);if(!r)return;const p=P(r.pid),im=$('vwImg');
+  if(r.noimg){note('Toto měření nemá uloženou fotku.');return}if(!im.naturalWidth||!vw.url){note('Fotka se ještě načítá, zkuste to za okamžik.');return}
+  const c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;c.getContext('2d').drawImage(im,0,0);shareCanvas(drawBand(c,recBand(r)),fileName(r.type,p?p.name:'',r.date),recText(r),note)}
+$('vwShare').onclick=vwExport;
 $('vwMore').onclick=()=>{const r=MEAS.find(m=>m.id===vw.ids[vw.i]);if(!r)return;const p=P(r.pid);
-  openMenu([{t:'Uložit fotku s výsledkem',s:'do Fotek, popis do schránky',ic:'i-img',fn:()=>{const im=$('vwImg');if(!im.naturalWidth||r.noimg){note('Fotka se ještě načítá.');return}
-      const c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;c.getContext('2d').drawImage(im,0,0);shareCanvas(drawBand(c,recBand(r)),fileName(r.type,p?p.name:'',r.date),recText(r),note)}},
+  openMenu([{t:'Uložit nebo sdílet fotku s výsledkem',s:'Fotky, AirDrop, e-mail… popis do schránky',ic:'i-share',fn:vwExport},
     {t:'Kopírovat text',s:'popis výsledku do kartotéky',ic:'i-copy',fn:()=>copyText(recText(r),note)},
     {t:'Souhrn vyšetření tohoto dne',ic:'i-chart',fn:()=>{closeVw();openSum(r.pid,r.date)}},
     {sep:1},{t:'Smazat snímek',ic:'i-del',danger:1,fn:()=>delRec(r,()=>{vw.ids=vw.ids.filter(x=>x!==r.id);if(!vw.ids.length)closeVw();else{vw.i=Math.min(vw.i,vw.ids.length-1);showVw()}})}],true)};

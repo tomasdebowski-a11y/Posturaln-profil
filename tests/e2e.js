@@ -274,6 +274,7 @@ async function closeSheetIfOpen(p){if(!(await p.hid('sheet'))){await p.click('#c
   ok('T24 souhrn vyšetření',!(await p.hid('pv'))&&(await p.evaluate(()=>document.querySelectorAll('#pvB .sumt').length))===1&&(await p.txt('pvB')).includes('průměr 2 snímků')&&!(await p.evaluate(()=>!!document.getElementById('sNext'))));
   ok('T24 po souhrnu nic nezůstává ve Fotkách k měření',await p.hid('npQueue'));
   await p.waitForFunction(()=>{const i=document.getElementById('siPOTSI');return i&&i.naturalWidth>0},null,{timeout:5000});
+  {const [d]=await Promise.all([p.waitForEvent('download',{timeout:8000}),p.click('#pvShare')]);ok('T29 rychlé sdílení souhrnu tlačítkem v záhlaví',/^Souhrn_Trend_Test_/.test(d.suggestedFilename()),d.suggestedFilename())}
   await p.click('#pvR');{const [d]=await Promise.all([p.waitForEvent('download',{timeout:8000}),p.click('#pvMenu >> text=Uložit souhrn do kartotéky')]);ok('T24 export souhrnu z menu',/^Souhrn_Trend_Test_/.test(d.suggestedFilename()),d.suggestedFilename())}
   // T21 karta pacienta, detail, porovnání
   await p.click('#pvL');await p.waitForTimeout(400);
@@ -283,7 +284,8 @@ async function closeSheetIfOpen(p){if(!(await p.hid('sheet'))){await p.click('#c
   ok('T21 fotka přes celou obrazovku',!(await p.hid('vw'))&&await p.evaluate(()=>document.getElementById('vwImg').naturalWidth>100));
   await p.click('#vwTog');ok('T21 podrobnosti se rozbalí',await p.evaluate(()=>document.getElementById('vwInfo').classList.contains('open'))&&(await p.txt('vwInfo')).includes('FAI'));
   await p.click('#vwNext');await p.waitForTimeout(500);ok('T21 přepnutí na další snímek',(await p.txt('vwS')).includes('2/2'),await p.txt('vwS'));
-  await p.click('#vwMore');{const [d]=await Promise.all([p.waitForEvent('download',{timeout:8000}),p.click('#pvMenu >> text=Uložit fotku s výsledkem')]);ok('T21 export fotky z menu',/POTSI_Trend_Test_/.test(d.suggestedFilename()),d.suggestedFilename())}
+  {const [d]=await Promise.all([p.waitForEvent('download',{timeout:8000}),p.click('#vwShare')]);ok('T29 rychlé sdílení fotky tlačítkem v záhlaví',/POTSI_Trend_Test_/.test(d.suggestedFilename()),d.suggestedFilename())}
+  await p.click('#vwMore');{const [d]=await Promise.all([p.waitForEvent('download',{timeout:8000}),p.click('#pvMenu >> text=Uložit nebo sdílet fotku s výsledkem')]);ok('T21 export fotky z menu',/POTSI_Trend_Test_/.test(d.suggestedFilename()),d.suggestedFilename())}
   await p.click('#vwBack');await p.waitForTimeout(300);await p.click('#cdTrend');await p.waitForTimeout(300);
   ok('T21 vývoj v samostatném zobrazení',(await p.evaluate(()=>document.querySelectorAll('#pvB .tpanel svg').length))===1);
   await p.click('#pvL');await p.waitForTimeout(200);await p.click('#cdCmp');await p.waitForTimeout(600);

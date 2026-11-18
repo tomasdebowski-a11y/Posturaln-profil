@@ -539,6 +539,15 @@ details p{margin:6px 0;color:var(--muted)}
 .camghost{position:absolute;top:calc(118px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(20,26,38,.82);color:#fff;font:600 12.5px var(--f-ui);cursor:pointer}
 .camghost[aria-pressed="true"]{border-color:var(--pt);color:var(--pt)}
 .camghost i{width:9px;height:9px;border-radius:50%;background:currentColor;opacity:.9}
+
+/* v0.40 náhled uložené fotky ve fotoaparátu */
+#camLib.thumb{position:relative;overflow:visible;border:2px solid #fff;padding:0;background:#111}
+#camLib.thumb img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+#camLib.thumb em{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:var(--pt);color:#14213d;font:700 12px/22px var(--f-num);font-style:normal;text-align:center}
+#camLib.thumb .ok{position:absolute;bottom:-4px;right:-4px;width:20px;height:20px;border-radius:50%;background:#3dff6e;color:#0d1017;display:grid;place-items:center}
+#camLib.thumb .ok .i{width:13px;height:13px;stroke-width:3}
+#camLib.pop{animation:thPop .35s ease-out}
+@keyframes thPop{0%{transform:scale(.6);opacity:.3}70%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
 /* v0.27 kartotéka pacientů */
 .npbk{margin-left:auto;width:44px;height:44px;border-radius:50%;border:1px solid var(--glass-line);background:rgba(255,255,255,.06);color:var(--on-glass);display:grid;place-items:center;cursor:pointer;padding:0;flex:none}
 .npmain{display:grid;grid-template-columns:1.2fr 1fr;gap:10px}
@@ -984,7 +993,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají. Pacienti, měření a fotky zůstávají jen v tomto telefonu – pravidelně je zálohujte (menu ⋯ na úvodu → Záloha dat). Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.39.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají. Pacienti, měření a fotky zůstávají jen v tomto telefonu – pravidelně je zálohujte (menu ⋯ na úvodu → Záloha dat). Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.40.</p>
     </div>
     </div>
   </div>
@@ -1459,7 +1468,7 @@ let hintT=0;function camHint(t,ms){const h=$('camHint');clearTimeout(hintT);h.te
 $('shutter').addEventListener('pointerdown',e=>{e.preventDefault();trigger()});
 document.addEventListener('keydown',e=>{if($('cam').hidden)return;
   if([' ','Enter','AudioVolumeUp','AudioVolumeDown','VolumeUp','VolumeDown','MediaPlayPause','Camera'].includes(e.key)){e.preventDefault();trigger()}});
-$('camLib').onclick=()=>{closeCam();if(quickMode){$('fileQ').click()}else $('fileLib').click()};
+$('camLib').onclick=()=>{if(quickMode&&quickIds.length){quickGoKart=true;$('camClose').click();return}closeCam();if(quickMode){$('fileQ').click()}else $('fileLib').click()};
 
 
 
@@ -1606,8 +1615,12 @@ async function resumeItem(id){
 async function pauseMeasure(){clearTimeout(draftT);saveRec();await saveDraft();clearPhoto();showDraftCard();flash('Měření uloženo v telefonu. Pokračujete z úvodní obrazovky.')}
 /* fotky do zásoby */
 let quickMode=false,quickIds=[],quickCount=0,quickPid=null,quickTarget=0;
+let quickGoKart=false;
+function camThumb(th,n){const b=$('camLib');if(!th||!quickMode){b.classList.remove('thumb');b.innerHTML='<svg class="i"><use href="#i-img"/></svg>';b.setAttribute('aria-label','Vybrat z galerie');return}
+  b.classList.add('thumb');b.innerHTML=`<img src="${th}" alt=""><em>${n}</em><i class="ok"><svg class="i"><use href="#i-check"/></svg></i>`;b.setAttribute('aria-label',`Uloženo ${n} – zobrazit Fotky k měření`);
+  b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}
 function quickLabel(){const n=quickCount;$('camQn').textContent=`${n} ${n===1?'fotka':(n>=2&&n<=4?'fotky':'fotek')}`;$('camType').textContent=`${type} ⇄`}
-async function startQuick(o){o=o||{};quickMode=true;quickIds=[];quickCount=0;quickPid=o.pid||null;quickTarget=o.target||0;$('camQ').hidden=false;$('camRow').hidden=false;quickLabel();await openCam();if(!camStream){quickMode=false;$('camQ').hidden=true}}
+async function startQuick(o){o=o||{};quickMode=true;quickIds=[];quickCount=0;quickGoKart=false;camThumb(null);quickPid=o.pid||null;quickTarget=o.target||0;$('camQ').hidden=false;$('camRow').hidden=false;quickLabel();await openCam();if(!camStream){quickMode=false;$('camQ').hidden=true}}
 let capC=null,capT=null,pending=0;
 function frameIsDark(c){const t=capT||(capT=document.createElement('canvas'));t.width=16;t.height=16;const g=t.getContext('2d',{willReadFrequently:true});
   g.drawImage(c,0,0,16,16);const d=g.getImageData(0,0,16,16).data;let s=0;for(let i=0;i<d.length;i+=4)s+=d[i]+d[i+1]+d[i+2];return s/(256*3)<7}
@@ -1624,7 +1637,7 @@ function quickShoot(){ // vše synchronně v okamžiku dotyku – snímek je zac
   const cam=$('cam');cam.classList.remove('flash');void cam.offsetWidth;cam.classList.add('flash');
   const th=thumbOf(capC),id=newId(),tp=type,qp=quickPid;pending++;quickCount++;quickLabel();
   if(quickTarget&&quickCount>=quickTarget)setTimeout(()=>{if(quickMode&&!$('cam').hidden){camHint(`Série ${quickTarget} snímků hotová`,700);setTimeout(()=>{if(quickMode)$('camClose').click()},650)}},250);
-  capC.toBlob(async blob=>{try{if(blob){await KV.set('img:'+id,blob);await KV.set('st:'+id,{up:u});await qPut({id,time:Date.now(),type:tp,pid:qp,pname:qp&&P(qp)?P(qp).name:'',n:0,thumb:th,raw:true});quickIds.push(id);quickLabel();if(!quickMode)showDraftCard()}
+  capC.toBlob(async blob=>{try{if(blob){await KV.set('img:'+id,blob);await KV.set('st:'+id,{up:u});await qPut({id,time:Date.now(),type:tp,pid:qp,pname:qp&&P(qp)?P(qp).name:'',n:0,thumb:th,raw:true});quickIds.push(id);quickLabel();camThumb(th,quickIds.length);if(!quickMode)showDraftCard()}
       else{quickCount--;quickLabel();camHint('Snímek se nepodařilo uložit',1500)}}catch(e){quickCount--;quickLabel();camHint('Snímek se nepodařilo uložit',1500)}finally{pending--}},'image/jpeg',0.9);
 }
 async function quickImport(files){
@@ -1641,7 +1654,10 @@ async function endQuick(){quickMode=false;$('camQ').hidden=true;for(let i=0;i<40
 async function finishQuick(pid){$('qName').hidden=true;const ids=quickIds;quickIds=[];
   if(typeof pid==='string'&&!P(pid)){const f=findByName(pid);pid=f?f.id:createPatient(pid,'')}
   if(pid){const nm=P(pid).name;await qEdit(q=>q.forEach(m=>{if(ids.includes(m.id)){m.pid=pid;m.pname=nm}}))}
-  const n=ids.length;showDraftCard();note(n?`${cnt(n,'snímek čeká','snímky čekají','snímků čeká')} na změření${pid?' – '+P(pid).name:''}. Najdete ${n===1?'ho':'je'} pod „K měření“.`:'')}
+  const n=ids.length;await showDraftCard();camThumb(null);
+  if(n&&quickGoKart){setTab('kart');setTimeout(()=>{const q=$('npQueue');if(q&&!q.hidden)q.scrollIntoView({block:'start',behavior:'smooth'})},60)}
+  quickGoKart=false;
+  note(n?`${cnt(n,'snímek uložen','snímky uloženy','snímků uloženo')}${pid?' – '+P(pid).name:''}. Čekají v Kartotéce › Fotky k měření.`:'')}
 $('qNameOk').onclick=()=>finishQuick($('qNameIn').value.trim());$('qNameSkip').onclick=()=>finishQuick('');
 $('qNameIn').onkeydown=e=>{if(e.key==='Enter')finishQuick($('qNameIn').value.trim())};
 $('npQuick').onclick=()=>startQuick();
@@ -1652,7 +1668,7 @@ $('fileQ').addEventListener('change',async e=>{const fs=[...(e.target.files||[])
 $('copy').onclick=copyResult;$('expImg').onclick=exportShare;
 
 /* v0.23: Úvod v každé kartě panelu, verze a automatická aktualizace */
-const APP_VER='0.39';
+const APP_VER='0.40';
 $('npVer').textContent='Posturální profil · verze '+APP_VER;
 $('sheet').querySelector('.card').insertAdjacentHTML('beforeend','<div class="tabfoot" id="tabFoot" hidden><button class="btn home" id="tfHome"><svg class="i"><use href="#i-home"/></svg>Úvod</button></div>');
 $('tfHome').onclick=()=>$('homeBtn').click();

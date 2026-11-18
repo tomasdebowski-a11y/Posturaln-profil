@@ -195,7 +195,10 @@ async function closeSheetIfOpen(p){if(!(await p.hid('sheet'))){await p.click('#c
   const sb=await p.locator('#shutter').boundingBox();
   for(let i=0;i<5;i++){if(i===3)await p.click('#camType');await p.mouse.click(sb.x+39,sb.y+39);await p.waitForTimeout(450)}
   ok('T7 počítadlo snímků',(await p.txt('camQn')).startsWith('5'),await p.txt('camQn'));
-  await p.click('#camClose');await p.waitForFunction(()=>!document.getElementById('pick').hidden,null,{timeout:6000}).catch(()=>{});
+  await p.waitForFunction(()=>document.getElementById('camLib').classList.contains('thumb'),null,{timeout:5000}).catch(()=>{});
+  ok('T7 místo ikony galerie náhled poslední uložené fotky s počtem',await p.evaluate(()=>{const b=document.getElementById('camLib');return b.classList.contains('thumb')&&!!b.querySelector('img')&&+b.querySelector('em').textContent>0}));
+  await p.click('#camLib');await p.waitForFunction(()=>!document.getElementById('pick').hidden,null,{timeout:6000}).catch(()=>{});
+  ok('T7 ťuknutí na náhled ukončí focení',await p.hid('cam'));p.goKart=true;
   ok('T7 dotaz na pacienta',!(await p.hid('pick')));
   ok('T7 u přiřazení vedle sebe Přiřadit a Nový pacient',!(await p.hid('pkGo'))&&!(await p.hid('pkNewBtn'))&&!(await p.evaluate(()=>!!document.querySelector('#pkList [data-newp]'))));
   await p.click('#pkGo');ok('T7 Přiřadit bez výběru upozorní',(await p.txt('pkErr')).length>0);
@@ -203,6 +206,7 @@ async function closeSheetIfOpen(p){if(!(await p.hid('sheet'))){await p.click('#c
   await p.click('#pkBackList');ok('T7 Zpět na seznam',!(await p.hid('pkList')));await p.click('#pkNewBtn');
   await p.fill('#pkName','Test Zásoba');await p.fill('#pkDob','1990-02-03');await p.click('#pkGo');await p.waitForTimeout(700);
   ok('T7 nový pacient s datem narození',(await p.T('pats')).some(x=>x.name==='Test Zásoba'&&x.dob==='1990-02-03'));
+  ok('T7 po náhledu se otevře Kartotéka s fotkami k měření',!(await p.hid('paneKart'))&&!(await p.hid('npQueue')));
   const rows=await p.evaluate(()=>[...document.querySelectorAll('#qList .qrow b')].map(e=>e.textContent));
   ok('T7 5 fotek se jménem a typem',rows.length===5&&rows.every(r=>r.includes('Test Zásoba'))&&rows.filter(r=>r.includes('ATSI')).length===2,rows.join(' | '));
   await kart(p);await p.click('#qList .qrow:nth-child(5) [data-go]');await p.waitForTimeout(2000);

@@ -534,6 +534,11 @@ details p{margin:6px 0;color:var(--muted)}
 .pkbtns .npbtn span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .pkdob{display:grid;gap:4px}.pkdob span{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--on-glass-dim);text-transform:uppercase}
 .pkdob input{width:100%;color-scheme:dark;-webkit-appearance:none;appearance:none}
+
+/* v0.39 průsvitka a kontrola polohy */
+.camghost{position:absolute;top:calc(118px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(20,26,38,.82);color:#fff;font:600 12.5px var(--f-ui);cursor:pointer}
+.camghost[aria-pressed="true"]{border-color:var(--pt);color:var(--pt)}
+.camghost i{width:9px;height:9px;border-radius:50%;background:currentColor;opacity:.9}
 /* v0.27 kartotéka pacientů */
 .npbk{margin-left:auto;width:44px;height:44px;border-radius:50%;border:1px solid var(--glass-line);background:rgba(255,255,255,.06);color:var(--on-glass);display:grid;place-items:center;cursor:pointer;padding:0;flex:none}
 .npmain{display:grid;grid-template-columns:1.2fr 1fr;gap:10px}
@@ -841,6 +846,7 @@ details p{margin:6px 0;color:var(--muted)}
     <canvas id="camOver"></canvas>
     <div class="camtop glass"><b id="camStatus">Narovnejte telefon</b><span class="camread" id="camRead">—</span></div>
     <div class="camwho" id="camWho" hidden></div>
+    <button class="camghost" id="camGhost" hidden aria-pressed="true"></button>
     <div class="camq" id="camRow" hidden><span id="camQ" hidden><button class="camtype" id="camType">POTSI ⇄</button><span id="camQn">0 fotek</span></span></div>
     <div class="camhint" id="camHint" hidden></div>
     <div class="cambar">
@@ -902,6 +908,7 @@ details p{margin:6px 0;color:var(--muted)}
           <li><b>1. Fotka</b> – <b>Vyfotit</b> otevře fotoaparát s vodováhou: vodorovná čára a bublina ukazují náklon a sklon telefonu, spoušť zezelená, když je telefon přibližně rovně (náklon i sklon pod 2,5°). Přesné vyrovnání udělá aplikace po vyfocení podle senzorů – zbytkový náklon dorovná otočením a sklon korekcí perspektivy, takže není třeba čekat na úplně přesnou polohu. Pacient má temenem a chodidly sedět na čárkovaných vodítkách. Fotku lze vybrat i z Galerie.</li>
           <li><b>2. Vyrovnání</b> – u fotky z aplikace podle senzorů telefonu (a pro kontrolu podle hran), u fotky z galerie automaticky: aplikace najde svislé linie v záběru (olovnici, zárubeň dveří, roh místnosti) a fotku podle nich srovná. Žluté čáry ukazují, podle čeho; když sedí, dejte Pokračovat. Jinak <b>Olovnicí ručně</b>: zaměřovač na horní konec olovnice, potvrdit, na dolní konec, potvrdit.</li>
           <li><b>Úvod</b> – žluté tlačítko je <b>rychlé focení</b> bez pacienta (pacienta přiřadíte po zavření fotoaparátu nebo později). <b>Nový pacient</b> otevře zápis: jméno, datum narození, co měříte a zda fotíte sérii 3 snímků, nebo jeden snímek. <b>Kartotéka</b> obsahuje fotky čekající na změření a všechny pacienty; zpět na úvod vede tlačítko Úvod. V kartě pacienta spustíte <b>Nové měření</b>, porovnání a vývoj; výsledky se do karty ukládají samy. Data jsou jen v telefonu – zálohujte je v menu ⋯ na úvodu (Záloha dat).</li>
+          <li><b>Stejné podmínky u kontrol</b> – paty na spodní čárkovanou čáru, temeno na horní, pacient na svislé ose uprostřed a vodováha zeleně. Má-li pacient předchozí snímek, ukáže ho fotoaparát jako <b>průsvitku</b> (tlačítko vpravo nahoře ji vypne) – srovnejte pacienta tak, aby se s ní kryl. Po umístění bodů aplikace upozorní, když je pacient mimo střed snímku nebo když je postava o víc než 10 % větší či menší než minule.</li>
           <li><b>Rychlé focení</b> (žluté tlačítko na úvodu). Otevře fotoaparát s vodováhou, ale po vyfocení zůstane otevřený, takže pořídíte víc snímků za sebou (POTSI/ATSI přepnete štítkem dole). Na konci zadáte jméno pacienta. Fotky čekají v seznamu <b>Fotky k měření</b> a body do nich zadáte později v klidu – vyrovnání podle senzorů se použije až při otevření. Do zásoby jde i víc fotek najednou z galerie (ikona galerie ve fotoaparátu). Rozpracované měření se do seznamu vrací i přes ⋯ → Přerušit.</li>
           <li><b>3. Body P1–P8</b> – zaměřovač posuňte na bod a potvrďte velkým tlačítkem. Po podpažní řase skočí zaměřovač nad ni a u ramene se posouvá jen nahoru a dolů – rameno leží podle metody na svislici z podpažní řasy.</li>
           <li><b>Zaměřovač</b> posouváte jedním prstem kdekoli na fotce; neskočí pod prst, takže ho nezakryjete. Pomalý pohyb prstu = jemné doladění. Ťuknutím ho přesunete na dané místo.</li>
@@ -977,7 +984,7 @@ details p{margin:6px 0;color:var(--muted)}
     </details>
     
       </div>
-      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají. Pacienti, měření a fotky zůstávají jen v tomto telefonu – pravidelně je zálohujte (menu ⋯ na úvodu → Záloha dat). Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.38.</p>
+      <p class="note">Snímky se zpracovávají jen v tomto zařízení, nikam se neodesílají. Pacienti, měření a fotky zůstávají jen v tomto telefonu – pravidelně je zálohujte (menu ⋯ na úvodu → Záloha dat). Výsledek je pomocný údaj; nenahrazuje klinické vyšetření ani RTG. Verze 0.39.</p>
     </div>
     </div>
   </div>
@@ -1383,6 +1390,9 @@ function camLoop(){
   const g=c.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,W,H);
   const v=$('camVideo'),vw=v.videoWidth||3,vh=v.videoHeight||4,s=Math.min(W/vw,H/vh),fw=vw*s,fh=vh*s,fx=(W-fw)/2,fy=(H-fh)/2;
   if(v.videoWidth&&v.readyState>=2){try{g.drawImage(v,fx,fy,fw,fh)}catch(e){}} // náhled = přesně to, co se uloží
+  if(ghost.on&&ghost.img&&ghost.img.naturalWidth){ // průsvitka předchozího snímku téhož pacienta
+    const gi=ghost.img,k=Math.min(fw/gi.naturalWidth,fh/gi.naturalHeight),gw=gi.naturalWidth*k,gh=gi.naturalHeight*k;
+    g.save();g.globalAlpha=0.38;g.drawImage(gi,fx+(fw-gw)/2,fy+(fh-gh)/2,gw,gh);g.restore()}
   // hranice snímku (co se uloží)
   g.save();g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=1*d;g.strokeRect(fx+.5,fy+.5,fw-1,fh-1);g.restore();
   // vodítka postavy: střed, hlava, chodidla
@@ -1635,14 +1645,14 @@ async function finishQuick(pid){$('qName').hidden=true;const ids=quickIds;quickI
 $('qNameOk').onclick=()=>finishQuick($('qNameIn').value.trim());$('qNameSkip').onclick=()=>finishQuick('');
 $('qNameIn').onkeydown=e=>{if(e.key==='Enter')finishQuick($('qNameIn').value.trim())};
 $('npQuick').onclick=()=>startQuick();
-$('camType').onclick=()=>{type=type==='POTSI'?'ATSI':'POTSI';syncType();quickLabel()};
+$('camType').onclick=()=>{type=type==='POTSI'?'ATSI':'POTSI';syncType();quickLabel();try{ghostUpd()}catch(e){}};
 let fileQBusy=false;$('fileQ').addEventListener('cancel',()=>{if(quickMode)endQuick()});
 window.addEventListener('focus',()=>setTimeout(()=>{if(quickMode&&$('cam').hidden&&!fileQBusy)endQuick()},1200)); // starší iOS neposílá „cancel“
 $('fileQ').addEventListener('change',async e=>{const fs=[...(e.target.files||[])];e.target.value='';if(!fs.length){endQuick();return}fileQBusy=true;flash('Ukládám fotky…');try{await quickImport(fs)}finally{fileQBusy=false}endQuick()});
 $('copy').onclick=copyResult;$('expImg').onclick=exportShare;
 
 /* v0.23: Úvod v každé kartě panelu, verze a automatická aktualizace */
-const APP_VER='0.38';
+const APP_VER='0.39';
 $('npVer').textContent='Posturální profil · verze '+APP_VER;
 $('sheet').querySelector('.card').insertAdjacentHTML('beforeend','<div class="tabfoot" id="tabFoot" hidden><button class="btn home" id="tfHome"><svg class="i"><use href="#i-home"/></svg>Úvod</button></div>');
 $('tfHome').onclick=()=>$('homeBtn').click();
@@ -1826,6 +1836,10 @@ function qualityWarnings(r){
   if(tiltDeg!=null&&Math.abs(tiltDeg)>1.5)w.push(`Svislé linie se na fotce sbíhají (o ${fmt(Math.abs(tiltDeg),1)}°) – telefon byl nakloněný dopředu nebo dozadu. Výškové poměry mohou být mírně zkreslené; příště držte telefon svisle v polovině výšky postavy.`);
   if(!calibrated)w.push('Snímek není vyrovnaný. Výškové indexy (HDI) jsou na náklon citlivé – náklon 1° posune výsledek u širokého trupu o několik desetin bodu.');
   if(r&&r.e<base.height*.3)w.push('Trup zabírá jen malou část snímku. Přibližte (ne širokoúhlým objektivem) nebo ořízněte, aby šly body umístit přesněji.');
+  if(r&&base&&!isDemo){const mx=(pts[def().mid].x-base.width/2)/base.width;
+    if(Math.abs(mx)>0.12)w.push(`Pacient není uprostřed snímku (osa je o ${Math.round(Math.abs(mx)*100)} % šířky ${mx<0?'vlevo':'vpravo'} od středu). Fotka byla nejspíš pořízena šikmo – příště stůjte přímo za pacientem a srovnejte ho se svislou čárkovanou osou.`);
+    if(curPid){const sc=r.e/base.height,prev=patMeas(curPid,type).filter(m=>m.id!==curMid&&m.scale).pop();
+      if(prev){const d=sc/prev.scale-1;if(Math.abs(d)>0.10)w.push(`Postava je o ${Math.round(Math.abs(d)*100)} % ${d>0?'větší':'menší'} než na předchozím snímku (${dFull(prev.date)}). Fotoaparát byl nejspíš v jiné vzdálenosti – příště dejte paty na spodní a temeno na horní čárkovanou čáru, nebo použijte průsvitku.`)}}}
   const miss=PROTO.filter(p=>!proto[p.k]);
   if(miss.length)w.push(`Protokol focení: neodškrtnuto ${miss.length} z ${PROTO.length} bodů. Výsledek nebude označen jako změřený podle standardizovaného protokolu.`);
   if(r&&series.length===0&&!curPid)w.push('Doporučení: změřte 3 snímky (nebo 3× tentýž snímek) a uložte průměr. Jednotlivé měření nese chybu několika bodů.');
@@ -2048,7 +2062,7 @@ function saveRec(){ // vše podstatné proběhne synchronně (lze volat těsně 
       thumb=thumbOf(img)}catch(e){img=null;thumb=''}}
     let li=null;try{li=levelInfo&&levelInfo.raw?{roll:levelInfo.raw.roll,pitch:levelInfo.raw.pitch}:null}catch(e){}
     const rec={...(old||{}),id,pid,type,date,time:old?old.time:Date.now(),upd:Date.now(),total:s.st.m,n:s.st.n,sd:s.st.sd,min:s.st.min,max:s.st.max,
-      parts:s.parts.map(p=>({c:p.c,v:p.v,dir:p.dir})),proto:protoOk(),calib:calibMode||(calibrated?'manual':''),lvl:li,warn:warn.length?warn:null,
+      parts:s.parts.map(p=>({c:p.c,v:p.v,dir:p.dir})),proto:protoOk(),...(lastRes&&base?{scale:lastRes.e/base.height,mx:(pts[def().mid].x-base.width/2)/base.width}:{}),calib:calibMode||(calibrated?'manual':''),lvl:li,warn:warn.length?warn:null,
       dist:$('dist').value,camh:$('camh').value,examiner:$('examiner').value.trim()};
     if(thumb){rec.thumb=thumb;delete rec.noimg}else if(!old||!old.thumb)rec.noimg=!old||old.noimg!==false?true:rec.noimg;
     MEAS=MEAS.filter(m=>m.id!==id);MEAS.push(rec);
@@ -2592,7 +2606,16 @@ $('hmInfo').onclick=()=>{closeHMenu();openSheet('info')};
 $('hmDemo').onclick=()=>{closeHMenu();loadDemo()};
 /* plovoucí spoušť po sjetí dolů */
 /* foťák: kdo a co se fotí */
-function camWhoUpd(){const el=$('camWho');if(!el)return;if(quickMode){el.hidden=true;return}
+let ghost={on:true,img:null,url:null,id:null};
+try{ghost.on=localStorage.getItem('ppGhost')!=='0'}catch(e){}
+function ghostUpd(){const b=$('camGhost'),pid=quickMode?quickPid:nextPid;
+  const prev=pid?patMeas(pid,type).filter(m=>!m.noimg).pop():null;
+  if(!prev){b.hidden=true;ghost.img=null;return}
+  b.hidden=false;b.setAttribute('aria-pressed',String(ghost.on));b.innerHTML=`<i></i>Průsvitka ${dLabel(prev.date)}`;
+  if(ghost.id===prev.id&&ghost.img)return;
+  ghost.id=prev.id;ghost.img=null;KV.get('mimg:'+prev.id).then(bl=>{if(!bl||ghost.id!==prev.id)return;if(ghost.url)URL.revokeObjectURL(ghost.url);ghost.url=URL.createObjectURL(bl);const im=new Image();im.onload=()=>{if(ghost.id===prev.id)ghost.img=im};im.src=ghost.url})}
+$('camGhost').onclick=e=>{e.stopPropagation();ghost.on=!ghost.on;try{localStorage.setItem('ppGhost',ghost.on?'1':'0')}catch(e2){}$('camGhost').setAttribute('aria-pressed',String(ghost.on));camHint(ghost.on?'Průsvitka zapnutá – srovnejte pacienta s předchozím snímkem':'Průsvitka vypnutá',900)};
+function camWhoUpd(){try{ghostUpd()}catch(e){}const el=$('camWho');if(!el)return;if(quickMode){el.hidden=true;return}
   const p=P(nextPid),n=p?dayCount(p.id,type)+1:0;
   el.innerHTML=p?`<span class="pcav">${esc(initials(p.name))}</span>${esc(p.name)} · <b>${type}</b> ${TNAME[type]}${n<=3?` · snímek ${n}/3`:''}`:`<span class="pcav none">–</span>Bez pacienta · <b>${type}</b> ${TNAME[type]}`;el.hidden=false}
 /* mini torzo: kde hledat bod */

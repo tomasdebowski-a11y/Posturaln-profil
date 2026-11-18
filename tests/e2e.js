@@ -162,6 +162,17 @@ async function closeSheetIfOpen(p){if(!(await p.hid('sheet'))){await p.click('#c
   ok('T26 bez chyb',p.errs.length===0,p.errs.join(' | '));
   await p.context().close();
 
+  // T28 kontrola polohy: pacient mimo střed a jiná velikost postavy než minule
+  p=await newPage();await pickNew(p,'Poloha Test');await passLeveling(p);await place8(p);await p.waitForTimeout(900);
+  ok('T28 první snímek bez upozornění na polohu',!(await p.txt('warns')).includes('uprostřed')&&(await p.T('meas')).length===1);
+  await p.click('#newM');await p.waitForTimeout(600);await kart(p);await p.click('#npList .prow');await p.waitForTimeout(300);await p.click('#pvFab');await p.click('#mfShot [data-m="single"]');
+  {const [fc]=await Promise.all([p.waitForEvent('filechooser'),p.click('#mfLib')]);await fc.setFiles(D+'/back.jpg');await p.waitForTimeout(1800)}
+  await passLeveling(p);{const b=await p.T('base');for(const [x,y] of BACK)await p.place((300+(x-720)*0.8)*b.w/1440,(400+(y-400)*0.8)*b.h/1920)}
+  await p.waitForTimeout(900);await openRes(p);await p.waitForTimeout(300);
+  {const w=await p.txt('warns');ok('T28 upozornění: pacient mimo střed',w.includes('není uprostřed'),w.slice(0,200));ok('T28 upozornění: jiná velikost postavy',w.includes('menší než na předchozím snímku'),w.slice(0,300))}
+  ok('T28 bez chyb',p.errs.length===0,p.errs.join(' | '));
+  await p.context().close();
+
   // T6 přerušení, obnovení po restartu, smazání
   p=await newPage();await loadGallery(p);await passLeveling(p);
   await p.place(720,520);await p.place(560,700);await p.place(560,560);
@@ -277,6 +288,10 @@ async function closeSheetIfOpen(p){if(!(await p.hid('sheet'))){await p.click('#c
   await p.click('#pvL');await p.waitForTimeout(200);
   await p.click('#pvR');await p.click('#pvMenu >> text=Upravit údaje pacienta');await p.fill('#cdName','Trend Testová');await p.fill('#cdCard','77');await p.click('#cdSave');await p.waitForTimeout(200);
   ok('T21 úprava pacienta',(await p.T('pats'))[0].name==='Trend Testová'&&(await p.T('pats'))[0].card==='77');
+  await p.click('#pvFab');await p.waitForTimeout(200);await p.click('#mfShot [data-m="single"]');await p.click('#mfGo');await p.waitForTimeout(1800);
+  ok('T27 fotoaparát nabízí průsvitku předchozího snímku',!(await p.hid('cam'))&&!(await p.hid('camGhost'))&&(await p.txt('camGhost')).includes('Průsvitka'),await p.txt('camGhost'));
+  await p.click('#camGhost');ok('T27 průsvitka jde vypnout',(await p.evaluate(()=>document.getElementById('camGhost').getAttribute('aria-pressed')))==='false');await p.click('#camGhost');
+  await p.click('#camClose');await p.waitForTimeout(500);await kart(p);await p.click('#npList .prow');await p.waitForTimeout(400);
   // T22 záloha a obnova do čistého telefonu
   await p.click('#pvL');await p.waitForTimeout(200);await p.click('#npBk');await p.click('#hmBk');
   await p.waitForFunction(()=>{const b=document.getElementById('bkGo');return b&&!b.disabled},null,{timeout:8000});
